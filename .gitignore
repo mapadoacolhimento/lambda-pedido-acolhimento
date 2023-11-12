@@ -1,0 +1,16 @@
+# Generated files
+node_modules
+dist
+.DS_Store
+
+# Typescript
+*.tsbuildinfo
+*.d.ts
+
+# Jest
+coverage
+.coverage
+
+# Env files
+.env*
+!.env.example

@@ -1,0 +1,54 @@
+service: create-support-request-api
+
+frameworkVersion: "3"
+useDotenv: true
+
+custom:
+  esbuild:
+    minify: true
+    bundle: true
+    watch:
+      pattern: ["./handler.ts", "src/**/*.ts"] # default .
+      ignore: [".serverless/**/*", ".build"] # default ['.build', 'dist', 'node_modules']
+  serverless-offline:
+    httpPort: 5000
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ${env:AWS_REGION}
+  httpApi:
+    metrics: true
+    authorizers:
+      customAuthorizer:
+        type: request
+        functionName: auth
+  environment:
+    JWT_SECRET: ${env:JWT_SECRET}
+    DB: ${env:DB}
+
+functions:
+  create:
+    handler: handler.create
+    events:
+      - httpApi:
+        path: create
+        method: POST
+        cors: true
+        authorizer: auth
+
+  process:
+    handler: handler.process
+    events:
+      - httpApi:
+        path: process
+        method: POST
+        cors: true
+        authorizer: auth
+
+  auth:
+    handler: handler.auth
+
+plugins:
+  - serverless-offline
+  - serverless-esbuild
