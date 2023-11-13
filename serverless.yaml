@@ -12,6 +12,7 @@ custom:
       ignore: [".serverless/**/*", ".build"] # default ['.build', 'dist', 'node_modules']
     external:
       - jsonwebtoken
+      - dotenv-safe
   serverless-offline:
     httpPort: 5000
 
