@@ -1,7 +1,7 @@
 {
   "extends": "@tsconfig/node-lts-strictest/tsconfig.json",
   "include": ["src/**/*", "handler.ts"],
-  "exclude": ["coverage", ".serverless", "dist", "build"],
+  "exclude": ["coverage", ".serverless", ".esbuild"],
   "compilerOptions": {
     /* Basic Options */
     "incremental": true,
