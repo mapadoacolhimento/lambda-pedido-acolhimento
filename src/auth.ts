@@ -41,15 +41,12 @@ const generatePolicy = function (
       Effect: effect,
       Resource: resource,
     };
-    const policyDocument = {
-      Statement: [statementOne],
-    };
 
     authResponse = {
       ...authResponse,
       policyDocument: {
         ...authResponse.policyDocument,
-        ...policyDocument,
+        Statement: [statementOne],
       },
     };
   }
