@@ -1,7 +1,4 @@
-import { auth, process, create } from "./src";
-
-export default {
-  auth,
-  process,
-  create,
-};
+export { default as sign } from "./src/sign";
+export { default as create } from "./src/create";
+export { default as process } from "./src/process";
+export { default as auth } from "./src/auth";
