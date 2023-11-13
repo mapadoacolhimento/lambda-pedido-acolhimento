@@ -4,55 +4,8 @@ import type {
   Context,
   APIGatewayTokenAuthorizerEvent,
   APIGatewayAuthorizerCallback,
-  APIGatewayAuthorizerResult,
-  Statement,
 } from "aws-lambda";
-
-const denyPolicy = function (
-  principalId: string,
-  resource: string,
-): APIGatewayAuthorizerResult {
-  return generatePolicy("Deny", principalId, resource);
-};
-
-const allowPolicy = function (
-  principalId: string,
-  resource: string,
-): APIGatewayAuthorizerResult {
-  return generatePolicy("Allow", principalId, resource);
-};
-
-const generatePolicy = function (
-  effect: string,
-  principalId: string,
-  resource: string,
-): APIGatewayAuthorizerResult {
-  let authResponse: APIGatewayAuthorizerResult = {
-    principalId,
-    policyDocument: {
-      Version: "2012-10-17", // default version
-      Statement: [],
-    },
-  };
-
-  if (effect && resource) {
-    const statementOne: Statement = {
-      Action: "execute-api:Invoke", // default action
-      Effect: effect,
-      Resource: resource,
-    };
-
-    authResponse = {
-      ...authResponse,
-      policyDocument: {
-        ...authResponse.policyDocument,
-        Statement: [statementOne],
-      },
-    };
-  }
-
-  return authResponse;
-};
+import { denyPolicy, allowPolicy } from "./utils";
 
 const auth: Handler = (
   event: APIGatewayTokenAuthorizerEvent,
