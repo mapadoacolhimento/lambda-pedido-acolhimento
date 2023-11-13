@@ -4,6 +4,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  STAGE: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+
 on:
   pull_request:
     branches:
@@ -59,6 +62,8 @@ jobs:
 
   deployment:
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
     needs:
       - integration
     if: always() && needs.integration.result == 'success'
@@ -94,14 +99,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
-
-      - name: Set env STAGE
-        run: |
-          if [[ ${GITHUB_REF} == "refs/heads/main" ]]; then
-            echo "STAGE=production" >> "$GITHUB_ENV"
-          else
-            echo "STAGE=staging" >> "$GITHUB_ENV"
-          fi
 
       - name: Create env file
         run: |
