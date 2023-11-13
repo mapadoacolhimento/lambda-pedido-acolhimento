@@ -10,6 +10,8 @@ custom:
     watch:
       pattern: ["./handler.ts", "src/**/*.ts"] # default .
       ignore: [".serverless/**/*", ".build"] # default ['.build', 'dist', 'node_modules']
+    external:
+      - jsonwebtoken
   serverless-offline:
     httpPort: 5000
 
