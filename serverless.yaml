@@ -25,9 +25,10 @@ provider:
     metrics: true
     cors: true
     authorizers:
-      customAuthorizer:
+      auth:
         type: request
         functionName: auth
+        identitySource: $request.header.Authorization
   environment:
     JWT_SECRET: ${env:JWT_SECRET}
     DB: ${env:DB}
@@ -43,7 +44,7 @@ functions:
           path: /create
           method: POST
           authorizer:
-            name: customAuthorizer
+            name: auth
             type: request
 
   process:
@@ -53,7 +54,7 @@ functions:
           path: /process
           method: POST
           authorizer:
-            name: customAuthorizer
+            name: auth
             type: request
 
   sign:

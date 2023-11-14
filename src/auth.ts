@@ -2,22 +2,25 @@ import { verify } from "jsonwebtoken";
 import type {
   Handler,
   Context,
-  APIGatewayTokenAuthorizerEvent,
+  APIGatewayRequestAuthorizerEventV2,
   APIGatewayAuthorizerCallback,
 } from "aws-lambda";
 import { denyPolicy, allowPolicy } from "./utils";
 
 const auth: Handler = (
-  event: APIGatewayTokenAuthorizerEvent,
+  event: APIGatewayRequestAuthorizerEventV2,
   _context: Context,
   callback: APIGatewayAuthorizerCallback,
 ) => {
   console.log("Received event", JSON.stringify(event, null, 2));
 
-  // remove the 'Bearer ' prefix from the auth token
-  const token = event.authorizationToken.replace(/Bearer /g, "");
+  const [authorization] = event.identitySource;
+  if (!authorization)
+    return callback(null, denyPolicy("anonymous", event.routeArn));
 
-  if (!token) return callback(null, denyPolicy("anonymous", event.methodArn));
+  // remove the 'Bearer ' prefix from the auth token
+  const token = authorization.replace(/Bearer /g, "");
+  if (!token) return callback(null, denyPolicy("anonymous", event.routeArn));
 
   const secret = process.env["JWT_SECRET"] || "";
 
@@ -25,11 +28,11 @@ const auth: Handler = (
   verify(token, secret, (err, verified) => {
     if (err) {
       console.error("JWT Error", err, err?.stack);
-      return callback(null, denyPolicy("anonymous", event.methodArn));
+      return callback(null, denyPolicy("anonymous", event.routeArn));
     }
     return callback(
       null,
-      allowPolicy(verified?.sub?.toString() || "", event.methodArn),
+      allowPolicy(verified?.sub?.toString() || "", event.routeArn),
     );
   });
 };
