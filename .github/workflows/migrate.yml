@@ -21,7 +21,7 @@ env:
   LOCAL_DATABASE_URL: postgresql://user:password@localhost:5432/mapa-org?schema=match
 
 jobs:
-  diff:
+  deploy:
     runs-on: ubuntu-latest
     environment:
       name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
