@@ -56,22 +56,35 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install pnpm and dependencies
+      - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8
           run_install: false
 
-      - name: Install prisma
-        run: pnpm add prisma --global
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Push current migrations to test database
-        run: prisma db push
+        run: pnpm run db:push
         env:
           DATABASE_URL: ${{ env.LOCAL_DATABASE_URL }}
 
       - name: Check migrations diff between remote and local databases
-        run: prisma migrate diff --from-url $REMOTE_DATABASE_URL --to-url $LOCAL_DATABASE_URL
+        run: pnpm run migrate:diff --from-url $REMOTE_DATABASE_URL --to-url $LOCAL_DATABASE_URL
         env:
           REMOTE_DATABASE_URL: ${{ secrets.DATABASE_URL }}
 

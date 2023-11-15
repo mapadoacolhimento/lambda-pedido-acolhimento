@@ -20,7 +20,8 @@
     "db:push": "prisma db push",
     "migrate:deploy": "prisma migrate deploy",
     "migrate:create": "prisma migrate dev --create-only",
-    "migrate:dev": "prisma migrate dev"
+    "migrate:dev": "prisma migrate dev",
+    "migrate:diff": "prisma migrate diff"
   },
   "author": "",
   "license": "MIT",
