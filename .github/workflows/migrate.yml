@@ -1,0 +1,93 @@
+name: Prisma Migrate
+
+on:
+  pull_request:
+    branches:
+      - "**"
+    paths:
+      - "./prisma/**/*.*"
+
+  push:
+    branches:
+      - "main"
+    paths:
+      - "./prisma/**/*.*"
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    strategy:
+      matrix:
+        node-version: [18.x]
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps TCP port 5432 on service container to the host
+          - 5432:5432
+    env:
+      LOCAL_DATABASE_URL: postgresql://user:password@localhost:5432/mapa-org
+      REMOTE_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install pnpm and dependencies
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Check migrations diff between remote and local databases
+        run: prisma migrate diff \
+          --from-url "$REMOTE_DATABASE_URL" \
+          --to-url "$LOCAL_DATABASE_URL"
+
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    needs:
+      - diff
+    if: always() && needs.diff.result == 'success'
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install pnpm and dependencies
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      # - name: Apply all pending migrations to the database
+      #   run: pnpm dlx prisma migrate deploy
+      #   env:
+      #     DATABASE_URL: ${{ secrets.DATABASE_URL }}
