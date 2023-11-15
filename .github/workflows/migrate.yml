@@ -91,6 +91,6 @@ jobs:
 
       - name: Apply all pending migrations to the database
         if: ${{ success() && steps.diff.conclusion == 'success' }}
-        run: echo "Yay! Deploy the migration :)"
+        run: pnpm run migrate:deploy
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
