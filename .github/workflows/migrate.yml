@@ -91,8 +91,6 @@ jobs:
           REMOTE_DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Apply all pending migrations to the database
-        if: success()
-        run: echo "Yay! I'm deploying :)"
-        # run: pnpm dlx prisma migrate deploy
-        # env:
-        #   DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: pnpm run migrate:deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
