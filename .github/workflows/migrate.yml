@@ -5,13 +5,13 @@ on:
     branches:
       - "**"
     paths:
-      - "./prisma/**/*.*"
+      - "prisma/**"
 
   push:
     branches:
       - "main"
     paths:
-      - "./prisma/**/*.*"
+      - "prisma/**"
 
 jobs:
   diff:
