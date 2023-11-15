@@ -1,3 +1,6 @@
+-- CreateSchema
+CREATE SCHEMA IF NOT EXISTS "match";
+
 -- CreateEnum
 CREATE TYPE "match"."support_type" AS ENUM ('PSYCOLOGICAL', 'LEGAL');
 
