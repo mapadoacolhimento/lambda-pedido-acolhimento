@@ -1,10 +1,12 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["register", "match"]
 }
 
 model auth_group {
@@ -14,6 +16,7 @@ model auth_group {
   auth_user_groups       auth_user_groups[]
 
   @@index([name], map: "auth_group_name_a6ea08ec_like")
+  @@schema("register")
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
@@ -27,6 +30,7 @@ model auth_group_permissions {
   @@unique([group_id, permission_id], map: "auth_group_permissions_group_id_permission_id_0cd325b0_uniq")
   @@index([group_id], map: "auth_group_permissions_group_id_b120cbf9")
   @@index([permission_id], map: "auth_group_permissions_permission_id_84c5c92e")
+  @@schema("register")
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
@@ -41,6 +45,7 @@ model auth_permission {
 
   @@unique([content_type_id, codename], map: "auth_permission_content_type_id_codename_01ab375a_uniq")
   @@index([content_type_id], map: "auth_permission_content_type_id_2f476e4b")
+  @@schema("register")
 }
 
 model auth_user {
@@ -62,6 +67,7 @@ model auth_user {
   volunteers_formdata        volunteers_formdata?
 
   @@index([username], map: "auth_user_username_6821ab7c_like")
+  @@schema("register")
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
@@ -75,6 +81,7 @@ model auth_user_groups {
   @@unique([user_id, group_id], map: "auth_user_groups_user_id_group_id_94350c0c_uniq")
   @@index([group_id], map: "auth_user_groups_group_id_97559544")
   @@index([user_id], map: "auth_user_groups_user_id_6a12ed8b")
+  @@schema("register")
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
@@ -88,6 +95,7 @@ model auth_user_user_permissions {
   @@unique([user_id, permission_id], map: "auth_user_user_permissions_user_id_permission_id_14a6b632_uniq")
   @@index([permission_id], map: "auth_user_user_permissions_permission_id_1fbb5f2c")
   @@index([user_id], map: "auth_user_user_permissions_user_id_a95ead1b")
+  @@schema("register")
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
@@ -102,6 +110,8 @@ model core_formdata {
   updated_at           DateTime               @db.Timestamptz(6)
   auth_user            auth_user              @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "core_formdata_user_id_3a7f140c_fk_auth_user_id")
   core_integrationlogs core_integrationlogs[]
+
+  @@schema("register")
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
@@ -118,6 +128,7 @@ model core_integrationlogs {
   core_formdata core_formdata @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "core_integrationlogs_form_data_id_3bdb0c69_fk_core_formdata_id")
 
   @@index([form_data_id], map: "core_integrationlogs_form_data_id_3bdb0c69")
+  @@schema("register")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -136,6 +147,7 @@ model django_admin_log {
 
   @@index([content_type_id], map: "django_admin_log_content_type_id_c4bce8eb")
   @@index([user_id], map: "django_admin_log_user_id_c564eba6")
+  @@schema("register")
 }
 
 model django_content_type {
@@ -146,6 +158,7 @@ model django_content_type {
   django_admin_log django_admin_log[]
 
   @@unique([app_label, model], map: "django_content_type_app_label_model_76bd3d3b_uniq")
+  @@schema("register")
 }
 
 model django_migrations {
@@ -153,6 +166,8 @@ model django_migrations {
   app     String   @db.VarChar(255)
   name    String   @db.VarChar(255)
   applied DateTime @db.Timestamptz(6)
+
+  @@schema("register")
 }
 
 model django_session {
@@ -162,6 +177,7 @@ model django_session {
 
   @@index([expire_date], map: "django_session_expire_date_a5c62663")
   @@index([session_key], map: "django_session_session_key_c0390e0f_like")
+  @@schema("register")
 }
 
 model integrations_logs {
@@ -175,6 +191,8 @@ model integrations_logs {
   external_id Int?
   form_type   String   @db.VarChar(15)
   internal_id Int?
+
+  @@schema("register")
 }
 
 model msrs_formdata {
@@ -183,6 +201,8 @@ model msrs_formdata {
   values     Json
   created_at DateTime @db.Timestamptz(6)
   updated_at DateTime @db.Timestamptz(6)
+
+  @@schema("register")
 }
 
 model msrs_msrs {
@@ -225,6 +245,8 @@ model msrs_msrs {
   property_violence    String   @db.VarChar(100)
   psych_violence       String   @db.VarChar(100)
   sexual_violence      String   @db.VarChar(100)
+
+  @@schema("register")
 }
 
 model solidarity_users {
@@ -289,6 +311,8 @@ model solidarity_users {
   ultima_atualizacao_de_dados           DateTime? @db.Timestamp(6)
   whatsapp                              String?
   permanently_deleted                   Boolean?
+
+  @@schema("register")
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
@@ -322,6 +346,7 @@ model volunteers {
   volunteers_formdata volunteers_formdata? @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_volunteer_form_data_id_ec6c5a18_fk_volunteer")
 
   @@index([form_data_id], map: "volunteers_volunteer_form_data_id_ec6c5a18")
+  @@schema("register")
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
@@ -336,11 +361,15 @@ model volunteers_formdata {
   updated_at  DateTime     @db.Timestamptz(6)
   volunteers  volunteers[]
   auth_user   auth_user    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_formdata_user_id_c9262138_fk_auth_user_id")
+
+  @@schema("register")
 }
 
 enum support_type {
   PSYCOLOGICAL
   LEGAL
+
+  @@schema("match")
 }
 
 enum support_requests_status {
@@ -349,6 +378,8 @@ enum support_requests_status {
   SOCIAL_ASSISTANT
   PUBLIC_SERVICE
   FINISHED
+
+  @@schema("match")
 }
 
 model support_requests {
@@ -368,4 +399,6 @@ model support_requests {
   status                 support_requests_status
   created_at             DateTime                @default(now()) @db.Timestamp(6)
   updated_at             DateTime                @default(now()) @db.Timestamp(6)
+
+  @@schema("match")
 }
