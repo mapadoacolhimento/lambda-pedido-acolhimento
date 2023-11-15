@@ -84,36 +84,13 @@ jobs:
           DATABASE_URL: ${{ env.LOCAL_DATABASE_URL }}
 
       - name: Check migrations diff between remote and local databases
-        run: pnpm run migrate:diff --from-url $REMOTE_DATABASE_URL --to-url $LOCAL_DATABASE_URL
+        run: pnpm run migrate:diff --from-url $REMOTE_DATABASE_URL --to-url $LOCAL_DATABASE_URL --exit-code
         env:
           REMOTE_DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-  deploy:
-    runs-on: ubuntu-latest
-    environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
-    needs:
-      - diff
-    if: always() && needs.diff.result == 'success'
-    strategy:
-      matrix:
-        node-version: [18.x]
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Install pnpm and dependencies
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      # - name: Apply all pending migrations to the database
-      #   run: pnpm dlx prisma migrate deploy
-      #   env:
-      #     DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - name: Apply all pending migrations to the database
+        if: success()
+        run: echo "Yay! I'm deploying :)"
+        # run: pnpm dlx prisma migrate deploy
+        # env:
+        #   DATABASE_URL: ${{ secrets.DATABASE_URL }}
