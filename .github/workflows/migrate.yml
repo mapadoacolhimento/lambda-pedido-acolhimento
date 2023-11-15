@@ -17,6 +17,9 @@ on:
     paths:
       - "prisma/**"
 
+env:
+  LOCAL_DATABASE_URL: postgresql://user:password@localhost:5432/mapa-org
+
 jobs:
   diff:
     runs-on: ubuntu-latest
@@ -59,10 +62,17 @@ jobs:
           version: 8
           run_install: false
 
-      - name: Check migrations diff between remote and local databases
-        run: pnpm dlx prisma migrate diff --from-url $REMOTE_DATABASE_URL --to-url $LOCAL_DATABASE_URL
+      - name: Install prisma
+        run: pnpm add prisma --global
+
+      - name: Push current migrations to test database
+        run: prisma db push
         env:
-          LOCAL_DATABASE_URL: postgresql://user:password@localhost:5432/mapa-org
+          DATABASE_URL: ${{ env.LOCAL_DATABASE_URL }}
+
+      - name: Check migrations diff between remote and local databases
+        run: prisma migrate diff --from-url $REMOTE_DATABASE_URL --to-url $LOCAL_DATABASE_URL
+        env:
           REMOTE_DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
   deploy:
