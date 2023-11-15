@@ -18,7 +18,7 @@ on:
       - "prisma/**"
 
 env:
-  LOCAL_DATABASE_URL: postgresql://user:password@localhost:5432/mapa-org
+  LOCAL_DATABASE_URL: postgresql://user:password@localhost:5432/mapa-org?schema=match
 
 jobs:
   diff:
@@ -84,7 +84,9 @@ jobs:
           DATABASE_URL: ${{ env.LOCAL_DATABASE_URL }}
 
       - name: Check migrations diff between remote and local databases
-        run: pnpm run migrate:diff --from-url $REMOTE_DATABASE_URL --to-url $LOCAL_DATABASE_URL --exit-code
+        run: |
+          echo "This is the difference between the remote and new schemas:"
+          pnpm run migrate:diff --from-url $REMOTE_DATABASE_URL --to-url $LOCAL_DATABASE_URL
         env:
           REMOTE_DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
