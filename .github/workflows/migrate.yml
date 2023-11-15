@@ -43,9 +43,6 @@ jobs:
         ports:
           # Maps TCP port 5432 on service container to the host
           - 5432:5432
-    env:
-      LOCAL_DATABASE_URL: postgresql://user:password@localhost:5432/mapa-org
-      REMOTE_DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
       - name: Checkout repository
@@ -63,9 +60,10 @@ jobs:
           run_install: false
 
       - name: Check migrations diff between remote and local databases
-        run: pnpm dlx prisma migrate diff \
-          --from-url $REMOTE_DATABASE_URL \
-          --to-url $LOCAL_DATABASE_URL
+        run: pnpm dlx prisma migrate diff --from-url $REMOTE_DATABASE_URL --to-url $LOCAL_DATABASE_URL
+        env:
+          LOCAL_DATABASE_URL: postgresql://user:password@localhost:5432/mapa-org
+          REMOTE_DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
   deploy:
     runs-on: ubuntu-latest
