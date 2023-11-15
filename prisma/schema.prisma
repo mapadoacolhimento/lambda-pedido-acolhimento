@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["public", "match"]
+  schemas  = ["public", "match", "register"]
 }
 
 model auth_group {
@@ -346,7 +346,7 @@ model volunteers {
   volunteers_formdata volunteers_formdata? @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_volunteer_form_data_id_ec6c5a18_fk_volunteer")
 
   @@index([form_data_id], map: "volunteers_volunteer_form_data_id_ec6c5a18")
-  @@schema("public")
+  @@schema("register")
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
