@@ -56,9 +56,10 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 8
+          run_install: false
 
       - name: Check migrations diff between remote and local databases
-        run: prisma migrate diff \
+        run: pnpm dlx prisma migrate diff \
           --from-url "$REMOTE_DATABASE_URL" \
           --to-url "$LOCAL_DATABASE_URL"
 
