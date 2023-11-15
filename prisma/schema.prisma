@@ -12,28 +12,30 @@ datasource db {
   schemas  = ["public", "match"]
 }
 
-enum support_type {
+enum SupportType {
   PSYCOLOGICAL
   LEGAL
 
+  @@map("support_type")
   @@schema("match")
 }
 
-enum support_requests_status {
+enum SupportRequestsStatus {
   OPEN
   MATCHED
   SOCIAL_ASSISTANT
   PUBLIC_SERVICE
   FINISHED
 
+  @@map("support_requests_status")
   @@schema("match")
 }
 
-model support_requests {
-  support_request_id     Int                     @id @default(autoincrement())
+model SupportRequests {
+  support_request_id     Int                   @id @default(autoincrement())
   msr_id                 Int
-  zendesk_ticket_id      Int                     @unique
-  support_type           support_type
+  zendesk_ticket_id      Int                   @unique
+  support_type           SupportType
   support_expertise      String
   priority               Int
   has_disability         Boolean
@@ -43,9 +45,10 @@ model support_requests {
   lng                    Float
   city                   String
   state                  String
-  status                 support_requests_status
-  created_at             DateTime                @default(now()) @db.Timestamp(6)
-  updated_at             DateTime                @default(now()) @db.Timestamp(6)
+  status                 SupportRequestsStatus
+  created_at             DateTime              @default(now()) @db.Timestamp(6)
+  updated_at             DateTime              @default(now()) @db.Timestamp(6)
 
+  @@map("support_requests")
   @@schema("match")
 }
