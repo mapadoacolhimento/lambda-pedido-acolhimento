@@ -64,8 +64,8 @@ jobs:
 
       - name: Check migrations diff between remote and local databases
         run: pnpm dlx prisma migrate diff \
-          --from-url "$REMOTE_DATABASE_URL" \
-          --to-url "$LOCAL_DATABASE_URL"
+          --from-url $REMOTE_DATABASE_URL \
+          --to-url $LOCAL_DATABASE_URL
 
   deploy:
     runs-on: ubuntu-latest
