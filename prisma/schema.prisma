@@ -1,0 +1,407 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["match", "public"]
+}
+
+model auth_group {
+  id                     Int                      @id @default(autoincrement())
+  name                   String                   @unique @db.VarChar(150)
+  auth_group_permissions auth_group_permissions[]
+  auth_user_groups       auth_user_groups[]
+
+  @@index([name], map: "auth_group_name_a6ea08ec_like")
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model auth_group_permissions {
+  id              BigInt          @id @default(autoincrement())
+  group_id        Int
+  permission_id   Int
+  auth_permission auth_permission @relation(fields: [permission_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_group_permissio_permission_id_84c5c92e_fk_auth_perm")
+  auth_group      auth_group      @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_group_permissions_group_id_b120cbf9_fk_auth_group_id")
+
+  @@unique([group_id, permission_id], map: "auth_group_permissions_group_id_permission_id_0cd325b0_uniq")
+  @@index([group_id], map: "auth_group_permissions_group_id_b120cbf9")
+  @@index([permission_id], map: "auth_group_permissions_permission_id_84c5c92e")
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model auth_permission {
+  id                         Int                          @id @default(autoincrement())
+  name                       String                       @db.VarChar(255)
+  content_type_id            Int
+  codename                   String                       @db.VarChar(100)
+  auth_group_permissions     auth_group_permissions[]
+  django_content_type        django_content_type          @relation(fields: [content_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_permission_content_type_id_2f476e4b_fk_django_co")
+  auth_user_user_permissions auth_user_user_permissions[]
+
+  @@unique([content_type_id, codename], map: "auth_permission_content_type_id_codename_01ab375a_uniq")
+  @@index([content_type_id], map: "auth_permission_content_type_id_2f476e4b")
+  @@schema("public")
+}
+
+model auth_user {
+  id                         Int                          @id @default(autoincrement())
+  password                   String                       @db.VarChar(128)
+  last_login                 DateTime?                    @db.Timestamptz(6)
+  is_superuser               Boolean
+  username                   String                       @unique @db.VarChar(150)
+  first_name                 String                       @db.VarChar(150)
+  last_name                  String                       @db.VarChar(150)
+  email                      String                       @db.VarChar(254)
+  is_staff                   Boolean
+  is_active                  Boolean
+  date_joined                DateTime                     @db.Timestamptz(6)
+  auth_user_groups           auth_user_groups[]
+  auth_user_user_permissions auth_user_user_permissions[]
+  core_formdata              core_formdata?
+  django_admin_log           django_admin_log[]
+  volunteers_formdata        volunteers_formdata?
+
+  @@index([username], map: "auth_user_username_6821ab7c_like")
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model auth_user_groups {
+  id         BigInt     @id @default(autoincrement())
+  user_id    Int
+  group_id   Int
+  auth_group auth_group @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_groups_group_id_97559544_fk_auth_group_id")
+  auth_user  auth_user  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_groups_user_id_6a12ed8b_fk_auth_user_id")
+
+  @@unique([user_id, group_id], map: "auth_user_groups_user_id_group_id_94350c0c_uniq")
+  @@index([group_id], map: "auth_user_groups_group_id_97559544")
+  @@index([user_id], map: "auth_user_groups_user_id_6a12ed8b")
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model auth_user_user_permissions {
+  id              BigInt          @id @default(autoincrement())
+  user_id         Int
+  permission_id   Int
+  auth_permission auth_permission @relation(fields: [permission_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm")
+  auth_user       auth_user       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id")
+
+  @@unique([user_id, permission_id], map: "auth_user_user_permissions_user_id_permission_id_14a6b632_uniq")
+  @@index([permission_id], map: "auth_user_user_permissions_permission_id_1fbb5f2c")
+  @@index([user_id], map: "auth_user_user_permissions_user_id_a95ead1b")
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model core_formdata {
+  id                   BigInt                 @id @default(autoincrement())
+  type_form            String                 @db.VarChar(10)
+  step                 Int
+  values               Json
+  user_id              Int                    @unique
+  created_at           DateTime               @db.Timestamptz(6)
+  total_steps          Int
+  updated_at           DateTime               @db.Timestamptz(6)
+  auth_user            auth_user              @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "core_formdata_user_id_3a7f140c_fk_auth_user_id")
+  core_integrationlogs core_integrationlogs[]
+
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model core_integrationlogs {
+  id            BigInt        @id @default(autoincrement())
+  type          String        @db.VarChar(30)
+  created_at    DateTime      @db.Timestamptz(6)
+  status        String        @db.VarChar(30)
+  error         String        @db.VarChar(200)
+  data          Json
+  form_data_id  BigInt
+  external_data Json
+  integration   String        @db.VarChar(15)
+  core_formdata core_formdata @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "core_integrationlogs_form_data_id_3bdb0c69_fk_core_formdata_id")
+
+  @@index([form_data_id], map: "core_integrationlogs_form_data_id_3bdb0c69")
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model django_admin_log {
+  id                  Int                  @id @default(autoincrement())
+  action_time         DateTime             @db.Timestamptz(6)
+  object_id           String?
+  object_repr         String               @db.VarChar(200)
+  action_flag         Int                  @db.SmallInt
+  change_message      String
+  content_type_id     Int?
+  user_id             Int
+  django_content_type django_content_type? @relation(fields: [content_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "django_admin_log_content_type_id_c4bce8eb_fk_django_co")
+  auth_user           auth_user            @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "django_admin_log_user_id_c564eba6_fk_auth_user_id")
+
+  @@index([content_type_id], map: "django_admin_log_content_type_id_c4bce8eb")
+  @@index([user_id], map: "django_admin_log_user_id_c564eba6")
+  @@schema("public")
+}
+
+model django_content_type {
+  id               Int                @id @default(autoincrement())
+  app_label        String             @db.VarChar(100)
+  model            String             @db.VarChar(100)
+  auth_permission  auth_permission[]
+  django_admin_log django_admin_log[]
+
+  @@unique([app_label, model], map: "django_content_type_app_label_model_76bd3d3b_uniq")
+  @@schema("public")
+}
+
+model django_migrations {
+  id      BigInt   @id @default(autoincrement())
+  app     String   @db.VarChar(255)
+  name    String   @db.VarChar(255)
+  applied DateTime @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model django_session {
+  session_key  String   @id @db.VarChar(40)
+  session_data String
+  expire_date  DateTime @db.Timestamptz(6)
+
+  @@index([expire_date], map: "django_session_expire_date_a5c62663")
+  @@index([session_key], map: "django_session_session_key_c0390e0f_like")
+  @@schema("public")
+}
+
+model integrations_logs {
+  id          BigInt   @id(map: "volunteers_integrationlogs_pkey") @default(autoincrement())
+  type        String   @db.VarChar(30)
+  created_at  DateTime @db.Timestamptz(6)
+  status      String   @db.VarChar(30)
+  error       String   @db.VarChar(200)
+  data        Json
+  integration String   @db.VarChar(15)
+  external_id Int?
+  form_type   String   @db.VarChar(15)
+  internal_id Int?
+
+  @@schema("public")
+}
+
+model msrs_formdata {
+  id         BigInt   @id @default(autoincrement())
+  stage      String   @db.VarChar(20)
+  values     Json
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model msrs_msrs {
+  id                   BigInt   @id @default(autoincrement())
+  user_zendesk_id      Int?
+  name                 String   @db.VarChar(100)
+  email                String   @db.VarChar(254)
+  cpf                  String   @db.VarChar(11)
+  color                String   @db.VarChar(15)
+  gender               String   @db.VarChar(15)
+  whatsapp             String   @db.VarChar(11)
+  state                String   @db.VarChar(2)
+  city                 String   @db.VarChar(100)
+  neighborhood         String   @db.VarChar(100)
+  latitude             Decimal  @db.Decimal(10, 4)
+  logintude            Decimal  @db.Decimal(10, 4)
+  pcd                  Boolean
+  education            String   @db.VarChar(40)
+  work_situation       String   @db.VarChar(40)
+  income               Decimal  @db.Decimal(10, 2)
+  duration_of_violence String   @db.VarChar(30)
+  author_of_violence   String   @db.VarChar(30)
+  story                String
+  risk_factors         String   @db.VarChar(140)
+  protective_factors   String   @db.VarChar(100)
+  public_service       String   @db.VarChar(100)
+  type_of_support      String   @db.VarChar(20)
+  access               String   @db.VarChar(30)
+  status               String   @db.VarChar(15)
+  support_on_queue     Boolean
+  on_queue             Boolean
+  online               Boolean
+  priority             String   @db.VarChar(15)
+  created_at           DateTime @db.Timestamptz(6)
+  updated_at           DateTime @db.Timestamptz(6)
+  match                Boolean
+  digital_violence     String   @db.VarChar(200)
+  obstetric_violence   String   @db.VarChar(100)
+  physical_violence    String   @db.VarChar(100)
+  property_violence    String   @db.VarChar(100)
+  psych_violence       String   @db.VarChar(100)
+  sexual_violence      String   @db.VarChar(100)
+
+  @@schema("public")
+}
+
+model solidarity_users {
+  id                                    Int       @id @default(autoincrement())
+  user_id                               BigInt    @unique
+  url                                   String?
+  name                                  String?
+  email                                 String?
+  created_at                            DateTime? @db.Timestamp(6)
+  updated_at                            DateTime? @db.Timestamp(6)
+  time_zone                             String?
+  iana_time_zone                        String?
+  phone                                 String?
+  shared_phone_number                   Boolean?
+  photo                                 Json?
+  locale_id                             BigInt?
+  locale                                String?
+  organization_id                       BigInt?
+  role                                  String?
+  verified                              Boolean?
+  external_id                           BigInt?
+  tags                                  Json?
+  alias                                 String?
+  active                                Boolean?
+  shared                                Boolean?
+  shared_agent                          Boolean?
+  last_login_at                         DateTime? @db.Timestamp(6)
+  two_factor_auth_enabled               Boolean?
+  signature                             String?
+  details                               String?
+  notes                                 String?
+  role_type                             BigInt?
+  custom_role_id                        BigInt?
+  moderator                             Boolean?
+  ticket_restriction                    String?
+  only_private_comments                 Boolean?
+  restricted_agent                      Boolean?
+  suspended                             Boolean?
+  chat_only                             Boolean?
+  default_group_id                      BigInt?
+  report_csv                            Boolean?
+  user_fields                           Json?
+  address                               String?
+  atendimentos_concludos_calculado_     BigInt?
+  atendimentos_concluidos               BigInt?
+  atendimentos_em_andamento             BigInt?
+  atendimentos_em_andamento_calculado_  BigInt?
+  cep                                   String?
+  city                                  String?
+  condition                             String?
+  cor                                   String?
+  data_de_inscricao_no_bonde            DateTime? @db.Timestamp(6)
+  disponibilidade_de_atendimentos       String?
+  encaminhamentos                       BigInt?
+  encaminhamentos_realizados_calculado_ BigInt?
+  latitude                              String?
+  longitude                             String?
+  occupation_area                       String?
+  registration_number                   String?
+  state                                 String?
+  tipo_de_acolhimento                   String?
+  ultima_atualizacao_de_dados           DateTime? @db.Timestamp(6)
+  whatsapp                              String?
+  permanently_deleted                   Boolean?
+
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model volunteers {
+  id                  Int                  @id(map: "volunteers_volunteer_pkey")
+  created_at          DateTime             @db.Timestamptz(6)
+  updated_at          DateTime             @db.Timestamptz(6)
+  condition           String               @db.VarChar(30)
+  first_name          String               @db.VarChar(200)
+  last_name           String               @db.VarChar(200)
+  email               String               @db.VarChar(254)
+  phone               String               @db.VarChar(11)
+  whatsapp            String               @db.VarChar(11)
+  zipcode             String               @db.VarChar(9)
+  state               String               @db.VarChar(2)
+  city                String               @db.VarChar(100)
+  neighborhood        String               @db.VarChar(100)
+  latitude            Decimal?             @db.Decimal(10, 4)
+  logintude           Decimal?             @db.Decimal(10, 4)
+  register_number     String               @db.VarChar(11)
+  birth_date          DateTime             @db.Timestamptz(6)
+  color               String               @db.VarChar(100)
+  gender              String               @db.VarChar(100)
+  modality            String               @db.VarChar(100)
+  fields_of_work      String               @db.VarChar(200)
+  years_of_experience String               @db.VarChar(100)
+  aviability          String               @db.VarChar(100)
+  approach            String?              @db.VarChar(100)
+  form_data_id        BigInt?
+  ocuppation          String               @db.VarChar(10)
+  volunteers_formdata volunteers_formdata? @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_volunteer_form_data_id_ec6c5a18_fk_volunteer")
+
+  @@index([form_data_id], map: "volunteers_volunteer_form_data_id_ec6c5a18")
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model volunteers_formdata {
+  id          BigInt       @id @default(autoincrement())
+  type_form   String       @db.VarChar(10)
+  step        Int
+  values      Json
+  user_id     Int          @unique
+  created_at  DateTime     @db.Timestamptz(6)
+  total_steps Int
+  updated_at  DateTime     @db.Timestamptz(6)
+  volunteers  volunteers[]
+  auth_user   auth_user    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_formdata_user_id_c9262138_fk_auth_user_id")
+
+  @@schema("public")
+}
+
+enum SupportType {
+  PSYCOLOGICAL
+  LEGAL
+
+  @@map("support_type")
+  @@schema("match")
+}
+
+enum SupportRequestsStatus {
+  OPEN
+  MATCHED
+  SOCIAL_ASSISTANT
+  PUBLIC_SERVICE
+  FINISHED
+
+  @@map("support_requests_status")
+  @@schema("match")
+}
+
+model SupportRequests {
+  support_request_id     Int                   @id @default(autoincrement())
+  msr_id                 Int
+  zendesk_ticket_id      Int                   @unique
+  support_type           SupportType
+  support_expertise      String
+  priority               Int
+  has_disability         Boolean
+  requires_libras        Boolean
+  accepts_online_support Boolean
+  lat                    Float
+  lng                    Float
+  city                   String
+  state                  String
+  status                 SupportRequestsStatus
+  created_at             DateTime              @default(now()) @db.Timestamp(6)
+  updated_at             DateTime              @default(now()) @db.Timestamp(6)
+
+  @@map("support_requests")
+  @@schema("match")
+}

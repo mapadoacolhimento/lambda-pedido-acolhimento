@@ -31,7 +31,7 @@ provider:
         identitySource: $request.header.Authorization
   environment:
     JWT_SECRET: ${env:JWT_SECRET}
-    DB: ${env:DB}
+    DATABASE_URL: ${env:DATABASE_URL}
 
 functions:
   auth:

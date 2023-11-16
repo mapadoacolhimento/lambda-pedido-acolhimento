@@ -15,7 +15,13 @@
     "test": "jest --watch",
     "test:stage": "jest --findRelatedTests --passWithNoTests",
     "test:ci": "jest --ci",
-    "clean:build": "rimraf .serverless dist"
+    "clean:build": "rimraf .serverless dist",
+    "db:start": "docker-compose up -d",
+    "db:push": "prisma db push",
+    "migrate:deploy": "prisma migrate deploy",
+    "migrate:create": "prisma migrate dev --create-only",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:diff": "prisma migrate diff"
   },
   "author": "",
   "license": "MIT",
@@ -36,6 +42,7 @@
     "jest": "^29.7.0",
     "lint-staged": "^15.1.0",
     "prettier": "^3.0.3",
+    "prisma": "^5.6.0",
     "rimraf": "^5.0.5",
     "serverless": "^3.36.0",
     "serverless-esbuild": "^1.48.5",
@@ -53,6 +60,7 @@
     ]
   },
   "dependencies": {
+    "@prisma/client": "^5.6.0",
     "dotenv-safe": "^8.2.0",
     "jsonwebtoken": "^9.0.2"
   }
