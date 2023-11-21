@@ -317,35 +317,37 @@ model solidarity_users {
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
 model Volunteers {
-  id                  Int                  @id(map: "volunteers_volunteer_pkey")
-  created_at          DateTime             @db.Timestamptz(6)
-  updated_at          DateTime             @db.Timestamptz(6)
-  condition           String               @db.VarChar(30)
-  first_name          String               @db.VarChar(200)
-  last_name           String               @db.VarChar(200)
-  email               String               @db.VarChar(254)
-  phone               String               @db.VarChar(11)
-  whatsapp            String               @db.VarChar(11)
-  zipcode             String               @db.VarChar(9)
-  state               String               @db.VarChar(2)
-  city                String               @db.VarChar(100)
-  neighborhood        String               @db.VarChar(100)
-  latitude            Decimal?             @db.Decimal(10, 4)
-  logintude           Decimal?             @db.Decimal(10, 4)
-  register_number     String               @db.VarChar(11)
-  birth_date          DateTime             @db.Timestamptz(6)
-  color               String               @db.VarChar(100)
-  gender              String               @db.VarChar(100)
-  modality            String               @db.VarChar(100)
-  fields_of_work      String               @db.VarChar(200)
-  years_of_experience String               @db.VarChar(100)
-  aviability          String               @db.VarChar(100)
-  approach            String?              @db.VarChar(100)
-  form_data_id        BigInt?
-  ocuppation          String               @db.VarChar(10)
-  moodle_id           Int?
-  volunteers_formdata volunteers_formdata? @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_volunteer_form_data_id_ec6c5a18_fk_volunteer")
-  Matches             Matches[]
+  id                       Int                        @id(map: "volunteers_volunteer_pkey")
+  created_at               DateTime                   @db.Timestamptz(6)
+  updated_at               DateTime                   @db.Timestamptz(6)
+  condition                String                     @db.VarChar(30)
+  first_name               String                     @db.VarChar(200)
+  last_name                String                     @db.VarChar(200)
+  email                    String                     @db.VarChar(254)
+  phone                    String                     @db.VarChar(11)
+  whatsapp                 String                     @db.VarChar(11)
+  zipcode                  String                     @db.VarChar(9)
+  state                    String                     @db.VarChar(2)
+  city                     String                     @db.VarChar(100)
+  neighborhood             String                     @db.VarChar(100)
+  latitude                 Decimal?                   @db.Decimal(10, 4)
+  logintude                Decimal?                   @db.Decimal(10, 4)
+  register_number          String                     @db.VarChar(11)
+  birth_date               DateTime                   @db.Timestamptz(6)
+  color                    String                     @db.VarChar(100)
+  gender                   String                     @db.VarChar(100)
+  modality                 String                     @db.VarChar(100)
+  fields_of_work           String                     @db.VarChar(200)
+  years_of_experience      String                     @db.VarChar(100)
+  aviability               String                     @db.VarChar(100)
+  approach                 String?                    @db.VarChar(100)
+  form_data_id             BigInt?
+  ocuppation               String                     @db.VarChar(10)
+  moodle_id                Int?
+  Matches                  Matches[]
+  volunteer_availability   volunteer_availability?
+  volunteer_status_history volunteer_status_history[]
+  volunteers_formdata      volunteers_formdata?       @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_volunteer_form_data_id_ec6c5a18_fk_volunteer")
 
   @@index([form_data_id], map: "volunteers_volunteer_form_data_id_ec6c5a18")
   @@map("volunteers")
@@ -506,5 +508,48 @@ model msrs_place {
   city  String  @db.VarChar(100)
   state String? @db.VarChar(2)
 
+  @@schema("public")
+}
+
+model cities {
+  city_id    Int      @id @default(autoincrement())
+  city_value String   @db.VarChar(100)
+  city_label String   @db.VarChar(100)
+  state      String   @db.VarChar(2)
+  ibge_code  Int
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model volunteer_availability {
+  volunteer_id          Int        @id
+  current_matches       Int
+  max_matches           Int
+  is_available          Boolean
+  support_type          String     @db.VarChar(20)
+  support_expertise     String     @db.VarChar(100)
+  offers_online_support Boolean
+  lat                   Decimal?   @db.Decimal(10, 4)
+  lng                   Decimal?   @db.Decimal(10, 4)
+  city                  String     @db.VarChar(100)
+  created_at            DateTime   @db.Timestamptz(6)
+  updated_at            DateTime   @db.Timestamptz(6)
+  volunteers            Volunteers @relation(fields: [volunteer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteer_availability_volunteer_id_ff544bbb_fk_volunteers_id")
+
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model volunteer_status_history {
+  id               BigInt     @id @default(autoincrement())
+  volunteer_status String     @db.VarChar(30)
+  created_at       DateTime   @db.Timestamptz(6)
+  volunteer_id     Int
+  volunteers       Volunteers @relation(fields: [volunteer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteer_status_history_volunteer_id_d1e0ea8c_fk_volunteers_id")
+
+  @@index([volunteer_id], map: "volunteer_status_history_volunteer_id_d1e0ea8c")
   @@schema("public")
 }
