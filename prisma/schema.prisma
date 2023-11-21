@@ -343,6 +343,7 @@ model Volunteers {
   approach            String?              @db.VarChar(100)
   form_data_id        BigInt?
   ocuppation          String               @db.VarChar(10)
+  moodle_id           Int?
   volunteers_formdata volunteers_formdata? @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_volunteer_form_data_id_ec6c5a18_fk_volunteer")
   Matches             Matches[]
 
@@ -498,4 +499,12 @@ model MatchStatusHistory {
 
   @@map("match_status_history")
   @@schema("match")
+}
+
+model msrs_place {
+  id    BigInt  @id @default(autoincrement())
+  city  String  @db.VarChar(100)
+  state String? @db.VarChar(2)
+
+  @@schema("public")
 }
