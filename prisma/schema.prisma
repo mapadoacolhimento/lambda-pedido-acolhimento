@@ -246,7 +246,7 @@ model msrs_msrs {
   property_violence    String   @db.VarChar(100)
   psych_violence       String   @db.VarChar(100)
   sexual_violence      String   @db.VarChar(100)
-  cities               cities   @relation(fields: [city_id], references: [city_id], onDelete: NoAction, onUpdate: NoAction, map: "msrs_msrs_city_id_e49bad88_fk_cities_city_id")
+  cities               Cities   @relation(fields: [city_id], references: [city_id], onDelete: NoAction, onUpdate: NoAction, map: "msrs_msrs_city_id_e49bad88_fk_cities_city_id")
 
   @@index([city_id], map: "msrs_msrs_city_id_e49bad88")
   @@schema("public")
@@ -348,8 +348,8 @@ model Volunteers {
   ocuppation               String                     @db.VarChar(10)
   moodle_id                Int?
   Matches                  Matches[]
-  volunteer_availability   volunteer_availability?
-  volunteer_status_history volunteer_status_history[]
+  volunteer_availability   VolunteerAvailability?
+  volunteer_status_history VolunteerStatusHistory[]
   volunteers_formdata      volunteers_formdata?       @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_volunteer_form_data_id_ec6c5a18_fk_volunteer")
 
   @@index([form_data_id], map: "volunteers_volunteer_form_data_id_ec6c5a18")
@@ -461,7 +461,7 @@ model msrs_place {
   @@schema("public")
 }
 
-model cities {
+model Cities {
   city_id    Int         @id @default(autoincrement())
   city_value String      @db.VarChar(100)
   city_label String      @db.VarChar(100)
@@ -472,10 +472,11 @@ model cities {
   msrs_msrs  msrs_msrs[]
 
   @@schema("public")
+  @@map("cities")
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
-model volunteer_availability {
+model VolunteerAvailability {
   volunteer_id          Int        @id
   current_matches       Int
   max_matches           Int
@@ -492,10 +493,11 @@ model volunteer_availability {
   volunteers            Volunteers @relation(fields: [volunteer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteer_availability_volunteer_id_ff544bbb_fk_volunteers_id")
 
   @@schema("public")
+  @@map("volunteer_availability")
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
-model volunteer_status_history {
+model VolunteerStatusHistory {
   id               BigInt     @id @default(autoincrement())
   volunteer_status String     @db.VarChar(30)
   created_at       DateTime   @db.Timestamptz(6)
@@ -504,6 +506,7 @@ model volunteer_status_history {
 
   @@index([volunteer_id], map: "volunteer_status_history_volunteer_id_d1e0ea8c")
   @@schema("public")
+  @@map("volunteer_status_history")
 }
 
 enum SupportType {
