@@ -317,36 +317,41 @@ model solidarity_users {
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
-model volunteers {
-  id                  Int                  @id(map: "volunteers_volunteer_pkey")
-  created_at          DateTime             @db.Timestamptz(6)
-  updated_at          DateTime             @db.Timestamptz(6)
-  condition           String               @db.VarChar(30)
-  first_name          String               @db.VarChar(200)
-  last_name           String               @db.VarChar(200)
-  email               String               @db.VarChar(254)
-  phone               String               @db.VarChar(11)
-  whatsapp            String               @db.VarChar(11)
-  zipcode             String               @db.VarChar(9)
-  state               String               @db.VarChar(2)
-  city                String               @db.VarChar(100)
-  neighborhood        String               @db.VarChar(100)
-  latitude            Decimal?             @db.Decimal(10, 4)
-  logintude           Decimal?             @db.Decimal(10, 4)
-  register_number     String               @db.VarChar(11)
-  birth_date          DateTime             @db.Timestamptz(6)
-  color               String               @db.VarChar(100)
-  gender              String               @db.VarChar(100)
-  modality            String               @db.VarChar(100)
-  fields_of_work      String               @db.VarChar(200)
-  years_of_experience String               @db.VarChar(100)
-  aviability          String               @db.VarChar(100)
-  approach            String?              @db.VarChar(100)
-  form_data_id        BigInt?
-  ocuppation          String               @db.VarChar(10)
-  volunteers_formdata volunteers_formdata? @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_volunteer_form_data_id_ec6c5a18_fk_volunteer")
+model Volunteers {
+  id                       Int                        @id(map: "volunteers_volunteer_pkey")
+  created_at               DateTime                   @db.Timestamptz(6)
+  updated_at               DateTime                   @db.Timestamptz(6)
+  condition                String                     @db.VarChar(30)
+  first_name               String                     @db.VarChar(200)
+  last_name                String                     @db.VarChar(200)
+  email                    String                     @db.VarChar(254)
+  phone                    String                     @db.VarChar(11)
+  whatsapp                 String                     @db.VarChar(11)
+  zipcode                  String                     @db.VarChar(9)
+  state                    String                     @db.VarChar(2)
+  city                     String                     @db.VarChar(100)
+  neighborhood             String                     @db.VarChar(100)
+  latitude                 Decimal?                   @db.Decimal(10, 4)
+  logintude                Decimal?                   @db.Decimal(10, 4)
+  register_number          String                     @db.VarChar(11)
+  birth_date               DateTime                   @db.Timestamptz(6)
+  color                    String                     @db.VarChar(100)
+  gender                   String                     @db.VarChar(100)
+  modality                 String                     @db.VarChar(100)
+  fields_of_work           String                     @db.VarChar(200)
+  years_of_experience      String                     @db.VarChar(100)
+  aviability               String                     @db.VarChar(100)
+  approach                 String?                    @db.VarChar(100)
+  form_data_id             BigInt?
+  ocuppation               String                     @db.VarChar(10)
+  moodle_id                Int?
+  Matches                  Matches[]
+  volunteer_availability   volunteer_availability?
+  volunteer_status_history volunteer_status_history[]
+  volunteers_formdata      volunteers_formdata?       @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_volunteer_form_data_id_ec6c5a18_fk_volunteer")
 
   @@index([form_data_id], map: "volunteers_volunteer_form_data_id_ec6c5a18")
+  @@map("volunteers")
   @@schema("public")
 }
 
@@ -360,7 +365,7 @@ model volunteers_formdata {
   created_at  DateTime     @db.Timestamptz(6)
   total_steps Int
   updated_at  DateTime     @db.Timestamptz(6)
-  volunteers  volunteers[]
+  volunteers  Volunteers[]
   auth_user   auth_user    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_formdata_user_id_c9262138_fk_auth_user_id")
 
   @@schema("public")
@@ -386,23 +391,166 @@ enum SupportRequestsStatus {
 }
 
 model SupportRequests {
-  support_request_id     Int                   @id @default(autoincrement())
-  msr_id                 Int
-  zendesk_ticket_id      Int                   @unique
-  support_type           SupportType
-  support_expertise      String
-  priority               Int
-  has_disability         Boolean
-  requires_libras        Boolean
-  accepts_online_support Boolean
-  lat                    Float
-  lng                    Float
-  city                   String
-  state                  String
-  status                 SupportRequestsStatus
-  created_at             DateTime              @default(now()) @db.Timestamp(6)
-  updated_at             DateTime              @default(now()) @db.Timestamp(6)
+  supportRequestId            Int                           @id @default(autoincrement()) @map("support_request_id")
+  msrId                       BigInt                        @map("msr_id")
+  zendeskTicketId             BigInt                        @unique @map("zendesk_ticket_id")
+  supportType                 SupportType                   @map("support_type")
+  // supportExpertise -> No futuro, array de enums
+  supportExpertise            String?                       @map("support_expertise")
+  priority                    Int?
+  hasDisability               Boolean?                      @map("has_disability")
+  requiresLibras              Boolean?                      @map("requires_libras")
+  acceptsOnlineSupport        Boolean                       @map("accepts_online_support")
+  lat                         Decimal?                      @db.Decimal(10, 4)
+  lng                         Decimal?                      @db.Decimal(10, 4)
+  city                        String?
+  state                       String?
+  status                      SupportRequestsStatus
+  createdAt                   DateTime                      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                   DateTime                      @updatedAt @map("updated_at") @db.Timestamp(6)
+  SupportRequestStatusHistory SupportRequestStatusHistory[]
+  Matches                     Matches[]
 
   @@map("support_requests")
   @@schema("match")
+}
+
+model SupportRequestStatusHistory {
+  supportRequestStatusHistoryId Int                   @id @default(autoincrement()) @map("support_request_status_history_id")
+  supportRequestId              Int                   @map("support_request_id")
+  supportRequest                SupportRequests       @relation(fields: [supportRequestId], references: [supportRequestId])
+  status                        SupportRequestsStatus
+  createdAt                     DateTime              @default(now()) @map("created_at") @db.Timestamp(6)
+
+  @@map("support_request_status_history")
+  @@schema("match")
+}
+
+enum MatchType {
+  MSR
+  VOLUNTEER
+  MANUAL
+
+  @@map("match_type")
+  @@schema("match")
+}
+
+enum MatchStage {
+  IDEAL
+  EXPANDED
+  ONLINE
+
+  @@map("match_stage")
+  @@schema("match")
+}
+
+enum MatchStatus {
+  WAITING_CONTACT
+  IN_CONTACT
+  ENDED
+
+  @@map("match_status")
+  @@schema("match")
+}
+
+enum EndingReason {
+  MSR_NO_CONTACT
+
+  @@map("ending_reason")
+  @@schema("match")
+}
+
+model Matches {
+  matchId                  Int                  @id @default(autoincrement()) @map("match_id")
+  supportRequestId         Int                  @map("support_request_id")
+  supportRequest           SupportRequests      @relation(fields: [supportRequestId], references: [supportRequestId])
+  // msrId -> quando criarmos o model da Msr, mapear a relacao aqui
+  msrId                    BigInt               @map("msr_id")
+  volunteerId              Int                  @map("volunteer_id")
+  volunteer                Volunteers           @relation(fields: [volunteerId], references: [id])
+  msrZendeskTicketId       BigInt               @map("msr_zendesk_ticket_id")
+  volunteerZendeskTicketId BigInt               @map("volunteer_zendesk_ticket_id")
+  supportType              SupportType          @map("support_type")
+  matchType                MatchType            @map("match_type")
+  matchStage               MatchStage           @map("match_stage")
+  status                   MatchStatus
+  createdAt                DateTime             @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                DateTime             @updatedAt @map("updated_at") @db.Timestamp(6)
+  EndedMatches             EndedMatches[]
+  MatchStatusHistory       MatchStatusHistory[]
+
+  @@map("matches")
+  @@schema("match")
+}
+
+model EndedMatches {
+  matchId      Int          @id @map("match_id")
+  match        Matches      @relation(fields: [matchId], references: [matchId])
+  endingReason EndingReason @map("ending_reason")
+  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamp(6)
+
+  @@map("ended_matches")
+  @@schema("match")
+}
+
+model MatchStatusHistory {
+  matchStatusHistoryId Int         @id @default(autoincrement()) @map("match_status_history_id")
+  matchId              Int         @map("match_id")
+  match                Matches     @relation(fields: [matchId], references: [matchId])
+  status               MatchStatus
+  createdAt            DateTime    @default(now()) @map("created_at") @db.Timestamp(6)
+
+  @@map("match_status_history")
+  @@schema("match")
+}
+
+model msrs_place {
+  id    BigInt  @id @default(autoincrement())
+  city  String  @db.VarChar(100)
+  state String? @db.VarChar(2)
+
+  @@schema("public")
+}
+
+model cities {
+  city_id    Int      @id @default(autoincrement())
+  city_value String   @db.VarChar(100)
+  city_label String   @db.VarChar(100)
+  state      String   @db.VarChar(2)
+  ibge_code  Int
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model volunteer_availability {
+  volunteer_id          Int        @id
+  current_matches       Int
+  max_matches           Int
+  is_available          Boolean
+  support_type          String     @db.VarChar(20)
+  support_expertise     String     @db.VarChar(100)
+  offers_online_support Boolean
+  lat                   Decimal?   @db.Decimal(10, 4)
+  lng                   Decimal?   @db.Decimal(10, 4)
+  city                  String     @db.VarChar(100)
+  created_at            DateTime   @db.Timestamptz(6)
+  updated_at            DateTime   @db.Timestamptz(6)
+  volunteers            Volunteers @relation(fields: [volunteer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteer_availability_volunteer_id_ff544bbb_fk_volunteers_id")
+
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model volunteer_status_history {
+  id               BigInt     @id @default(autoincrement())
+  volunteer_status String     @db.VarChar(30)
+  created_at       DateTime   @db.Timestamptz(6)
+  volunteer_id     Int
+  volunteers       Volunteers @relation(fields: [volunteer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteer_status_history_volunteer_id_d1e0ea8c_fk_volunteers_id")
+
+  @@index([volunteer_id], map: "volunteer_status_history_volunteer_id_d1e0ea8c")
+  @@schema("public")
 }
