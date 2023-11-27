@@ -6,20 +6,20 @@ import type {
 import { object, string, mixed, number, boolean } from "yup";
 import { SupportRequestsStatus, SupportType } from "@prisma/client";
 
-// import client from "./client";
+import client from "./client";
 import { getErrorMessage, isJsonString } from "./utils";
 
 const bodySchema = object({
-  msr_id: number().required(),
-  zendesk_ticket_id: number().required(),
-  support_type: mixed<SupportType>()
+  msrId: number().required(),
+  zendeskTicketId: number().required(),
+  supportType: mixed<SupportType>()
     .oneOf(Object.values(SupportType))
     .required(),
-  support_expertise: string().required(),
-  priority: number().nullable(),
-  has_disability: boolean().required(),
-  requires_libras: boolean().required(),
-  accepts_online_support: boolean().required(),
+  supportExpertise: string().required(),
+  priority: number().nullable().required(),
+  hasDisability: boolean().required(),
+  requiresLibras: boolean().required(),
+  acceptsOnlineSupport: boolean().required(),
   lat: number().required(),
   lng: number().required(),
   city: string().required(),
@@ -35,6 +35,9 @@ const create = async (
   callback: APIGatewayProxyCallback,
 ) => {
   try {
+    console.log(`Event: ${JSON.stringify(event, null, 2)}`);
+    console.log(`Context: ${JSON.stringify(context, null, 2)}`);
+
     const { body } = event;
     if (!body) {
       return callback(null, {
@@ -51,17 +54,21 @@ const create = async (
 
     const validatedBody = await bodySchema.validate(parsedBody);
 
-    // const supportRequest = await client.supportRequests.create({
-    //   data: validatedBody,
-    // });
-
-    console.log(`Event: ${JSON.stringify(event, null, 2)}`);
-    console.log(`Context: ${JSON.stringify(context, null, 2)}`);
+    const supportRequest = await client.supportRequests.create({
+      data: {
+        ...validatedBody,
+        SupportRequestStatusHistory: {
+          create: {
+            status: validatedBody.status,
+          },
+        },
+      },
+    });
 
     return callback(null, {
       statusCode: 200,
       body: JSON.stringify({
-        message: validatedBody,
+        message: supportRequest,
       }),
     });
   } catch (e) {
