@@ -2,7 +2,7 @@
   "*.json": "prettier --write --ignore-unknown",
   "*.{js,ts}": [
     "eslint --fix",
-    "pnpm run test:stage",
+    "npm run test:stage",
     "prettier --write --ignore-unknown"
   ]
 }
