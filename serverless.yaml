@@ -3,16 +3,21 @@ service: create-support-request-api
 frameworkVersion: "3"
 useDotenv: true
 
+package:
+  patterns:
+    - '!node_modules/.prisma/client/libquery_engine-*'
+    - 'node_modules/.prisma/client/libquery_engine-rhel-*'
+    - '!node_modules/prisma/libquery_engine-*'
+    - '!node_modules/@prisma/engines/**'
+
 custom:
-  esbuild:
-    minify: true
-    bundle: true
-    watch:
-      pattern: ["./handler.ts", "src/**/*.ts"] # default .
-      ignore: [".serverless/**/*", ".build"] # default ['.build', 'dist', 'node_modules']
-    external:
-      - jsonwebtoken
-      - dotenv-safe
+  webpack:
+    webpackConfig: 'webpack.config.js'
+    includeModules: true
+    packagerOptions:
+      scripts:
+        - npm run generate
+        - find . -name "libquery_engine-*" -not -name "libquery_engine-rhel-openssl-*" | xargs rm
   serverless-offline:
     httpPort: 5000
     ignoreJWTSignature: true
@@ -65,5 +70,5 @@ functions:
           method: GET
 
 plugins:
+  - serverless-webpack
   - serverless-offline
-  - serverless-esbuild
