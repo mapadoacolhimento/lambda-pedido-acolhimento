@@ -12,11 +12,10 @@ package:
 
 custom:
   webpack:
-    webpackConfig: 'webpack.config.js'
     includeModules: true
     packagerOptions:
       scripts:
-        - npm run generate
+        - prisma generate
         - find . -name "libquery_engine-*" -not -name "libquery_engine-rhel-openssl-*" | xargs rm
   serverless-offline:
     httpPort: 5000
