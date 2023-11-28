@@ -1,4 +1,4 @@
-service: create-support-request-api
+service: support-request-api
 
 frameworkVersion: "3"
 useDotenv: true
