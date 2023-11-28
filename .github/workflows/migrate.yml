@@ -67,7 +67,7 @@ jobs:
 
       - name: Check migrations diff between remote and local databases
         id: diff
-        run: npm run migrate:diff --from-url $REMOTE_DATABASE_URL --to-url $LOCAL_DATABASE_URL --exit-code
+        run: npm run migrate:diff -- --from-url $REMOTE_DATABASE_URL --to-url $LOCAL_DATABASE_URL --exit-code
         env:
           REMOTE_DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
