@@ -15,7 +15,7 @@ custom:
     includeModules: true
     packagerOptions:
       scripts:
-        - prisma generate
+        - npx prisma generate
         - find . -name "libquery_engine-*" -not -name "libquery_engine-rhel-openssl-*" | xargs rm
   serverless-offline:
     httpPort: 5000
