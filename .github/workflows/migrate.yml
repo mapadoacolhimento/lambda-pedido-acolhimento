@@ -55,42 +55,24 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-          run_install: false
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: npm ci
 
       - name: Push current migrations to test database
-        run: pnpm run db:push
+        run: npm run db:push
         env:
           DATABASE_URL: ${{ env.LOCAL_DATABASE_URL }}
 
       - name: Check migrations diff between remote and local databases
         id: diff
-        run: pnpm run migrate:diff --from-url $REMOTE_DATABASE_URL --to-url $LOCAL_DATABASE_URL --exit-code
+        run: npm run migrate:diff --from-url $REMOTE_DATABASE_URL --to-url $LOCAL_DATABASE_URL --exit-code
         env:
           REMOTE_DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Apply all pending migrations to the database
         if: ${{ success() && steps.diff.conclusion == 'success' }}
-        run: pnpm run migrate:deploy
+        run: npm run migrate:deploy
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
