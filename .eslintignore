@@ -1,7 +1,6 @@
 # Generated files
 
-.pnpm-store
-pnpm-lock.yaml
+package-lock.json
 node_modules
 .serverless
 .esbuild
