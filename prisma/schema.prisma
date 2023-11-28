@@ -514,53 +514,53 @@ model VolunteerStatusHistory {
 }
 
 enum SupportType {
-  PSYCOLOGICAL
-  LEGAL
+  psychological
+  legal
 
   @@map("support_type")
   @@schema("match")
 }
 
 enum SupportRequestsStatus {
-  OPEN
-  MATCHED
-  SOCIAL_ASSISTANT
-  PUBLIC_SERVICE
-  FINISHED
+  open
+  matched
+  social_assistant
+  public_service
+  finished
 
   @@map("support_requests_status")
   @@schema("match")
 }
 
 enum MatchType {
-  MSR
-  VOLUNTEER
-  MANUAL
+  msr
+  volunteer
+  manual
 
   @@map("match_type")
   @@schema("match")
 }
 
 enum MatchStage {
-  IDEAL
-  EXPANDED
-  ONLINE
+  ideal
+  expanded
+  online
 
   @@map("match_stage")
   @@schema("match")
 }
 
 enum MatchStatus {
-  WAITING_CONTACT
-  IN_CONTACT
-  ENDED
+  waiting_contact
+  in_contact
+  ended
 
   @@map("match_status")
   @@schema("match")
 }
 
 enum EndingReason {
-  MSR_NO_CONTACT
+  msr_no_contact
 
   @@map("ending_reason")
   @@schema("match")
