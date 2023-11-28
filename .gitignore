@@ -17,4 +17,5 @@ coverage
 
 # Serverless
 .serverless
-.esbuild
+.webpack
+.webpackCache

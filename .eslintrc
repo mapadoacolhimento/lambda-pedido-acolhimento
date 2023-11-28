@@ -13,5 +13,6 @@
   "parserOptions": {
     "tsconfigRootDir": ".",
     "project": "./tsconfig.json"
-  }
+  },
+  "ignorePatterns": "webpack.config.js"
 }
