@@ -526,7 +526,7 @@ enum SupportRequestsStatus {
   matched
   social_assistant
   public_service
-  concluded
+  completed
   duplicated
   old
 
