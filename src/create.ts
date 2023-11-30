@@ -4,7 +4,7 @@ import type {
   APIGatewayProxyCallback,
 } from "aws-lambda";
 import { object, string, mixed, number, boolean } from "yup";
-import { SupportRequestsStatus, SupportType } from "@prisma/client";
+import { SupportType } from "@prisma/client";
 
 import client from "./client";
 import { getErrorMessage, isJsonString } from "./utils";
@@ -16,7 +16,7 @@ const bodySchema = object({
     .oneOf(Object.values(SupportType))
     .required(),
   supportExpertise: string().required(),
-  priority: number().nullable().required(),
+  priority: number().nullable().defined(),
   hasDisability: boolean().required(),
   requiresLibras: boolean().required(),
   acceptsOnlineSupport: boolean().required(),
@@ -24,10 +24,7 @@ const bodySchema = object({
   lng: number().required(),
   city: string().required(),
   state: string().required(),
-  status: mixed<SupportRequestsStatus>()
-    .oneOf(Object.values(SupportRequestsStatus))
-    .required(),
-});
+}).strict();
 
 const create = async (
   event: APIGatewayEvent,
@@ -57,18 +54,24 @@ const create = async (
     const supportRequest = await client.supportRequests.create({
       data: {
         ...validatedBody,
+        status: "open",
         SupportRequestStatusHistory: {
           create: {
-            status: validatedBody.status,
+            status: "open",
           },
         },
       },
     });
 
+    const { msrId, zendeskTicketId, ...rest } = supportRequest;
     return callback(null, {
       statusCode: 200,
       body: JSON.stringify({
-        message: supportRequest,
+        message: {
+          msrId: msrId.toString(),
+          zendeskTicketId: zendeskTicketId.toString(),
+          ...rest,
+        },
       }),
     });
   } catch (e) {
