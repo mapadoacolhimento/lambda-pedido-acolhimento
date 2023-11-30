@@ -68,6 +68,16 @@ functions:
           path: /sign
           method: GET
 
+  feature-flag:
+    handler: handler.featureFlag
+    events:
+      - httpApi:
+          path: /feature-flag
+          method: GET
+          authorizer:
+            name: auth
+            type: request
+
 plugins:
   - serverless-webpack
   - serverless-offline
