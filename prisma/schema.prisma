@@ -513,6 +513,14 @@ model VolunteerStatusHistory {
   @@schema("public")
 }
 
+model FeatureFlag {
+  id           BigInt     @id @default(autoincrement())
+  feature_name String @map("featureName") @unique
+  feature_enabled Boolean @default(false) @map("featureEnabled")
+  @@map("feature_flag")
+  @@schema("match")
+}
+
 enum SupportType {
   psychological
   legal
@@ -567,3 +575,5 @@ enum EndingReason {
   @@map("ending_reason")
   @@schema("match")
 }
+
+
