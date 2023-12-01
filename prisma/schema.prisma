@@ -526,9 +526,8 @@ enum SupportRequestsStatus {
   matched
   social_assistant
   public_service
-  completed
   duplicated
-  old
+  closed
 
   @@map("support_requests_status")
   @@schema("match")
