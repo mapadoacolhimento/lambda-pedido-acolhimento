@@ -537,6 +537,7 @@ enum MatchType {
   msr
   volunteer
   manual
+  old
 
   @@map("match_type")
   @@schema("match")
@@ -546,6 +547,7 @@ enum MatchStage {
   ideal
   expanded
   online
+  old
 
   @@map("match_stage")
   @@schema("match")
