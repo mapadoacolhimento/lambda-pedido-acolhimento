@@ -554,9 +554,12 @@ enum MatchStage {
 }
 
 enum MatchStatus {
-  waiting_contact
+  completed
+  expired
   in_contact
-  ended
+  interrupted_after_support
+  interrupted_before_support
+  waiting_contact
 
   @@map("match_status")
   @@schema("match")
