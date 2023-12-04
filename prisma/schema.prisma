@@ -427,22 +427,11 @@ model Matches {
   status                   MatchStatus
   createdAt                DateTime             @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt                DateTime             @updatedAt @map("updated_at") @db.Timestamp(6)
-  EndedMatches             EndedMatches[]
   MatchStatusHistory       MatchStatusHistory[]
   supportRequest           SupportRequests      @relation(fields: [supportRequestId], references: [supportRequestId])
   volunteer                Volunteers?          @relation(fields: [volunteerId], references: [id])
 
   @@map("matches")
-  @@schema("match")
-}
-
-model EndedMatches {
-  matchId      Int          @id @map("match_id")
-  endingReason EndingReason @map("ending_reason")
-  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamp(6)
-  match        Matches      @relation(fields: [matchId], references: [matchId])
-
-  @@map("ended_matches")
   @@schema("match")
 }
 
@@ -572,12 +561,5 @@ enum MatchStatus {
   waiting_contact
 
   @@map("match_status")
-  @@schema("match")
-}
-
-enum EndingReason {
-  msr_no_contact
-
-  @@map("ending_reason")
   @@schema("match")
 }
