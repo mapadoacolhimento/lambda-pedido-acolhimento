@@ -537,6 +537,7 @@ enum SupportRequestsStatus {
   public_service
   duplicated
   closed
+  special_case
 
   @@map("support_requests_status")
   @@schema("match")
