@@ -418,9 +418,9 @@ model Matches {
   supportRequestId         Int                  @map("support_request_id")
   // msrId -> quando criarmos o model da Msr, mapear a relacao aqui
   msrId                    BigInt               @map("msr_id")
-  volunteerId              Int                  @map("volunteer_id")
+  volunteerId              Int?                 @map("volunteer_id")
   msrZendeskTicketId       BigInt               @map("msr_zendesk_ticket_id")
-  volunteerZendeskTicketId BigInt               @map("volunteer_zendesk_ticket_id")
+  volunteerZendeskTicketId BigInt?              @map("volunteer_zendesk_ticket_id")
   supportType              SupportType          @map("support_type")
   matchType                MatchType            @map("match_type")
   matchStage               MatchStage           @map("match_stage")
@@ -430,7 +430,7 @@ model Matches {
   EndedMatches             EndedMatches[]
   MatchStatusHistory       MatchStatusHistory[]
   supportRequest           SupportRequests      @relation(fields: [supportRequestId], references: [supportRequestId])
-  volunteer                Volunteers           @relation(fields: [volunteerId], references: [id])
+  volunteer                Volunteers?          @relation(fields: [volunteerId], references: [id])
 
   @@map("matches")
   @@schema("match")
