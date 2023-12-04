@@ -428,6 +428,7 @@ model Matches {
   createdAt                DateTime             @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt                DateTime             @updatedAt @map("updated_at") @db.Timestamp(6)
   MatchStatusHistory       MatchStatusHistory[]
+  MatchSurveys             MatchSurveys[]
   supportRequest           SupportRequests      @relation(fields: [supportRequestId], references: [supportRequestId])
   volunteer                Volunteers?          @relation(fields: [volunteerId], references: [id])
 
@@ -443,6 +444,18 @@ model MatchStatusHistory {
   match                Matches     @relation(fields: [matchId], references: [matchId])
 
   @@map("match_status_history")
+  @@schema("match")
+}
+
+model MatchSurveys {
+  matchSurveyId Int        @id @default(autoincrement()) @map("match_survey_id")
+  matchId       Int        @map("match_id")
+  surveyType    SurveyType
+  createdAt     DateTime   @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt     DateTime   @updatedAt @map("updated_at") @db.Timestamp(6)
+  match         Matches    @relation(fields: [matchId], references: [matchId])
+
+  @@map("match_surveys")
   @@schema("match")
 }
 
@@ -561,5 +574,15 @@ enum MatchStatus {
   waiting_contact
 
   @@map("match_status")
+  @@schema("match")
+}
+
+enum SurveyType {
+  triagem_1
+  triagem_2
+  atendimento_1
+  atendimento_2
+
+  @@map("survey_type")
   @@schema("match")
 }
