@@ -330,9 +330,9 @@ model Volunteers {
   phone                    String                   @db.VarChar(100)
   whatsapp                 String                   @db.VarChar(100)
   zipcode                  String                   @db.VarChar(9)
-  state                    String                   @db.VarChar(9)
-  city                     String                   @db.VarChar(100)
-  neighborhood             String                   @db.VarChar(100)
+  state                    String?                  @db.VarChar(9)
+  city                     String?                  @db.VarChar(100)
+  neighborhood             String?                  @db.VarChar(100)
   latitude                 Decimal?                 @db.Decimal(10, 4)
   longitude                Decimal?                 @db.Decimal(10, 4)
   register_number          String                   @db.VarChar(400)
@@ -350,6 +350,7 @@ model Volunteers {
   zendesk_user_id          BigInt?
   availability             Int
   offers_libras_support    Boolean
+  street                   String?                  @db.VarChar(200)
   Matches                  Matches[]
   volunteer_availability   VolunteerAvailability?
   volunteer_status_history VolunteerStatusHistory[]
@@ -511,6 +512,14 @@ model VolunteerStatusHistory {
   @@index([volunteer_id], map: "volunteer_status_history_volunteer_id_d1e0ea8c")
   @@map("volunteer_status_history")
   @@schema("public")
+}
+
+model feature_flag {
+  id             BigInt  @id @default(autoincrement())
+  featureName    String  @unique
+  featureEnabled Boolean @default(false)
+
+  @@schema("match")
 }
 
 enum SupportType {
