@@ -580,8 +580,8 @@ enum MatchStatus {
 enum SurveyType {
   triagem_1
   triagem_2
-  atendimento_1
-  atendimento_2
+  acompanhamento_1
+  acompanhamento_2
 
   @@map("survey_type")
   @@schema("match")
