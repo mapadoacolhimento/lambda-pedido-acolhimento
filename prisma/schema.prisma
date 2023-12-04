@@ -450,7 +450,7 @@ model MatchStatusHistory {
 model MatchSurveys {
   matchSurveyId Int        @id @default(autoincrement()) @map("match_survey_id")
   matchId       Int        @map("match_id")
-  surveyType    SurveyType
+  surveyType    SurveyType @map("survey_type")
   createdAt     DateTime   @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt     DateTime   @updatedAt @map("updated_at") @db.Timestamp(6)
   match         Matches    @relation(fields: [matchId], references: [matchId])
