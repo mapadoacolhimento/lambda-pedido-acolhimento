@@ -3,28 +3,32 @@ import type {
   Context,
   APIGatewayProxyCallback,
 } from "aws-lambda";
-import { object, string, mixed, number, boolean } from "yup";
+import { object, string, mixed, number, boolean, array } from "yup";
 import { SupportType } from "@prisma/client";
 
 import client from "./client";
 import { getErrorMessage, isJsonString } from "./utils";
 
-const bodySchema = object({
-  msrId: number().required(),
-  zendeskTicketId: number().required(),
-  supportType: mixed<SupportType>()
-    .oneOf(Object.values(SupportType))
-    .required(),
-  supportExpertise: string().required(),
-  priority: number().nullable().defined(),
-  hasDisability: boolean().required(),
-  requiresLibras: boolean().required(),
-  acceptsOnlineSupport: boolean().required(),
-  lat: number().required(),
-  lng: number().required(),
-  city: string().required(),
-  state: string().required(),
-}).strict();
+const bodySchema = array(
+  object({
+    msrId: number().required(),
+    zendeskTicketId: number().required(),
+    supportType: mixed<SupportType>()
+      .oneOf(Object.values(SupportType))
+      .required(),
+    supportExpertise: string().nullable().defined(),
+    priority: number().nullable().defined(),
+    hasDisability: boolean().required(),
+    requiresLibras: boolean().required(),
+    acceptsOnlineSupport: boolean().required(),
+    lat: number().required(),
+    lng: number().required(),
+    city: string().required(),
+    state: string().required(),
+  }).required(),
+)
+  .required()
+  .strict();
 
 const create = async (
   event: APIGatewayEvent,
@@ -50,28 +54,24 @@ const create = async (
       : (Object.create(null) as Record<string, unknown>);
 
     const validatedBody = await bodySchema.validate(parsedBody);
-
-    const supportRequest = await client.supportRequests.create({
-      data: {
-        ...validatedBody,
-        status: "open",
-        SupportRequestStatusHistory: {
-          create: {
-            status: "open",
-          },
+    const data = validatedBody.map((supportRequest) => ({
+      ...supportRequest,
+      status: "open" as const,
+      SupportRequestStatusHistory: {
+        create: {
+          status: "open",
         },
       },
+    }));
+
+    const supportRequest = await client.supportRequests.createMany({
+      data,
     });
 
-    const { msrId, zendeskTicketId, ...rest } = supportRequest;
     return callback(null, {
       statusCode: 200,
       body: JSON.stringify({
-        message: {
-          msrId: msrId.toString(),
-          zendeskTicketId: zendeskTicketId.toString(),
-          ...rest,
-        },
+        message: supportRequest,
       }),
     });
   } catch (e) {
