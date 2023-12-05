@@ -11,6 +11,7 @@ package:
     - '!node_modules/@prisma/engines/**'
 
 custom:
+  processArn: "arn:aws:lambda:${self:provider.region}:#{AWS::AccountId}:function:${self:service}-${sls:stage}-process"
   webpack:
     includeModules: true
     packagerOptions:
@@ -44,7 +45,7 @@ functions:
   create:
     handler: handler.create
     destinations:
-      onSuccess: process
+      onSuccess: ${self:custom.processArn}
       # onFailure: helloFailure
     events:
       - httpApi:
