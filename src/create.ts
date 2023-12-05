@@ -41,6 +41,7 @@ const create = async (
         statusCode: 400,
         body: JSON.stringify({
           error: "Empty request body",
+          Success: false,
         }),
       });
     }
@@ -67,11 +68,10 @@ const create = async (
     return callback(null, {
       statusCode: 200,
       body: JSON.stringify({
-        message: {
-          msrId: msrId.toString(),
-          zendeskTicketId: zendeskTicketId.toString(),
-          ...rest,
-        },
+        Success: true,
+        msrId: msrId.toString(),
+        zendeskTicketId: zendeskTicketId.toString(),
+        ...rest,
       }),
     });
   } catch (e) {
@@ -79,12 +79,18 @@ const create = async (
     if (error["name"] === "ValidationError") {
       return callback(null, {
         statusCode: 400,
-        body: `Validation error: ${getErrorMessage(e)}`,
+        body: JSON.stringify({
+          error: `Validation error: ${getErrorMessage(e)}`,
+          Success: false,
+        }),
       });
     }
     return callback(null, {
       statusCode: 500,
-      body: getErrorMessage(error),
+      body: JSON.stringify({
+        error: getErrorMessage(error),
+        Success: false,
+      }),
     });
   }
 };
