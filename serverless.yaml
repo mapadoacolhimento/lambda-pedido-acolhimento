@@ -43,6 +43,9 @@ functions:
 
   create:
     handler: handler.create
+    destinations:
+      onSuccess: process
+      # onFailure: helloFailure
     events:
       - httpApi:
           path: /create
@@ -53,13 +56,6 @@ functions:
 
   process:
     handler: handler.process
-    events:
-      - httpApi:
-          path: /process
-          method: POST
-          authorizer:
-            name: auth
-            type: request
 
   sign:
     handler: handler.sign
