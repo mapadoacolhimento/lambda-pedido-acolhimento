@@ -330,9 +330,9 @@ model Volunteers {
   phone                    String                   @db.VarChar(100)
   whatsapp                 String                   @db.VarChar(100)
   zipcode                  String                   @db.VarChar(9)
-  state                    String                   @db.VarChar(9)
-  city                     String                   @db.VarChar(100)
-  neighborhood             String                   @db.VarChar(100)
+  state                    String?                  @db.VarChar(9)
+  city                     String?                  @db.VarChar(100)
+  neighborhood             String?                  @db.VarChar(100)
   latitude                 Decimal?                 @db.Decimal(10, 4)
   longitude                Decimal?                 @db.Decimal(10, 4)
   register_number          String                   @db.VarChar(400)
@@ -350,6 +350,7 @@ model Volunteers {
   zendesk_user_id          BigInt?
   availability             Int
   offers_libras_support    Boolean
+  street                   String?                  @db.VarChar(200)
   Matches                  Matches[]
   volunteer_availability   VolunteerAvailability?
   volunteer_status_history VolunteerStatusHistory[]
@@ -417,31 +418,21 @@ model Matches {
   supportRequestId         Int                  @map("support_request_id")
   // msrId -> quando criarmos o model da Msr, mapear a relacao aqui
   msrId                    BigInt               @map("msr_id")
-  volunteerId              Int                  @map("volunteer_id")
+  volunteerId              Int?                 @map("volunteer_id")
   msrZendeskTicketId       BigInt               @map("msr_zendesk_ticket_id")
-  volunteerZendeskTicketId BigInt               @map("volunteer_zendesk_ticket_id")
+  volunteerZendeskTicketId BigInt?              @map("volunteer_zendesk_ticket_id")
   supportType              SupportType          @map("support_type")
   matchType                MatchType            @map("match_type")
   matchStage               MatchStage           @map("match_stage")
   status                   MatchStatus
   createdAt                DateTime             @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt                DateTime             @updatedAt @map("updated_at") @db.Timestamp(6)
-  EndedMatches             EndedMatches[]
   MatchStatusHistory       MatchStatusHistory[]
+  MatchSurveys             MatchSurveys[]
   supportRequest           SupportRequests      @relation(fields: [supportRequestId], references: [supportRequestId])
-  volunteer                Volunteers           @relation(fields: [volunteerId], references: [id])
+  volunteer                Volunteers?          @relation(fields: [volunteerId], references: [id])
 
   @@map("matches")
-  @@schema("match")
-}
-
-model EndedMatches {
-  matchId      Int          @id @map("match_id")
-  endingReason EndingReason @map("ending_reason")
-  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamp(6)
-  match        Matches      @relation(fields: [matchId], references: [matchId])
-
-  @@map("ended_matches")
   @@schema("match")
 }
 
@@ -453,6 +444,18 @@ model MatchStatusHistory {
   match                Matches     @relation(fields: [matchId], references: [matchId])
 
   @@map("match_status_history")
+  @@schema("match")
+}
+
+model MatchSurveys {
+  matchSurveyId Int        @id @default(autoincrement()) @map("match_survey_id")
+  matchId       Int        @map("match_id")
+  surveyType    SurveyType @map("survey_type")
+  createdAt     DateTime   @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt     DateTime   @updatedAt @map("updated_at") @db.Timestamp(6)
+  match         Matches    @relation(fields: [matchId], references: [matchId])
+
+  @@map("match_surveys")
   @@schema("match")
 }
 
@@ -514,9 +517,10 @@ model VolunteerStatusHistory {
 }
 
 model FeatureFlag {
-  id           BigInt     @id @default(autoincrement())
-  feature_name String @map("featureName") @unique
+  id              BigInt  @id @default(autoincrement())
+  feature_name    String  @unique @map("featureName")
   feature_enabled Boolean @default(false) @map("featureEnabled")
+
   @@map("feature_flag")
   @@schema("match")
 }
@@ -534,9 +538,9 @@ enum SupportRequestsStatus {
   matched
   social_assistant
   public_service
-  completed
   duplicated
-  old
+  closed
+  special_case
 
   @@map("support_requests_status")
   @@schema("match")
@@ -546,6 +550,7 @@ enum MatchType {
   msr
   volunteer
   manual
+  old
 
   @@map("match_type")
   @@schema("match")
@@ -555,25 +560,30 @@ enum MatchStage {
   ideal
   expanded
   online
+  old
 
   @@map("match_stage")
   @@schema("match")
 }
 
 enum MatchStatus {
-  waiting_contact
+  completed
+  expired
   in_contact
-  ended
+  interrupted_after_support
+  interrupted_before_support
+  waiting_contact
 
   @@map("match_status")
   @@schema("match")
 }
 
-enum EndingReason {
-  msr_no_contact
+enum SurveyType {
+  triagem_1
+  triagem_2
+  acompanhamento_1
+  acompanhamento_2
 
-  @@map("ending_reason")
+  @@map("survey_type")
   @@schema("match")
 }
-
-
