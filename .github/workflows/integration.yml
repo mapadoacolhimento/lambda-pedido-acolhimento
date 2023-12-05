@@ -19,7 +19,7 @@ on:
 jobs:
   integration:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 5
     strategy:
       matrix:
         node-version: [18.x]
@@ -44,6 +44,7 @@ jobs:
 
   deployment:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     environment:
       name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
     needs:
