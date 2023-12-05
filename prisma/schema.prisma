@@ -516,11 +516,12 @@ model VolunteerStatusHistory {
   @@schema("public")
 }
 
-model feature_flag {
-  id             BigInt  @id @default(autoincrement())
-  featureName    String  @unique
-  featureEnabled Boolean @default(false)
+model FeatureFlag {
+  id              BigInt  @id @default(autoincrement())
+  feature_name    String  @unique @map("featureName")
+  feature_enabled Boolean @default(false) @map("featureEnabled")
 
+  @@map("feature_flag")
   @@schema("match")
 }
 
