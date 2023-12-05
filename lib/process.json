@@ -1,0 +1,17 @@
+{
+  "httpMethod": "POST",
+  "data": {
+    "msrId": 21432703137812,
+    "zendeskTicketId": 79186,
+    "supportType": "psychological",
+    "supportExpertise": null,
+    "priority": null,
+    "hasDisability": false,
+    "requiresLibras": false,
+    "acceptsOnlineSupport": true,
+    "lat": -23.559,
+    "lng": -46.669,
+    "city": "São Paulo",
+    "state": "SP"
+  }
+}

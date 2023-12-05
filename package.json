@@ -22,7 +22,8 @@
     "migrate:create": "prisma migrate dev --create-only",
     "migrate:dev": "prisma migrate dev",
     "migrate:diff": "prisma migrate diff",
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "dev:process": "serverless invoke local --function process --path lib/process.json"
   },
   "author": "",
   "license": "MIT",
