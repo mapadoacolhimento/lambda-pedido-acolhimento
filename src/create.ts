@@ -32,12 +32,12 @@ const bodySchema = array(
 
 const create = async (
   event: APIGatewayEvent,
-  context: Context,
+  _context: Context,
   callback: APIGatewayProxyCallback,
 ) => {
   try {
-    console.log(`Event: ${JSON.stringify(event, null, 2)}`);
-    console.log(`Context: ${JSON.stringify(context, null, 2)}`);
+    // console.log(`Event: ${JSON.stringify(event, null, 2)}`);
+    // console.log(`Context: ${JSON.stringify(context, null, 2)}`);
 
     const { body } = event;
     if (!body) {
@@ -54,24 +54,33 @@ const create = async (
       : (Object.create(null) as Record<string, unknown>);
 
     const validatedBody = await bodySchema.validate(parsedBody);
-    const data = validatedBody.map((supportRequest) => ({
-      ...supportRequest,
-      status: "open" as const,
-      SupportRequestStatusHistory: {
-        create: {
-          status: "open",
-        },
-      },
-    }));
 
-    const supportRequest = await client.supportRequests.createMany({
-      data,
-    });
+    const supportRequestPromises = validatedBody.map(
+      async (supportRequest) =>
+        await client.supportRequests.create({
+          data: {
+            ...supportRequest,
+            status: "open",
+            SupportRequestStatusHistory: {
+              create: {
+                status: "open",
+              },
+            },
+          },
+        }),
+    );
+
+    const supportRequests = await Promise.all(supportRequestPromises);
+    const res = supportRequests.map(({ msrId, zendeskTicketId, ...rest }) => ({
+      msrId: msrId.toString(),
+      zendeskTicketId: zendeskTicketId.toString(),
+      ...rest,
+    }));
 
     return callback(null, {
       statusCode: 200,
       body: JSON.stringify({
-        message: supportRequest,
+        message: res,
       }),
     });
   } catch (e) {
@@ -79,12 +88,14 @@ const create = async (
     if (error["name"] === "ValidationError") {
       return callback(null, {
         statusCode: 400,
-        body: `Validation error: ${getErrorMessage(e)}`,
+        body: JSON.stringify({
+          error: `Validation error: ${getErrorMessage(e)}`,
+        }),
       });
     }
     return callback(null, {
       statusCode: 500,
-      body: getErrorMessage(error),
+      body: JSON.stringify({ error: getErrorMessage(error) }),
     });
   }
 };
