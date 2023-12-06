@@ -7,10 +7,12 @@ import { object, string, mixed, number, boolean } from "yup";
 import { SupportType, VolunteerAvailability } from "@prisma/client";
 import client from "./client";
 import {
-  fetchVolunteerForIdealMatch,
-  createMatch,
   getErrorMessage,
   isJsonString,
+  createIdealMatch,
+  createExpandedMatch,
+  createOnlineMatch,
+  decideOnOnlineMatch,
 } from "./utils";
 
 const bodySchema = object({
@@ -60,34 +62,50 @@ const process = async (
       supportRequest.supportType,
     );
 
-    if (!!supportRequest.lat && !!supportRequest.lng) {
-      const volunteerForIdealMatch = fetchVolunteerForIdealMatch(
-        supportRequest.lat,
-        supportRequest.lng,
+    const idealMatch = await createIdealMatch(supportRequest, allVolunteers);
+
+    if (idealMatch)
+      return callback(null, {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: `Support request ${supportRequest.supportRequestId} received an Ideal Match with match_id: ${idealMatch.matchId}`,
+        }),
+      });
+
+    const expandedMatch = await createExpandedMatch(
+      supportRequest,
+      allVolunteers,
+    );
+
+    if (expandedMatch)
+      return callback(null, {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: `Support request ${supportRequest.supportRequestId} received an Expanded Match with match_id: ${expandedMatch.matchId}`,
+        }),
+      });
+
+    const shouldReceiveAnOnlineMatch = decideOnOnlineMatch();
+
+    if (shouldReceiveAnOnlineMatch) {
+      const onlineMatch = await createOnlineMatch(
+        supportRequest,
         allVolunteers,
       );
 
-      if (volunteerForIdealMatch) {
-        const match = await createMatch(
-          supportRequest,
-          volunteerForIdealMatch,
-          "msr",
-          "ideal",
-        );
-
+      if (onlineMatch)
         return callback(null, {
           statusCode: 200,
           body: JSON.stringify({
-            message: { matchId: match.matchId.toString() },
+            message: `Support request ${supportRequest.supportRequestId} received an Online Match with match_id: ${onlineMatch.matchId}`,
           }),
         });
-      }
     }
 
     return callback(null, {
       statusCode: 200,
       body: JSON.stringify({
-        message: "Hello from process!",
+        message: `Support request ${supportRequest.supportRequestId} directed to Public Service`,
       }),
     });
   } catch (e) {
