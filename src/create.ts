@@ -71,10 +71,10 @@ const create = async (
     );
 
     const supportRequests = await Promise.all(supportRequestPromises);
-    const res = supportRequests.map(({ msrId, zendeskTicketId, ...rest }) => ({
-      msrId: msrId.toString(),
-      zendeskTicketId: zendeskTicketId.toString(),
-      ...rest,
+    const res = supportRequests.map((request) => ({
+      ...request,
+      msrId: request.msrId.toString(),
+      zendeskTicketId: request.zendeskTicketId.toString(),
     }));
 
     return callback(null, {
