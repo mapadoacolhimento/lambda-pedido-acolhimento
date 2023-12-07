@@ -59,6 +59,7 @@ describe("/create endpoint", () => {
         lng: 23.32,
         city: "SÃO PAULO",
         state: "SP",
+        status: "open",
       },
     ];
     await create(
@@ -88,6 +89,7 @@ describe("/create endpoint", () => {
       lng: 23.32 as unknown as Decimal,
       city: "SÃO PAULO",
       state: "SP",
+      status: "open",
     };
     const psySupportRequest = {
       ...defaultBody,
@@ -98,6 +100,7 @@ describe("/create endpoint", () => {
     };
     const legalSupportRequest = {
       ...defaultBody,
+      status: "duplicated",
       supportRequestId: 2,
       msrId: 1,
       zendeskTicketId: 2,
@@ -115,7 +118,7 @@ describe("/create endpoint", () => {
       ...legalSupportRequest,
       msrId: BigInt(legalSupportRequest.msrId),
       zendeskTicketId: BigInt(legalSupportRequest.zendeskTicketId),
-      status: "open" as const,
+      status: "duplicated" as const,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

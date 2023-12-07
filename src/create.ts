@@ -4,7 +4,7 @@ import type {
   APIGatewayProxyCallback,
 } from "aws-lambda";
 import { object, string, mixed, number, boolean, array } from "yup";
-import { SupportType } from "@prisma/client";
+import { SupportType, SupportRequestsStatus } from "@prisma/client";
 
 import client from "./client";
 import { getErrorMessage, isJsonString } from "./utils";
@@ -16,18 +16,22 @@ const bodySchema = array(
     supportType: mixed<SupportType>()
       .oneOf(Object.values(SupportType))
       .required(),
+    status: mixed<SupportRequestsStatus>()
+      .oneOf(Object.values(SupportRequestsStatus))
+      .required(),
     supportExpertise: string().nullable().defined(),
     priority: number().nullable().defined(),
-    hasDisability: boolean().required(),
-    requiresLibras: boolean().required(),
+    hasDisability: boolean().nullable().defined(),
+    requiresLibras: boolean().nullable().defined(),
     acceptsOnlineSupport: boolean().required(),
-    lat: number().required(),
-    lng: number().required(),
+    lat: number().nullable().defined(),
+    lng: number().nullable().defined(),
     city: string().required(),
     state: string().required(),
   }).required(),
 )
   .required()
+  .min(1)
   .strict();
 
 const create = async (
@@ -60,10 +64,9 @@ const create = async (
         await client.supportRequests.create({
           data: {
             ...supportRequest,
-            status: "open",
             SupportRequestStatusHistory: {
               create: {
-                status: "open",
+                status: supportRequest.status,
               },
             },
           },
