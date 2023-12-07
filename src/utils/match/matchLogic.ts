@@ -78,20 +78,29 @@ export async function createOnlineMatch(
 ) {
   if (!allVolunteers[0]) return null;
 
-  const volunteerInTheSameState = findVolunteerInTheSameState(
+  const volunteersInTheSameState = filterVolunteersInTheSameState(
     supportRequest.state,
     allVolunteers,
   );
 
-  if (volunteerInTheSameState) {
-    const { match } = await createMatch(
-      supportRequest,
-      volunteerInTheSameState,
-      "msr",
-      "online",
+  if (volunteersInTheSameState[0]) {
+    const closestVolunteersInTheSameState = fetchClosestVolunteers(
+      supportRequest.lat,
+      supportRequest.lng,
+      volunteersInTheSameState,
+      null,
     );
 
-    return match;
+    if (closestVolunteersInTheSameState[0]) {
+      const { match } = await createMatch(
+        supportRequest,
+        closestVolunteersInTheSameState[0],
+        "msr",
+        "online",
+      );
+
+      return match;
+    }
   }
 
   const closestVolunteers = fetchClosestVolunteers(
@@ -180,13 +189,13 @@ function findVolunteerInTheSameCity(
   );
 }
 
-function findVolunteerInTheSameState(
+function filterVolunteersInTheSameState(
   msrState: string,
   volunteers: VolunteerAvailability[],
 ) {
-  if (msrState === "not_found") return null;
+  if (msrState === "not_found") return [];
 
-  return volunteers.find((volunteer) => volunteer.state === msrState) || null;
+  return volunteers.filter((volunteer) => volunteer.state === msrState);
 }
 
 export function decideOnOnlineMatch() {
