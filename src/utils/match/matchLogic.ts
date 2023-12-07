@@ -24,7 +24,7 @@ export async function createIdealMatch(
 
   if (!closestVolunteers[0]) return null;
 
-  const match = await createMatch(
+  const { match } = await createMatch(
     supportRequest,
     closestVolunteers[0],
     "msr",
@@ -53,7 +53,7 @@ export async function createExpandedMatch(
 
   if (!volunteerInTheSameCity) return null;
 
-  const match = await createMatch(
+  const { match } = await createMatch(
     supportRequest,
     volunteerInTheSameCity,
     "msr",
@@ -84,7 +84,7 @@ export async function createOnlineMatch(
   );
 
   if (volunteerInTheSameState) {
-    const match = await createMatch(
+    const { match } = await createMatch(
       supportRequest,
       volunteerInTheSameState,
       "msr",
@@ -102,7 +102,7 @@ export async function createOnlineMatch(
   );
 
   if (closestVolunteers[0]) {
-    const match = await createMatch(
+    const { match } = await createMatch(
       supportRequest,
       closestVolunteers[0],
       "msr",
@@ -112,7 +112,7 @@ export async function createOnlineMatch(
     return match;
   }
 
-  const match = await createMatch(
+  const { match } = await createMatch(
     supportRequest,
     allVolunteers[0],
     "msr",

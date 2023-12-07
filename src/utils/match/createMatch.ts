@@ -38,7 +38,38 @@ export async function createMatch(
     },
   });
 
-  return match;
+  const updateSupportRequest = await client.supportRequests.update({
+    where: {
+      supportRequestId: supportRequest.supportRequestId,
+    },
+    data: {
+      status: "matched",
+      SupportRequestStatusHistory: {
+        create: {
+          status: "matched",
+        },
+      },
+    },
+  });
+
+  const newVolunteerIsAvailable =
+    volunteer.current_matches + 1 < volunteer.max_matches ? true : false;
+
+  const updateVolunteerAvailability = await client.volunteerAvailability.update(
+    {
+      where: {
+        volunteer_id: volunteer.volunteer_id,
+      },
+      data: {
+        current_matches: volunteer.current_matches + 1,
+        is_available: newVolunteerIsAvailable,
+      },
+    },
+  );
+
+  // Atualizar também o status da voluntária
+
+  return { match, updateSupportRequest, updateVolunteerAvailability };
 }
 
 function createVolunteerZendestTicket() {
