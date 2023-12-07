@@ -193,7 +193,6 @@ export function decideOnOnlineMatch() {
   const randomNum = Math.floor(Math.random() * 100);
 
   const shouldReceiveAnOnlineMatch = randomNum % 2 === 0 ? true : false;
-  console.log(randomNum, shouldReceiveAnOnlineMatch);
 
   return shouldReceiveAnOnlineMatch;
 }
