@@ -1,8 +1,12 @@
-import type { SupportType, VolunteerAvailability } from "@prisma/client";
+import {
+  MatchStage,
+  MatchType,
+  type SupportType,
+  type VolunteerAvailability,
+} from "@prisma/client";
 import * as turf from "@turf/turf";
 import { createMatch } from "./createMatch";
-
-const IDEAL_MATCH_MAX_DISTANCE = 20;
+import { IDEAL_MATCH_MAX_DISTANCE } from "../constants";
 
 export async function createIdealMatch(
   supportRequest: {
@@ -27,8 +31,8 @@ export async function createIdealMatch(
   const { match } = await createMatch(
     supportRequest,
     closestVolunteers[0],
-    "msr",
-    "ideal",
+    MatchType.msr,
+    MatchStage.ideal,
   );
 
   return match;
@@ -56,8 +60,8 @@ export async function createExpandedMatch(
   const { match } = await createMatch(
     supportRequest,
     volunteerInTheSameCity,
-    "msr",
-    "expanded",
+    MatchType.msr,
+    MatchStage.expanded,
   );
 
   return match;
@@ -95,8 +99,8 @@ export async function createOnlineMatch(
       const { match } = await createMatch(
         supportRequest,
         closestVolunteersInTheSameState[0],
-        "msr",
-        "online",
+        MatchType.msr,
+        MatchStage.online,
       );
 
       return match;
@@ -114,8 +118,8 @@ export async function createOnlineMatch(
     const { match } = await createMatch(
       supportRequest,
       closestVolunteers[0],
-      "msr",
-      "online",
+      MatchType.msr,
+      MatchStage.online,
     );
 
     return match;
@@ -124,8 +128,8 @@ export async function createOnlineMatch(
   const { match } = await createMatch(
     supportRequest,
     allVolunteers[0],
-    "msr",
-    "online",
+    MatchType.msr,
+    MatchStage.online,
   );
 
   return match;

@@ -1,0 +1,1 @@
+export const IDEAL_MATCH_MAX_DISTANCE = 20;
