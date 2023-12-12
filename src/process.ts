@@ -36,7 +36,7 @@ const bodySchema = object({
 
 const process = async (
   event: APIGatewayEvent,
-  context: Context,
+  _context: Context,
   callback: APIGatewayProxyCallback
 ) => {
   try {
@@ -67,7 +67,7 @@ const process = async (
         statusCode: 200,
         body: JSON.stringify({
           message: `Support request ${supportRequest.supportRequestId} received an Ideal Match`,
-          match: idealMatch,
+          match: stringifyBigInt(idealMatch),
         }),
       });
 
@@ -81,7 +81,7 @@ const process = async (
         statusCode: 200,
         body: JSON.stringify({
           message: `Support request ${supportRequest.supportRequestId} received an Expanded Match`,
-          match: expandedMatch,
+          match: stringifyBigInt(expandedMatch),
         }),
       });
 
@@ -98,7 +98,7 @@ const process = async (
           statusCode: 200,
           body: JSON.stringify({
             message: `Support request ${supportRequest.supportRequestId} received an Online Match`,
-            match: onlineMatch,
+            match: stringifyBigInt(onlineMatch),
           }),
         });
     }
@@ -136,5 +136,20 @@ const fetchVolunteers = async (supportType: SupportType) => {
 
   return availableVolunteers || [];
 };
+
+function stringifyBigInt(obj: Record<string, unknown>) {
+  return Object.keys(obj).reduce((previousValue, currentKey) => {
+    let currentObjValue = obj[currentKey];
+
+    if (typeof currentObjValue === "bigint") {
+      currentObjValue = currentObjValue.toString();
+    }
+
+    return {
+      ...previousValue,
+      [currentKey]: currentObjValue,
+    };
+  }, {});
+}
 
 export default process;
