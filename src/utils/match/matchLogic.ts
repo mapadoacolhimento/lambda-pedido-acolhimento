@@ -205,7 +205,7 @@ function filterVolunteersInTheSameState(
 export function decideOnOnlineMatch() {
   const randomNum = Math.floor(Math.random() * 100);
 
-  const shouldReceiveAnOnlineMatch = randomNum % 2 === 0 ? true : false;
+  const shouldReceiveAnOnlineMatch = randomNum % 2 === 0;
 
   return shouldReceiveAnOnlineMatch;
 }
