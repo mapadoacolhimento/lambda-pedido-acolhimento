@@ -15,6 +15,7 @@ import {
   decideOnOnlineMatch,
 } from "./utils";
 import { directToPublicService } from "./utils/match/publicService";
+import { stringifyBigInt } from "./utils/stringfyBigInt";
 
 const bodySchema = object({
   supportRequestId: number().required(),
@@ -136,20 +137,5 @@ const fetchVolunteers = async (supportType: SupportType) => {
 
   return availableVolunteers || [];
 };
-
-function stringifyBigInt(obj: Record<string, unknown>) {
-  return Object.keys(obj).reduce((previousValue, currentKey) => {
-    let currentObjValue = obj[currentKey];
-
-    if (typeof currentObjValue === "bigint") {
-      currentObjValue = currentObjValue.toString();
-    }
-
-    return {
-      ...previousValue,
-      [currentKey]: currentObjValue,
-    };
-  }, {});
-}
 
 export default process;
