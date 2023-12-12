@@ -39,9 +39,6 @@ const process = async (
   callback: APIGatewayProxyCallback,
 ) => {
   try {
-    console.log(`Event: ${JSON.stringify(event, null, 2)}`);
-    console.log(`Context: ${JSON.stringify(context, null, 2)}`);
-
     const { body } = event;
     if (!body) {
       return callback(null, {
