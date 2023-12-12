@@ -17,7 +17,7 @@ export async function createMatch(
   matchType: MatchType,
   matchStage: MatchStage,
 ) {
-  const volunteerZendeskTicketId = createVolunteerZendestTicket();
+  const volunteerZendeskTicketId = createVolunteerZendeskTicket();
 
   const match = await client.matches.create({
     data: {
@@ -72,7 +72,7 @@ export async function createMatch(
   return { match, updateSupportRequest, updateVolunteerAvailability };
 }
 
-function createVolunteerZendestTicket() {
+function createVolunteerZendeskTicket() {
   const zendeskTicketId = 1;
 
   return zendeskTicketId;
