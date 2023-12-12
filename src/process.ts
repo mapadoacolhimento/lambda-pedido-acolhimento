@@ -3,8 +3,7 @@ import type {
   Context,
   APIGatewayProxyCallback,
 } from "aws-lambda";
-import { object, string, mixed, number, boolean } from "yup";
-import { SupportType, VolunteerAvailability } from "@prisma/client";
+import { object, number } from "yup";
 import client from "./client";
 import {
   getErrorMessage,
@@ -16,23 +15,12 @@ import {
 } from "./utils";
 import { directToPublicService } from "./utils/match/publicService";
 import { stringifyBigInt } from "./utils/stringfyBigInt";
+import { createSupportRequestSchema } from "./utils/validations";
+import type { SupportType, VolunteerAvailability } from "@prisma/client";
 
 const bodySchema = object({
   supportRequestId: number().required(),
-  msrId: number().required(),
-  zendeskTicketId: number().required(),
-  supportType: mixed<SupportType>()
-    .oneOf(Object.values(SupportType))
-    .required(),
-  supportExpertise: string().nullable().defined(), // mudar no create
-  priority: number().nullable().defined(),
-  hasDisability: boolean().nullable().defined(), // mudar no create
-  requiresLibras: boolean().nullable().defined(), // mudar no create
-  acceptsOnlineSupport: boolean().required(),
-  lat: number().nullable().defined(), // mudar no create
-  lng: number().nullable().defined(), // mudar no create
-  city: string().required(),
-  state: string().required(),
+  ...createSupportRequestSchema,
 }).strict();
 
 const process = async (
