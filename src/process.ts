@@ -37,7 +37,7 @@ const bodySchema = object({
 const process = async (
   event: APIGatewayEvent,
   context: Context,
-  callback: APIGatewayProxyCallback,
+  callback: APIGatewayProxyCallback
 ) => {
   try {
     const { body } = event;
@@ -57,7 +57,7 @@ const process = async (
     const supportRequest = await bodySchema.validate(parsedBody);
 
     const allVolunteers: VolunteerAvailability[] = await fetchVolunteers(
-      supportRequest.supportType,
+      supportRequest.supportType
     );
 
     const idealMatch = await createIdealMatch(supportRequest, allVolunteers);
@@ -72,7 +72,7 @@ const process = async (
 
     const expandedMatch = await createExpandedMatch(
       supportRequest,
-      allVolunteers,
+      allVolunteers
     );
 
     if (expandedMatch)
@@ -88,7 +88,7 @@ const process = async (
     if (shouldReceiveAnOnlineMatch) {
       const onlineMatch = await createOnlineMatch(
         supportRequest,
-        allVolunteers,
+        allVolunteers
       );
 
       if (onlineMatch)
@@ -101,7 +101,7 @@ const process = async (
     }
 
     const publicService = await directToPublicService(
-      supportRequest.supportRequestId,
+      supportRequest.supportRequestId
     );
 
     return callback(null, {
@@ -131,7 +131,7 @@ const fetchVolunteers = async (supportType: SupportType) => {
       where: { is_available: true, support_type: supportType },
     });
 
-  return availableVolunteers;
+  return availableVolunteers || [];
 };
 
 export default process;

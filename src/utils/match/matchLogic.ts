@@ -17,22 +17,22 @@ export async function createIdealMatch(
     lat: number | null;
     lng: number | null;
   },
-  allVolunteers: VolunteerAvailability[],
+  allVolunteers: VolunteerAvailability[]
 ) {
-  const closestVolunteers = fetchClosestVolunteers(
+  const closestVolunteer = findClosestVolunteer(
     supportRequest.lat,
     supportRequest.lng,
     allVolunteers,
-    IDEAL_MATCH_MAX_DISTANCE,
+    IDEAL_MATCH_MAX_DISTANCE
   );
 
-  if (!closestVolunteers[0]) return null;
+  if (!closestVolunteer) return null;
 
   const { match } = await createMatch(
     supportRequest,
-    closestVolunteers[0],
+    closestVolunteer,
     MatchType.msr,
-    MatchStage.ideal,
+    MatchStage.ideal
   );
 
   return match;
@@ -47,12 +47,12 @@ export async function createExpandedMatch(
     city: string;
     state: string;
   },
-  allVolunteers: VolunteerAvailability[],
+  allVolunteers: VolunteerAvailability[]
 ) {
   const volunteerInTheSameCity = findVolunteerInTheSameCity(
     supportRequest.city,
     supportRequest.state,
-    allVolunteers,
+    allVolunteers
   );
 
   if (!volunteerInTheSameCity) return null;
@@ -61,7 +61,7 @@ export async function createExpandedMatch(
     supportRequest,
     volunteerInTheSameCity,
     MatchType.msr,
-    MatchStage.expanded,
+    MatchStage.expanded
   );
 
   return match;
@@ -78,48 +78,48 @@ export async function createOnlineMatch(
     city: string;
     state: string;
   },
-  allVolunteers: VolunteerAvailability[],
+  allVolunteers: VolunteerAvailability[]
 ) {
-  if (!allVolunteers[0]) return null;
+  if (allVolunteers.length === 0 || !allVolunteers[0]) return null;
 
   const volunteersInTheSameState = filterVolunteersInTheSameState(
     supportRequest.state,
-    allVolunteers,
+    allVolunteers
   );
 
-  if (volunteersInTheSameState[0]) {
-    const closestVolunteersInTheSameState = fetchClosestVolunteers(
+  if (volunteersInTheSameState.length > 0) {
+    const closestVolunteerInTheSameState = findClosestVolunteer(
       supportRequest.lat,
       supportRequest.lng,
       volunteersInTheSameState,
-      null,
+      null
     );
 
-    if (closestVolunteersInTheSameState[0]) {
+    if (closestVolunteerInTheSameState) {
       const { match } = await createMatch(
         supportRequest,
-        closestVolunteersInTheSameState[0],
+        closestVolunteerInTheSameState,
         MatchType.msr,
-        MatchStage.online,
+        MatchStage.online
       );
 
       return match;
     }
   }
 
-  const closestVolunteers = fetchClosestVolunteers(
+  const closestVolunteer = findClosestVolunteer(
     supportRequest.lat,
     supportRequest.lng,
     allVolunteers,
-    null,
+    null
   );
 
-  if (closestVolunteers[0]) {
+  if (closestVolunteer) {
     const { match } = await createMatch(
       supportRequest,
-      closestVolunteers[0],
+      closestVolunteer,
       MatchType.msr,
-      MatchStage.online,
+      MatchStage.online
     );
 
     return match;
@@ -129,28 +129,28 @@ export async function createOnlineMatch(
     supportRequest,
     allVolunteers[0],
     MatchType.msr,
-    MatchStage.online,
+    MatchStage.online
   );
 
   return match;
 }
 
 function filterVolunteersWithLatLng(
-  volunteers: VolunteerAvailability[],
+  volunteers: VolunteerAvailability[]
 ): VolunteerAvailability[] {
   return volunteers.filter((volunteer) => !!volunteer.lat && !!volunteer.lng);
 }
 
-function fetchClosestVolunteers(
+function findClosestVolunteer(
   msrLat: number | null,
   msrLng: number | null,
   volunteers: VolunteerAvailability[],
-  maxDistance: number | null,
+  maxDistance: number | null
 ) {
-  if (!msrLat || !msrLng) return [];
+  if (!msrLat || !msrLng) return null;
 
   const volunteersWithLatLng = filterVolunteersWithLatLng(volunteers);
-  if (!volunteersWithLatLng[0]) return [];
+  if (volunteersWithLatLng.length === 0) return null;
 
   const closestVolunteers = volunteersWithLatLng
     .map((volunteer) => {
@@ -164,10 +164,10 @@ function fetchClosestVolunteers(
     })
     .sort((a, b) => Number(a.distance) - Number(b.distance));
 
-  if (!maxDistance) return closestVolunteers;
+  if (!maxDistance) return closestVolunteers[0];
 
-  return closestVolunteers.filter(
-    (volunteer) => volunteer.distance && volunteer.distance <= maxDistance,
+  return closestVolunteers.find(
+    (volunteer) => volunteer.distance && volunteer.distance <= maxDistance
   );
 }
 
@@ -182,20 +182,20 @@ function calcDistance(pointA: number[], pointB: number[]): number | null {
 function findVolunteerInTheSameCity(
   msrCity: string,
   msrState: string,
-  volunteers: VolunteerAvailability[],
+  volunteers: VolunteerAvailability[]
 ) {
   if (msrCity === "not_found" || msrState === "not_found") return null;
 
   return (
     volunteers.find(
-      (volunteer) => volunteer.city === msrCity && volunteer.state === msrState,
+      (volunteer) => volunteer.city === msrCity && volunteer.state === msrState
     ) || null
   );
 }
 
 function filterVolunteersInTheSameState(
   msrState: string,
-  volunteers: VolunteerAvailability[],
+  volunteers: VolunteerAvailability[]
 ) {
   if (msrState === "not_found") return [];
 
