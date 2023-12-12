@@ -66,7 +66,8 @@ const process = async (
       return callback(null, {
         statusCode: 200,
         body: JSON.stringify({
-          message: `Support request ${supportRequest.supportRequestId} received an Ideal Match with match_id: ${idealMatch.matchId}`,
+          message: `Support request ${supportRequest.supportRequestId} received an Ideal Match`,
+          match: idealMatch,
         }),
       });
 
@@ -79,7 +80,8 @@ const process = async (
       return callback(null, {
         statusCode: 200,
         body: JSON.stringify({
-          message: `Support request ${supportRequest.supportRequestId} received an Expanded Match with match_id: ${expandedMatch.matchId}`,
+          message: `Support request ${supportRequest.supportRequestId} received an Expanded Match`,
+          match: expandedMatch,
         }),
       });
 
@@ -95,7 +97,8 @@ const process = async (
         return callback(null, {
           statusCode: 200,
           body: JSON.stringify({
-            message: `Support request ${supportRequest.supportRequestId} received an Online Match with match_id: ${onlineMatch.matchId}`,
+            message: `Support request ${supportRequest.supportRequestId} received an Online Match`,
+            match: onlineMatch,
           }),
         });
     }
