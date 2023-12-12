@@ -14,6 +14,7 @@ import {
   createOnlineMatch,
   decideOnOnlineMatch,
 } from "./utils";
+import { directToPublicService } from "./utils/match/publicService";
 
 const bodySchema = object({
   supportRequestId: number().required(),
@@ -99,10 +100,14 @@ const process = async (
         });
     }
 
+    const publicService = await directToPublicService(
+      supportRequest.supportRequestId,
+    );
+
     return callback(null, {
       statusCode: 200,
       body: JSON.stringify({
-        message: `Support request ${supportRequest.supportRequestId} directed to Public Service`,
+        message: `Support request ${publicService.supportRequestId} directed to Public Service`,
       }),
     });
   } catch (e) {
