@@ -15,7 +15,7 @@ export async function createMatch(
   },
   volunteer: VolunteerAvailability,
   matchType: MatchType,
-  matchStage: MatchStage,
+  matchStage: MatchStage
 ) {
   const volunteerZendeskTicketId = createVolunteerZendeskTicket();
 
@@ -52,7 +52,7 @@ export async function createMatch(
     },
   });
 
-  const newVolunteerIsAvailable =
+  const isVolunteerAvailable =
     volunteer.current_matches + 1 < volunteer.max_matches ? true : false;
 
   const updateVolunteerAvailability = await client.volunteerAvailability.update(
@@ -62,12 +62,29 @@ export async function createMatch(
       },
       data: {
         current_matches: volunteer.current_matches + 1,
-        is_available: newVolunteerIsAvailable,
+        is_available: isVolunteerAvailable,
       },
-    },
+    }
   );
 
-  // Atualizar também o status da voluntária
+  if (!isVolunteerAvailable) {
+    await client.volunteers.update({
+      where: {
+        id: volunteer.volunteer_id,
+      },
+      data: {
+        condition: "totally_booked",
+      },
+    });
+
+    await client.volunteerStatusHistory.create({
+      data: {
+        volunteer_id: volunteer.volunteer_id,
+        status: "totally_booked",
+        created_at: new Date(),
+      },
+    });
+  }
 
   return { match, updateSupportRequest, updateVolunteerAvailability };
 }
