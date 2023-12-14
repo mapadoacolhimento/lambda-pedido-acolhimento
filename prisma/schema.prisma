@@ -206,52 +206,6 @@ model msrs_formdata {
   @@schema("public")
 }
 
-model msrs_msrs {
-  id                   BigInt   @id @default(autoincrement())
-  user_zendesk_id      Int?
-  name                 String   @db.VarChar(100)
-  email                String   @db.VarChar(254)
-  cpf                  String   @db.VarChar(11)
-  color                String   @db.VarChar(15)
-  gender               String   @db.VarChar(15)
-  whatsapp             String   @db.VarChar(11)
-  state                String   @db.VarChar(2)
-  city_id              Int
-  neighborhood         String   @db.VarChar(100)
-  latitude             Decimal  @db.Decimal(10, 4)
-  logintude            Decimal  @db.Decimal(10, 4)
-  pcd                  Boolean
-  education            String   @db.VarChar(40)
-  work_situation       String   @db.VarChar(40)
-  income               Decimal  @db.Decimal(10, 2)
-  duration_of_violence String   @db.VarChar(30)
-  author_of_violence   String   @db.VarChar(30)
-  story                String
-  risk_factors         String   @db.VarChar(140)
-  protective_factors   String   @db.VarChar(100)
-  public_service       String   @db.VarChar(100)
-  type_of_support      String   @db.VarChar(20)
-  access               String   @db.VarChar(30)
-  status               String   @db.VarChar(15)
-  support_on_queue     Boolean
-  on_queue             Boolean
-  online               Boolean
-  priority             String   @db.VarChar(15)
-  created_at           DateTime @db.Timestamptz(6)
-  updated_at           DateTime @db.Timestamptz(6)
-  match                Boolean
-  digital_violence     String   @db.VarChar(200)
-  obstetric_violence   String   @db.VarChar(100)
-  physical_violence    String   @db.VarChar(100)
-  property_violence    String   @db.VarChar(100)
-  psych_violence       String   @db.VarChar(100)
-  sexual_violence      String   @db.VarChar(100)
-  cities               Cities   @relation(fields: [city_id], references: [city_id], onDelete: NoAction, onUpdate: NoAction, map: "msrs_msrs_city_id_e49bad88_fk_cities_city_id")
-
-  @@index([city_id], map: "msrs_msrs_city_id_e49bad88")
-  @@schema("public")
-}
-
 model solidarity_users {
   id                                    Int       @id @default(autoincrement())
   user_id                               BigInt    @unique
@@ -330,9 +284,9 @@ model Volunteers {
   phone                    String                   @db.VarChar(100)
   whatsapp                 String                   @db.VarChar(100)
   zipcode                  String                   @db.VarChar(9)
-  state                    String?                  @db.VarChar(9)
-  city                     String?                  @db.VarChar(100)
-  neighborhood             String?                  @db.VarChar(100)
+  state                    String                   @db.VarChar(9)
+  city                     String                   @db.VarChar(100)
+  neighborhood             String                   @db.VarChar(100)
   latitude                 Decimal?                 @db.Decimal(10, 4)
   longitude                Decimal?                 @db.Decimal(10, 4)
   register_number          String                   @db.VarChar(400)
@@ -382,7 +336,6 @@ model SupportRequests {
   msrId                       BigInt                        @map("msr_id")
   zendeskTicketId             BigInt                        @unique @map("zendesk_ticket_id")
   supportType                 SupportType                   @map("support_type")
-  // supportExpertise -> No futuro, array de enums
   supportExpertise            String?                       @map("support_expertise")
   priority                    Int?
   hasDisability               Boolean?                      @map("has_disability")
@@ -416,7 +369,6 @@ model SupportRequestStatusHistory {
 model Matches {
   matchId                  Int                  @id @default(autoincrement()) @map("match_id")
   supportRequestId         Int                  @map("support_request_id")
-  // msrId -> quando criarmos o model da Msr, mapear a relacao aqui
   msrId                    BigInt               @map("msr_id")
   volunteerId              Int?                 @map("volunteer_id")
   msrZendeskTicketId       BigInt               @map("msr_zendesk_ticket_id")
@@ -450,9 +402,9 @@ model MatchStatusHistory {
 model MatchSurveys {
   matchSurveyId Int        @id @default(autoincrement()) @map("match_survey_id")
   matchId       Int        @map("match_id")
-  surveyType    SurveyType @map("survey_type")
   createdAt     DateTime   @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt     DateTime   @updatedAt @map("updated_at") @db.Timestamp(6)
+  surveyType    SurveyType @map("survey_type")
   match         Matches    @relation(fields: [matchId], references: [matchId])
 
   @@map("match_surveys")
@@ -468,14 +420,14 @@ model msrs_place {
 }
 
 model Cities {
-  city_id    Int         @id @default(autoincrement())
-  city_value String      @db.VarChar(100)
-  city_label String      @db.VarChar(100)
-  state      String      @db.VarChar(2)
+  city_id    Int      @id @default(autoincrement())
+  city_value String   @db.VarChar(100)
+  city_label String   @db.VarChar(100)
+  state      String   @db.VarChar(2)
   ibge_code  Int
-  created_at DateTime    @db.Timestamptz(6)
-  updated_at DateTime    @db.Timestamptz(6)
-  msrs_msrs  msrs_msrs[]
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  msrs       msrs[]
 
   @@map("cities")
   @@schema("public")
@@ -488,7 +440,7 @@ model VolunteerAvailability {
   max_matches           Int
   is_available          Boolean
   support_type          String     @db.VarChar(20)
-  support_expertise     String     @db.VarChar(100)
+  support_expertise     String     @db.VarChar(200)
   offers_online_support Boolean
   lat                   Decimal?   @db.Decimal(10, 4)
   lng                   Decimal?   @db.Decimal(10, 4)
@@ -523,6 +475,53 @@ model FeatureFlag {
 
   @@map("feature_flag")
   @@schema("match")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model msrs {
+  id                   BigInt   @id(map: "msrs_msrs_pkey") @default(autoincrement())
+  user_zendesk_id      Int?
+  name                 String   @db.VarChar(100)
+  email                String   @db.VarChar(254)
+  cpf                  String   @db.VarChar(11)
+  color                String   @db.VarChar(15)
+  gender               String   @db.VarChar(15)
+  whatsapp             String   @db.VarChar(11)
+  state                String   @db.VarChar(2)
+  city_id              Int
+  neighborhood         String   @db.VarChar(100)
+  latitude             Decimal  @db.Decimal(10, 4)
+  logintude            Decimal  @db.Decimal(10, 4)
+  pcd                  Boolean
+  education            String   @db.VarChar(40)
+  work_situation       String   @db.VarChar(40)
+  income               Decimal  @db.Decimal(10, 2)
+  duration_of_violence String   @db.VarChar(30)
+  author_of_violence   String   @db.VarChar(30)
+  story                String
+  risk_factors         String   @db.VarChar(140)
+  protective_factors   String   @db.VarChar(100)
+  public_service       String   @db.VarChar(100)
+  type_of_support      String   @db.VarChar(20)
+  access               String   @db.VarChar(30)
+  status               String   @db.VarChar(15)
+  support_on_queue     Boolean
+  on_queue             Boolean
+  online               Boolean
+  priority             String   @db.VarChar(15)
+  created_at           DateTime @db.Timestamptz(6)
+  updated_at           DateTime @db.Timestamptz(6)
+  match                Boolean
+  digital_violence     String   @db.VarChar(200)
+  obstetric_violence   String   @db.VarChar(100)
+  physical_violence    String   @db.VarChar(100)
+  property_violence    String   @db.VarChar(100)
+  psych_violence       String   @db.VarChar(100)
+  sexual_violence      String   @db.VarChar(100)
+  cities               Cities   @relation(fields: [city_id], references: [city_id], onDelete: NoAction, onUpdate: NoAction, map: "msrs_msrs_city_id_e49bad88_fk_cities_city_id")
+
+  @@index([city_id], map: "msrs_msrs_city_id_e49bad88")
+  @@schema("public")
 }
 
 enum SupportType {
