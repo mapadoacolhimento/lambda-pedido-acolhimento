@@ -7,7 +7,7 @@ import { object, string, mixed, number, boolean, array } from "yup";
 import { SupportType, SupportRequestsStatus } from "@prisma/client";
 
 import client from "./client";
-import { getErrorMessage, isJsonString } from "./utils";
+import { getErrorMessage, isJsonString, normalizeCity } from "./utils";
 
 const bodySchema = array(
   object({
@@ -64,6 +64,7 @@ const create = async (
         await client.supportRequests.create({
           data: {
             ...supportRequest,
+            city: normalizeCity(supportRequest.city),
             SupportRequestStatusHistory: {
               create: {
                 status: supportRequest.status,
