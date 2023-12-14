@@ -2,7 +2,7 @@ import("isomorphic-fetch");
 
 import { getErrorMessage } from "../utils";
 import {
-  ZENDESK_API_PASSWORD,
+  ZENDESK_API_TOKEN,
   ZENDESK_API_URL,
   ZENDESK_API_USER,
 } from "../constants";
@@ -18,9 +18,9 @@ export default async function createTicket(ticket: Ticket) {
         "Content-Type": "application/json",
         Authorization:
           "Basic " +
-          Buffer.from(`${ZENDESK_API_USER}:${ZENDESK_API_PASSWORD}`).toString(
-            "base64",
-          ),
+          Buffer.from(
+            `${ZENDESK_API_USER}/token:${ZENDESK_API_TOKEN}`,
+          ).toString("base64"),
       },
     });
 
