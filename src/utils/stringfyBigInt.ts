@@ -1,4 +1,4 @@
-export function stringifyBigInt(obj: Record<string, unknown>) {
+export function stringfyBigInt(obj: Record<string, unknown>) {
   return Object.keys(obj).reduce((previousValue, currentKey) => {
     let currentObjValue = obj[currentKey];
 

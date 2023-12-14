@@ -135,13 +135,13 @@ export async function createOnlineMatch(
   return match;
 }
 
-function filterVolunteersWithLatLng(
+export function filterVolunteersWithLatLng(
   volunteers: VolunteerAvailability[]
 ): VolunteerAvailability[] {
   return volunteers.filter((volunteer) => !!volunteer.lat && !!volunteer.lng);
 }
 
-function findClosestVolunteer(
+export function findClosestVolunteer(
   msrLat: number | null,
   msrLng: number | null,
   volunteers: VolunteerAvailability[],
@@ -171,7 +171,10 @@ function findClosestVolunteer(
   );
 }
 
-function calcDistance(pointA: number[], pointB: number[]): number | null {
+export function calcDistance(
+  pointA: number[],
+  pointB: number[]
+): number | null {
   const a: turf.Coord = turf.point(pointA);
 
   const b: turf.Coord = turf.point(pointB);
@@ -179,7 +182,7 @@ function calcDistance(pointA: number[], pointB: number[]): number | null {
   return Number(turf.distance(a, b));
 }
 
-function findVolunteerInTheSameCity(
+export function findVolunteerInTheSameCity(
   msrCity: string,
   msrState: string,
   volunteers: VolunteerAvailability[]
@@ -193,7 +196,7 @@ function findVolunteerInTheSameCity(
   );
 }
 
-function filterVolunteersInTheSameState(
+export function filterVolunteersInTheSameState(
   msrState: string,
   volunteers: VolunteerAvailability[]
 ) {

@@ -14,7 +14,7 @@ import {
   decideOnOnlineMatch,
 } from "./utils";
 import { directToPublicService } from "./utils/match/publicService";
-import { stringifyBigInt } from "./utils/stringfyBigInt";
+import { stringfyBigInt } from "./utils/stringfyBigInt";
 import { createSupportRequestSchema } from "./utils/validations";
 import type { SupportType, VolunteerAvailability } from "@prisma/client";
 
@@ -56,7 +56,7 @@ const process = async (
         statusCode: 200,
         body: JSON.stringify({
           message: `Support request ${supportRequest.supportRequestId} received an Ideal Match`,
-          match: stringifyBigInt(idealMatch),
+          match: stringfyBigInt(idealMatch),
         }),
       });
 
@@ -70,7 +70,7 @@ const process = async (
         statusCode: 200,
         body: JSON.stringify({
           message: `Support request ${supportRequest.supportRequestId} received an Expanded Match`,
-          match: stringifyBigInt(expandedMatch),
+          match: stringfyBigInt(expandedMatch),
         }),
       });
 
@@ -87,7 +87,7 @@ const process = async (
           statusCode: 200,
           body: JSON.stringify({
             message: `Support request ${supportRequest.supportRequestId} received an Online Match`,
-            match: stringifyBigInt(onlineMatch),
+            match: stringfyBigInt(onlineMatch),
           }),
         });
     }
@@ -107,12 +107,14 @@ const process = async (
     if (error["name"] === "ValidationError") {
       return callback(null, {
         statusCode: 400,
-        body: `Validation error: ${getErrorMessage(e)}`,
+        body: JSON.stringify({
+          error: `Validation error: ${getErrorMessage(e)}`,
+        }),
       });
     }
     return callback(null, {
       statusCode: 500,
-      body: getErrorMessage(error),
+      body: JSON.stringify({ error: getErrorMessage(error) }),
     });
   }
 };
