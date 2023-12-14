@@ -74,6 +74,9 @@ jobs:
           JWT_SECRET=${{ secrets.JWT_SECRET }}
           DATABASE_URL=${{ secrets.DATABASE_URL }}
           NODE_ENV=${{ env.STAGE }}
+          ZENDESK_SUBDOMAIN=${{ secrets.ZENDESK_SUBDOMAIN }}
+          ZENDESK_API_USER=${{ secrets.ZENDESK_API_USER }}
+          ZENDESK_API_PASSWORD=${{ secrets.ZENDESK_API_PASSWORD }}
           EOF
 
       - name: Install serverless globally
