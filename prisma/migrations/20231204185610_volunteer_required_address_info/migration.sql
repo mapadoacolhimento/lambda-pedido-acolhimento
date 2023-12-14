@@ -5,7 +5,7 @@ ALTER COLUMN "city" DROP NOT NULL,
 ALTER COLUMN "neighborhood" DROP NOT NULL;
 
 -- CreateTable
-CREATE TABLE "match"."feature_flag" (
+CREATE TABLE IF NOT EXISTS "match"."feature_flag" (
     "id" BIGSERIAL NOT NULL,
     "featureName" TEXT NOT NULL,
     "featureEnabled" BOOLEAN NOT NULL DEFAULT false,
@@ -14,4 +14,4 @@ CREATE TABLE "match"."feature_flag" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "feature_flag_featureName_key" ON "match"."feature_flag"("featureName");
+CREATE UNIQUE INDEX IF NOT EXISTS "feature_flag_featureName_key" ON "match"."feature_flag"("featureName");
