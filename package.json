@@ -30,7 +30,6 @@
     "@babel/core": "^7.23.3",
     "@babel/preset-env": "^7.23.3",
     "@babel/preset-typescript": "^7.23.3",
-    "@jest/globals": "^29.7.0",
     "@tsconfig/node-lts-strictest": "^18.12.1",
     "@types/aws-lambda": "^8.10.126",
     "@types/dotenv-safe": "^8.1.5",
