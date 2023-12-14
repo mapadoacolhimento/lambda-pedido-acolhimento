@@ -4,3 +4,4 @@ export { default as getErrorMessage } from "./getErrorMessage";
 export { default as isJsonString } from "./isJsonString";
 export * from "./match/createMatch";
 export * from "./match/matchLogic";
+export { default as normalizeCity } from "./normalizeCity";

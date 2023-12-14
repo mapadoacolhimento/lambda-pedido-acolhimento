@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import type { APIGatewayProxyEvent, Context } from "aws-lambda";
 import type { Decimal } from "@prisma/client/runtime/library";
 import create from "../create";
@@ -87,7 +88,7 @@ describe("/create endpoint", () => {
       acceptsOnlineSupport: true,
       lat: -11.23 as unknown as Decimal,
       lng: 23.32 as unknown as Decimal,
-      city: "SÃO PAULO",
+      city: "São Paulo",
       state: "SP",
       status: "open",
     };
@@ -147,6 +148,29 @@ describe("/create endpoint", () => {
       body: JSON.stringify({
         message: expectedRes,
       }),
+    });
+    expect(prismaMock.supportRequests.create).toHaveBeenCalledTimes(2);
+    expect(prismaMock.supportRequests.create).toHaveBeenNthCalledWith(1, {
+      data: {
+        ...psySupportRequest,
+        city: "SAO PAULO",
+        SupportRequestStatusHistory: {
+          create: {
+            status: "open",
+          },
+        },
+      },
+    });
+    expect(prismaMock.supportRequests.create).toHaveBeenNthCalledWith(2, {
+      data: {
+        ...legalSupportRequest,
+        city: "SAO PAULO",
+        SupportRequestStatusHistory: {
+          create: {
+            status: "duplicated",
+          },
+        },
+      },
     });
   });
 });

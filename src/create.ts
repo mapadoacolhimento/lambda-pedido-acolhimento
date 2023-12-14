@@ -6,8 +6,9 @@ import type {
 import { object, array } from "yup";
 
 import client from "./client";
-import { getErrorMessage, isJsonString } from "./utils";
+import { getErrorMessage, isJsonString, normalizeCity } from "./utils";
 import { createSupportRequestSchema } from "./utils/validations";
+
 
 const bodySchema = array(object(createSupportRequestSchema).required())
   .required()
@@ -44,6 +45,7 @@ const create = async (
         await client.supportRequests.create({
           data: {
             ...supportRequest,
+            city: normalizeCity(supportRequest.city),
             SupportRequestStatusHistory: {
               create: {
                 status: supportRequest.status,
