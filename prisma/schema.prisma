@@ -63,7 +63,6 @@ model auth_user {
   date_joined                DateTime                     @db.Timestamptz(6)
   auth_user_groups           auth_user_groups[]
   auth_user_user_permissions auth_user_user_permissions[]
-  core_formdata              core_formdata?
   django_admin_log           django_admin_log[]
   volunteers_formdata        volunteers_formdata?
 
@@ -96,39 +95,6 @@ model auth_user_user_permissions {
   @@unique([user_id, permission_id], map: "auth_user_user_permissions_user_id_permission_id_14a6b632_uniq")
   @@index([permission_id], map: "auth_user_user_permissions_permission_id_1fbb5f2c")
   @@index([user_id], map: "auth_user_user_permissions_user_id_a95ead1b")
-  @@schema("public")
-}
-
-/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
-model core_formdata {
-  id                   BigInt                 @id @default(autoincrement())
-  type_form            String                 @db.VarChar(10)
-  step                 Int
-  values               Json
-  user_id              Int                    @unique
-  created_at           DateTime               @db.Timestamptz(6)
-  total_steps          Int
-  updated_at           DateTime               @db.Timestamptz(6)
-  auth_user            auth_user              @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "core_formdata_user_id_3a7f140c_fk_auth_user_id")
-  core_integrationlogs core_integrationlogs[]
-
-  @@schema("public")
-}
-
-/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
-model core_integrationlogs {
-  id            BigInt        @id @default(autoincrement())
-  type          String        @db.VarChar(30)
-  created_at    DateTime      @db.Timestamptz(6)
-  status        String        @db.VarChar(30)
-  error         String        @db.VarChar(200)
-  data          Json
-  form_data_id  BigInt
-  external_data Json
-  integration   String        @db.VarChar(15)
-  core_formdata core_formdata @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "core_integrationlogs_form_data_id_3bdb0c69_fk_core_formdata_id")
-
-  @@index([form_data_id], map: "core_integrationlogs_form_data_id_3bdb0c69")
   @@schema("public")
 }
 
@@ -202,72 +168,6 @@ model msrs_formdata {
   values     Json
   created_at DateTime @db.Timestamptz(6)
   updated_at DateTime @db.Timestamptz(6)
-
-  @@schema("public")
-}
-
-model solidarity_users {
-  id                                    Int       @id @default(autoincrement())
-  user_id                               BigInt    @unique
-  url                                   String?
-  name                                  String?
-  email                                 String?
-  created_at                            DateTime? @db.Timestamp(6)
-  updated_at                            DateTime? @db.Timestamp(6)
-  time_zone                             String?
-  iana_time_zone                        String?
-  phone                                 String?
-  shared_phone_number                   Boolean?
-  photo                                 Json?
-  locale_id                             BigInt?
-  locale                                String?
-  organization_id                       BigInt?
-  role                                  String?
-  verified                              Boolean?
-  external_id                           BigInt?
-  tags                                  Json?
-  alias                                 String?
-  active                                Boolean?
-  shared                                Boolean?
-  shared_agent                          Boolean?
-  last_login_at                         DateTime? @db.Timestamp(6)
-  two_factor_auth_enabled               Boolean?
-  signature                             String?
-  details                               String?
-  notes                                 String?
-  role_type                             BigInt?
-  custom_role_id                        BigInt?
-  moderator                             Boolean?
-  ticket_restriction                    String?
-  only_private_comments                 Boolean?
-  restricted_agent                      Boolean?
-  suspended                             Boolean?
-  chat_only                             Boolean?
-  default_group_id                      BigInt?
-  report_csv                            Boolean?
-  user_fields                           Json?
-  address                               String?
-  atendimentos_concludos_calculado_     BigInt?
-  atendimentos_concluidos               BigInt?
-  atendimentos_em_andamento             BigInt?
-  atendimentos_em_andamento_calculado_  BigInt?
-  cep                                   String?
-  city                                  String?
-  condition                             String?
-  cor                                   String?
-  data_de_inscricao_no_bonde            DateTime? @db.Timestamp(6)
-  disponibilidade_de_atendimentos       String?
-  encaminhamentos                       BigInt?
-  encaminhamentos_realizados_calculado_ BigInt?
-  latitude                              String?
-  longitude                             String?
-  occupation_area                       String?
-  registration_number                   String?
-  state                                 String?
-  tipo_de_acolhimento                   String?
-  ultima_atualizacao_de_dados           DateTime? @db.Timestamp(6)
-  whatsapp                              String?
-  permanently_deleted                   Boolean?
 
   @@schema("public")
 }
@@ -411,14 +311,6 @@ model MatchSurveys {
   @@schema("match")
 }
 
-model msrs_place {
-  id    BigInt  @id @default(autoincrement())
-  city  String  @db.VarChar(100)
-  state String? @db.VarChar(2)
-
-  @@schema("public")
-}
-
 model Cities {
   city_id    Int      @id @default(autoincrement())
   city_value String   @db.VarChar(100)
@@ -440,7 +332,7 @@ model VolunteerAvailability {
   max_matches           Int
   is_available          Boolean
   support_type          String     @db.VarChar(20)
-  support_expertise     String     @db.VarChar(200)
+  support_expertise     String     @db.VarChar(100)
   offers_online_support Boolean
   lat                   Decimal?   @db.Decimal(10, 4)
   lng                   Decimal?   @db.Decimal(10, 4)
