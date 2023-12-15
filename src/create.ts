@@ -6,7 +6,7 @@ import type {
 import { object, string, mixed, number, boolean, array } from "yup";
 import { SupportType, SupportRequestsStatus } from "@prisma/client";
 
-import client from "./client";
+import prismaClient from "./prismaClient";
 import { getErrorMessage, isJsonString, normalizeCity } from "./utils";
 
 const bodySchema = array(
@@ -61,7 +61,7 @@ const create = async (
 
     const supportRequestPromises = validatedBody.map(
       async (supportRequest) =>
-        await client.supportRequests.create({
+        await prismaClient.supportRequests.create({
           data: {
             ...supportRequest,
             city: normalizeCity(supportRequest.city),
