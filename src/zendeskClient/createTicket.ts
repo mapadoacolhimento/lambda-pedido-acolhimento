@@ -32,7 +32,7 @@ export default async function createTicket(ticket: Ticket) {
     return data;
   } catch (e) {
     console.log(
-      `Something when wrong when creating a ticket for this user '${
+      `Something went wrong when creating a ticket for this user '${
         ticket.requester_id
       }': ${getErrorMessage(e)}`,
     );

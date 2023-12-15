@@ -10,7 +10,7 @@ import type { CreatedTicket } from "../types";
 
 export default async function updateTicket(ticket: CreatedTicket) {
   try {
-    const endpoint = ZENDESK_API_URL + "/tickets" + ticket.id + ".json";
+    const endpoint = ZENDESK_API_URL + "/tickets/" + ticket.id + ".json";
     const response = await fetch(endpoint, {
       body: JSON.stringify(ticket),
       method: "PUT",
@@ -32,7 +32,7 @@ export default async function updateTicket(ticket: CreatedTicket) {
     return data;
   } catch (e) {
     console.log(
-      `Something when wrong when updating this ticket '${
+      `Something went wrong when updating this ticket '${
         ticket.id
       }': ${getErrorMessage(e)}`,
     );
