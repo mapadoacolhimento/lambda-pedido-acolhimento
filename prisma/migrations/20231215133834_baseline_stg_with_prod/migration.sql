@@ -14,9 +14,6 @@ ALTER TABLE "public"."core_formdata" DROP CONSTRAINT "core_formdata_user_id_3a7f
 -- DropForeignKey
 ALTER TABLE "public"."core_integrationlogs" DROP CONSTRAINT "core_integrationlogs_form_data_id_3bdb0c69_fk_core_formdata_id";
 
--- AlterTable
-ALTER TABLE "public"."volunteer_availability" ALTER COLUMN "support_expertise" SET DATA TYPE VARCHAR(100);
-
 -- DropTable
 DROP TABLE "public"."core_formdata";
 
