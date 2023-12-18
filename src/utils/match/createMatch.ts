@@ -1,18 +1,13 @@
 import type {
   MatchStage,
   MatchType,
-  SupportType,
   VolunteerAvailability,
 } from "@prisma/client";
 import client from "../../client";
+import type { SupportRequest } from "../../types/supportRequest";
 
 export async function createMatch(
-  supportRequest: {
-    supportRequestId: number;
-    msrId: number;
-    zendeskTicketId: number;
-    supportType: SupportType;
-  },
+  supportRequest: SupportRequest,
   volunteer: VolunteerAvailability,
   matchType: MatchType,
   matchStage: MatchStage

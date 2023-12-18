@@ -525,6 +525,8 @@ describe("createIdealMatch()", () => {
       supportType: "psychological" as const,
       lat: -23.556080048271628,
       lng: -46.679234876547184,
+      city: "SAO PAULO",
+      state: "SP",
     };
 
     const volunteerAvailability: VolunteerAvailability[] = [
@@ -562,6 +564,8 @@ describe("createIdealMatch()", () => {
       supportType: "psychological" as const,
       lat: -23.55603087428766,
       lng: -46.67928852072954,
+      city: "SAO PAULO",
+      state: "SP",
     };
 
     const volunteerAvailability: VolunteerAvailability[] = [
@@ -616,6 +620,8 @@ describe("createExpandedMatch()", () => {
       msrId: 1,
       zendeskTicketId: 1,
       supportType: "psychological" as const,
+      lat: null,
+      lng: null,
       city: "SAO PAULO",
       state: "SP",
     };
@@ -655,6 +661,8 @@ describe("createExpandedMatch()", () => {
       supportType: "psychological" as const,
       city: "SAO PAULO",
       state: "SP",
+      lat: null,
+      lng: null,
     };
 
     const volunteerAvailability: VolunteerAvailability[] = [

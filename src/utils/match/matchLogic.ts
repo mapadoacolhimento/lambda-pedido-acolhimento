@@ -1,22 +1,15 @@
 import {
   MatchStage,
   MatchType,
-  type SupportType,
   type VolunteerAvailability,
 } from "@prisma/client";
 import * as turf from "@turf/turf";
 import { createMatch } from "./createMatch";
 import { IDEAL_MATCH_MAX_DISTANCE } from "../constants";
+import type { SupportRequest } from "../../types/supportRequest";
 
 export async function createIdealMatch(
-  supportRequest: {
-    supportRequestId: number;
-    msrId: number;
-    zendeskTicketId: number;
-    supportType: SupportType;
-    lat: number | null;
-    lng: number | null;
-  },
+  supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[]
 ) {
   const closestVolunteer = findClosestVolunteer(
@@ -39,14 +32,7 @@ export async function createIdealMatch(
 }
 
 export async function createExpandedMatch(
-  supportRequest: {
-    supportRequestId: number;
-    msrId: number;
-    zendeskTicketId: number;
-    supportType: SupportType;
-    city: string;
-    state: string;
-  },
+  supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[]
 ) {
   const volunteerInTheSameCity = findVolunteerInTheSameCity(
@@ -68,16 +54,7 @@ export async function createExpandedMatch(
 }
 
 export async function createOnlineMatch(
-  supportRequest: {
-    supportRequestId: number;
-    msrId: number;
-    zendeskTicketId: number;
-    supportType: SupportType;
-    lat: number | null;
-    lng: number | null;
-    city: string;
-    state: string;
-  },
+  supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[]
 ) {
   if (allVolunteers.length === 0 || !allVolunteers[0]) return null;
