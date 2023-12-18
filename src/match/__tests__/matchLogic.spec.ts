@@ -7,10 +7,10 @@ import {
   createIdealMatch,
   createExpandedMatch,
   createOnlineMatch,
-} from "../../match/matchLogic";
+} from "../matchLogic";
 import type { Decimal } from "@prisma/client/runtime/library";
 import type { VolunteerAvailability } from "@prisma/client";
-import { prismaMock } from "../../../setupTests";
+import { prismaMock } from "../../setupTests";
 
 describe("filterVolunteersWithLatLng()", () => {
   it("should filter only the volunteers with not null lat lng", () => {

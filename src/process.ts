@@ -9,14 +9,16 @@ import type { SupportType, VolunteerAvailability } from "@prisma/client";
 import {
   getErrorMessage,
   isJsonString,
-  createIdealMatch,
-  createExpandedMatch,
-  createOnlineMatch,
-  decideOnOnlineMatch,
   createSupportRequestSchema,
-  directToPublicService,
   stringfyBigInt,
 } from "./utils";
+import {
+  createExpandedMatch,
+  createIdealMatch,
+  createOnlineMatch,
+  decideOnOnlineMatch,
+} from "./match/matchLogic";
+import { directToPublicService } from "./match/publicService";
 
 const bodySchema = object({
   supportRequestId: number().required(),

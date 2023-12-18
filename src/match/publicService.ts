@@ -1,4 +1,4 @@
-import client from "../../client";
+import client from "../client";
 
 export async function directToPublicService(supportRequestId: number) {
   const updateSupportRequest = await client.supportRequests.update({
