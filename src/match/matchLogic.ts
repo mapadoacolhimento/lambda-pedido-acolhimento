@@ -156,7 +156,9 @@ export function calcDistance(
 
   const b: turf.Coord = turf.point(pointB);
 
-  return Number(turf.distance(a, b));
+  const distance = turf.distance(a, b);
+
+  return distance ? Number(distance) : null;
 }
 
 export function findVolunteerInTheSameCity(
