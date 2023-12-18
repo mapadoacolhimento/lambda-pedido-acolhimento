@@ -123,7 +123,7 @@ export function findClosestVolunteer(
   msrLng: number | null,
   volunteers: VolunteerAvailability[],
   maxDistance: number | null
-) {
+): VolunteerAvailability | null {
   if (!msrLat || !msrLng) return null;
 
   const volunteersWithLatLng = filterVolunteersWithLatLng(volunteers);
@@ -141,7 +141,7 @@ export function findClosestVolunteer(
     })
     .sort((a, b) => Number(a.distance) - Number(b.distance));
 
-  if (!maxDistance) return closestVolunteers[0];
+  if (!maxDistance) return closestVolunteers[0] || null;
 
   const closestVolunteer = closestVolunteers.find(
     (volunteer) => volunteer.distance && volunteer.distance <= maxDistance
