@@ -166,14 +166,13 @@ export function findVolunteerInTheSameCity(
   msrCity: string,
   msrState: string,
   volunteers: VolunteerAvailability[]
-) {
+): VolunteerAvailability | null {
   if (msrCity === "not_found" || msrState === "not_found") return null;
 
-  return (
-    volunteers.find(
-      (volunteer) => volunteer.city === msrCity && volunteer.state === msrState
-    ) || null
+  const volunteerInTheSameCity = volunteers.find(
+    (volunteer) => volunteer.city === msrCity && volunteer.state === msrState
   );
+  return volunteerInTheSameCity || null;
 }
 
 export function filterVolunteersInTheSameState(
