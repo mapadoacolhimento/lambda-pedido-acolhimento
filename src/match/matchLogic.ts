@@ -143,9 +143,10 @@ export function findClosestVolunteer(
 
   if (!maxDistance) return closestVolunteers[0];
 
-  return closestVolunteers.find(
+  const closestVolunteer = closestVolunteers.find(
     (volunteer) => volunteer.distance && volunteer.distance <= maxDistance
   );
+  return closestVolunteer || null;
 }
 
 export function calcDistance(
