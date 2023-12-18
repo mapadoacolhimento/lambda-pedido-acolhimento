@@ -33,7 +33,7 @@ export async function createMatch(
     },
   });
 
-  const updateSupportRequest = await client.supportRequests.update({
+  await client.supportRequests.update({
     where: {
       supportRequestId: supportRequest.supportRequestId,
     },
@@ -50,17 +50,15 @@ export async function createMatch(
   const isVolunteerAvailable =
     volunteer.current_matches + 1 < volunteer.max_matches ? true : false;
 
-  const updateVolunteerAvailability = await client.volunteerAvailability.update(
-    {
-      where: {
-        volunteer_id: volunteer.volunteer_id,
-      },
-      data: {
-        current_matches: volunteer.current_matches + 1,
-        is_available: isVolunteerAvailable,
-      },
-    }
-  );
+  await client.volunteerAvailability.update({
+    where: {
+      volunteer_id: volunteer.volunteer_id,
+    },
+    data: {
+      current_matches: volunteer.current_matches + 1,
+      is_available: isVolunteerAvailable,
+    },
+  });
 
   if (!isVolunteerAvailable) {
     await client.volunteers.update({
@@ -81,7 +79,7 @@ export async function createMatch(
     });
   }
 
-  return { match, updateSupportRequest, updateVolunteerAvailability };
+  return match;
 }
 
 function createVolunteerZendeskTicket() {
