@@ -4,8 +4,7 @@ import type {
   APIGatewayProxyCallback,
 } from "aws-lambda";
 import { object, array } from "yup";
-
-import client from "./client";
+import prismaClient from "./prismaClient";
 import {
   getErrorMessage,
   isJsonString,
@@ -45,7 +44,7 @@ const create = async (
 
     const supportRequestPromises = validatedBody.map(
       async (supportRequest) =>
-        await client.supportRequests.create({
+        await prismaClient.supportRequests.create({
           data: {
             ...supportRequest,
             city: normalizeCity(supportRequest.city),

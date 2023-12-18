@@ -1,4 +1,4 @@
-import client from "./client";
+import prismaClient from "./prismaClient";
 import { getErrorMessage } from "./utils";
 import type {
   APIGatewayEvent,
@@ -9,7 +9,7 @@ import type {
 const featureFlag = async (
   event: APIGatewayEvent,
   _context: Context,
-  callback: APIGatewayProxyCallback,
+  callback: APIGatewayProxyCallback
 ) => {
   try {
     const { queryStringParameters } = event;
@@ -24,7 +24,7 @@ const featureFlag = async (
       });
     }
 
-    const isFeatureFlagEnabled = await client.featureFlag.findUnique({
+    const isFeatureFlagEnabled = await prismaClient.featureFlag.findUnique({
       where: {
         feature_name: featureFlagName,
       },

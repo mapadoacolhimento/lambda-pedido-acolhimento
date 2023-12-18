@@ -3,7 +3,7 @@ import type {
   MatchType,
   VolunteerAvailability,
 } from "@prisma/client";
-import client from "../client";
+import client from "../prismaClient";
 import type { SupportRequest } from "../types/supportRequest";
 
 export async function createMatch(

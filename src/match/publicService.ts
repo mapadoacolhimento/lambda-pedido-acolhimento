@@ -1,4 +1,4 @@
-import client from "../client";
+import client from "../prismaClient";
 
 export async function directToPublicService(supportRequestId: number) {
   const updateSupportRequest = await client.supportRequests.update({

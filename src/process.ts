@@ -4,7 +4,7 @@ import type {
   APIGatewayProxyCallback,
 } from "aws-lambda";
 import { object, number } from "yup";
-import client from "./client";
+import client from "./prismaClient";
 import type { SupportType, VolunteerAvailability } from "@prisma/client";
 import {
   getErrorMessage,

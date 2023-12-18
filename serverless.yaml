@@ -36,6 +36,9 @@ provider:
   environment:
     JWT_SECRET: ${env:JWT_SECRET}
     DATABASE_URL: ${env:DATABASE_URL}
+    ZENDESK_SUBDOMAIN: ${env:ZENDESK_SUBDOMAIN}
+    ZENDESK_API_USER: ${env:ZENDESK_API_USER}
+    ZENDESK_API_TOKEN: ${env:ZENDESK_API_TOKEN}
 
 functions:
   auth:
