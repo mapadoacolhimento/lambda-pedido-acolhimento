@@ -47,8 +47,10 @@ export async function createMatch(
     },
   });
 
-  const isVolunteerAvailable =
-    volunteer.current_matches + 1 < volunteer.max_matches ? true : false;
+  const isVolunteerAvailable = checkVolunteerAvailability(
+    volunteer.current_matches,
+    volunteer.max_matches
+  );
 
   await client.volunteerAvailability.update({
     where: {
@@ -80,6 +82,14 @@ export async function createMatch(
   }
 
   return match;
+}
+
+export function checkVolunteerAvailability(
+  currentMatches: number,
+  maxMatches: number
+) {
+  const isVolunteerAvailable = currentMatches + 1 < maxMatches ? true : false;
+  return isVolunteerAvailable;
 }
 
 function createVolunteerZendeskTicket() {
