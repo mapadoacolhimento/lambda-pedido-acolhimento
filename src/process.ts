@@ -55,8 +55,7 @@ const process = async (
       return callback(null, {
         statusCode: 200,
         body: JSON.stringify({
-          message: `Support request ${supportRequest.supportRequestId} received an Ideal Match`,
-          match: stringfyBigInt(idealMatch),
+          message: stringfyBigInt(idealMatch),
         }),
       });
 
@@ -69,8 +68,7 @@ const process = async (
       return callback(null, {
         statusCode: 200,
         body: JSON.stringify({
-          message: `Support request ${supportRequest.supportRequestId} received an Expanded Match`,
-          match: stringfyBigInt(expandedMatch),
+          message: stringfyBigInt(expandedMatch),
         }),
       });
 
@@ -86,8 +84,7 @@ const process = async (
         return callback(null, {
           statusCode: 200,
           body: JSON.stringify({
-            message: `Support request ${supportRequest.supportRequestId} received an Online Match`,
-            match: stringfyBigInt(onlineMatch),
+            message: stringfyBigInt(onlineMatch),
           }),
         });
     }
@@ -99,7 +96,7 @@ const process = async (
     return callback(null, {
       statusCode: 200,
       body: JSON.stringify({
-        message: `Support request ${publicService.supportRequestId} directed to Public Service`,
+        message: stringfyBigInt(publicService),
       }),
     });
   } catch (e) {

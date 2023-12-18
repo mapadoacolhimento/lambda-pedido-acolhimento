@@ -2,6 +2,7 @@ import type { APIGatewayProxyEvent, Context } from "aws-lambda";
 import process from "../process";
 import type { Decimal } from "@prisma/client/runtime/library";
 import { prismaMock } from "../setupTests";
+import { stringfyBigInt } from "../utils";
 
 describe("/process endpoint", () => {
   it("should return an error res when no body is provided to the req", async () => {
@@ -118,7 +119,7 @@ describe("/process endpoint", () => {
     expect(callback).toHaveBeenCalledWith(null, {
       statusCode: 200,
       body: JSON.stringify({
-        message: `Support request 1 directed to Public Service`,
+        message: stringfyBigInt(supportRequest),
       }),
     });
   });
@@ -199,13 +200,7 @@ describe("/process endpoint", () => {
     expect(callback).toHaveBeenCalledWith(null, {
       statusCode: 200,
       body: JSON.stringify({
-        message: `Support request 1 received an Ideal Match`,
-        match: {
-          ...match,
-          msrId: match.msrId.toString(),
-          msrZendeskTicketId: match.msrZendeskTicketId.toString(),
-          volunteerZendeskTicketId: match.volunteerZendeskTicketId.toString(),
-        },
+        message: stringfyBigInt(match),
       }),
     });
   });
@@ -286,13 +281,7 @@ describe("/process endpoint", () => {
     expect(callback).toHaveBeenCalledWith(null, {
       statusCode: 200,
       body: JSON.stringify({
-        message: `Support request 1 received an Expanded Match`,
-        match: {
-          ...match,
-          msrId: match.msrId.toString(),
-          msrZendeskTicketId: match.msrZendeskTicketId.toString(),
-          volunteerZendeskTicketId: match.volunteerZendeskTicketId.toString(),
-        },
+        message: stringfyBigInt(match),
       }),
     });
   });
