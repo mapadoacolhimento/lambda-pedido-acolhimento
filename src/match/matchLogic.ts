@@ -57,7 +57,7 @@ export async function createOnlineMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[]
 ) {
-  if (allVolunteers.length === 0 || !allVolunteers[0]) return null;
+  if (allVolunteers.length === 0) return null;
 
   const volunteersInTheSameState = filterVolunteersInTheSameState(
     supportRequest.state,
@@ -104,7 +104,7 @@ export async function createOnlineMatch(
 
   const match = await createMatch(
     supportRequest,
-    allVolunteers[0],
+    allVolunteers[0] as VolunteerAvailability,
     MatchType.msr,
     MatchStage.online
   );
