@@ -131,7 +131,7 @@ export function findClosestVolunteer(
 
   const closestVolunteers = volunteersWithLatLng
     .map((volunteer) => {
-      const pointA = [msrLng, msrLat];
+      const pointA = [Number(msrLng), Number(msrLat)];
       const pointB = [Number(volunteer.lng), Number(volunteer.lat)];
       const distance = calcDistance(pointA, pointB);
       return {
