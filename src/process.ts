@@ -5,6 +5,7 @@ import type {
 } from "aws-lambda";
 import { object, number } from "yup";
 import client from "./client";
+import type { SupportType, VolunteerAvailability } from "@prisma/client";
 import {
   getErrorMessage,
   isJsonString,
@@ -12,11 +13,10 @@ import {
   createExpandedMatch,
   createOnlineMatch,
   decideOnOnlineMatch,
+  createSupportRequestSchema,
+  directToPublicService,
+  stringfyBigInt,
 } from "./utils";
-import { directToPublicService } from "./utils/match/publicService";
-import { stringfyBigInt } from "./utils/stringfyBigInt";
-import { createSupportRequestSchema } from "./utils/validations";
-import type { SupportType, VolunteerAvailability } from "@prisma/client";
 
 const bodySchema = object({
   supportRequestId: number().required(),

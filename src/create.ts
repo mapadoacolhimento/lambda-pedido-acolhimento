@@ -6,9 +6,12 @@ import type {
 import { object, array } from "yup";
 
 import client from "./client";
-import { getErrorMessage, isJsonString, normalizeCity } from "./utils";
-import { createSupportRequestSchema } from "./utils/validations";
-
+import {
+  getErrorMessage,
+  isJsonString,
+  normalizeCity,
+  createSupportRequestSchema,
+} from "./utils";
 
 const bodySchema = array(object(createSupportRequestSchema).required())
   .required()
