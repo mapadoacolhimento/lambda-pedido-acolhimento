@@ -252,7 +252,7 @@ describe("findClosestVolunteer()", () => {
 });
 
 describe("findVolunteerInTheSameCity()", () => {
-  it("return null if msr city and state are not_found", () => {
+  it("should return null if msr city and state are not_found", () => {
     const msrCity = "not_found";
     const msrState = "not_found";
     const volunteerAvailability: VolunteerAvailability[] = [
@@ -283,7 +283,7 @@ describe("findVolunteerInTheSameCity()", () => {
     expect(volunteerInTheSameCity).toStrictEqual(null);
   });
 
-  it("return null if there are no volunteers in the same city as the msr", () => {
+  it("should return null if there are no volunteers in the same city as the msr", () => {
     const msrCity = "UBATUBA";
     const msrState = "SP";
     const volunteerAvailability: VolunteerAvailability[] = [
@@ -314,7 +314,7 @@ describe("findVolunteerInTheSameCity()", () => {
     expect(volunteerInTheSameCity).toStrictEqual(null);
   });
 
-  it("return a volunteer that is in the same city as the msr", () => {
+  it("should return a volunteer that is in the same city as the msr", () => {
     const msrCity = "SAO PAULO";
     const msrState = "SP";
     const volunteerAvailability: VolunteerAvailability[] = [
@@ -363,7 +363,7 @@ describe("findVolunteerInTheSameCity()", () => {
 });
 
 describe("filterVolunteersInTheSameState()", () => {
-  it("return an empty array if msr state is not_found", () => {
+  it("should return an empty array if msr state is not_found", () => {
     const msrState = "not_found";
     const volunteerAvailability: VolunteerAvailability[] = [
       {
@@ -392,7 +392,7 @@ describe("filterVolunteersInTheSameState()", () => {
     expect(volunteerInTheSameState).toStrictEqual([]);
   });
 
-  it("return an empty array if there are no volunteers in the same state as the msr", () => {
+  it("should return an empty array if there are no volunteers in the same state as the msr", () => {
     const msrState = "SP";
     const volunteerAvailability: VolunteerAvailability[] = [
       {
@@ -421,7 +421,7 @@ describe("filterVolunteersInTheSameState()", () => {
     expect(volunteerInTheSameState).toStrictEqual([]);
   });
 
-  it("return a list of volunteers that are in the same state as the msr", () => {
+  it("should return a list of volunteers that are in the same state as the msr", () => {
     const msrState = "SP";
     const volunteerAvailability: VolunteerAvailability[] = [
       {
@@ -517,7 +517,7 @@ describe("filterVolunteersInTheSameState()", () => {
 });
 
 describe("createIdealMatch()", () => {
-  it("return null if there are no volunteers within 20km", async () => {
+  it("should return null if there are no volunteers within 20km", async () => {
     const supportRequest = {
       supportRequestId: 1,
       msrId: 1,
@@ -556,7 +556,7 @@ describe("createIdealMatch()", () => {
     expect(idealMatch).toStrictEqual(null);
   });
 
-  it("return an ideal match if there is a volunteer within 20km", async () => {
+  it("should return an ideal match if there is a volunteer within 20km", async () => {
     const supportRequest = {
       supportRequestId: 1,
       msrId: 1,
@@ -614,7 +614,7 @@ describe("createIdealMatch()", () => {
 });
 
 describe("createExpandedMatch()", () => {
-  it("return null if there are no volunteers in the same city", async () => {
+  it("should return null if there are no volunteers in the same city", async () => {
     const supportRequest = {
       supportRequestId: 1,
       msrId: 1,
@@ -653,7 +653,7 @@ describe("createExpandedMatch()", () => {
     expect(expandedMatch).toStrictEqual(null);
   });
 
-  it("return an expanded match if there is a volunteer in the same city", async () => {
+  it("should return an expanded match if there is a volunteer in the same city", async () => {
     const supportRequest = {
       supportRequestId: 1,
       msrId: 1,
@@ -711,7 +711,7 @@ describe("createExpandedMatch()", () => {
 });
 
 describe("createOnlineMatch()", () => {
-  it("return null if there are no volunteers available", async () => {
+  it("should return null if there are no volunteers available", async () => {
     const supportRequest = {
       supportRequestId: 1,
       msrId: 1,
@@ -733,7 +733,7 @@ describe("createOnlineMatch()", () => {
     expect(onlineMatch).toStrictEqual(null);
   });
 
-  it("return an online match in the are volunteers available", async () => {
+  it("should return an online match in the are volunteers available", async () => {
     const supportRequest = {
       supportRequestId: 1,
       msrId: 1,
