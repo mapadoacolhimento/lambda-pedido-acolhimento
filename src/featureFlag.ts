@@ -9,7 +9,7 @@ import type {
 const featureFlag = async (
   event: APIGatewayEvent,
   _context: Context,
-  callback: APIGatewayProxyCallback,
+  callback: APIGatewayProxyCallback
 ) => {
   try {
     const { queryStringParameters } = event;

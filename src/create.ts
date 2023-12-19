@@ -3,33 +3,16 @@ import type {
   Context,
   APIGatewayProxyCallback,
 } from "aws-lambda";
-import { object, string, mixed, number, boolean, array } from "yup";
-import { SupportType, SupportRequestsStatus } from "@prisma/client";
-
+import { object, array } from "yup";
 import prismaClient from "./prismaClient";
-import { getErrorMessage, isJsonString, normalizeCity } from "./utils";
+import {
+  getErrorMessage,
+  isJsonString,
+  normalizeCity,
+  createSupportRequestSchema,
+} from "./utils";
 
-const bodySchema = array(
-  object({
-    msrId: number().required(),
-    zendeskTicketId: number().required(),
-    supportType: mixed<SupportType>()
-      .oneOf(Object.values(SupportType))
-      .required(),
-    status: mixed<SupportRequestsStatus>()
-      .oneOf(Object.values(SupportRequestsStatus))
-      .required(),
-    supportExpertise: string().nullable().defined(),
-    priority: number().nullable().defined(),
-    hasDisability: boolean().nullable().defined(),
-    requiresLibras: boolean().nullable().defined(),
-    acceptsOnlineSupport: boolean().required(),
-    lat: number().nullable().defined(),
-    lng: number().nullable().defined(),
-    city: string().required(),
-    state: string().required(),
-  }).required(),
-)
+const bodySchema = array(object(createSupportRequestSchema).required())
   .required()
   .min(1)
   .strict();
@@ -37,7 +20,7 @@ const bodySchema = array(
 const create = async (
   event: APIGatewayEvent,
   _context: Context,
-  callback: APIGatewayProxyCallback,
+  callback: APIGatewayProxyCallback
 ) => {
   try {
     // console.log(`Event: ${JSON.stringify(event, null, 2)}`);
@@ -71,7 +54,7 @@ const create = async (
               },
             },
           },
-        }),
+        })
     );
 
     const supportRequests = await Promise.all(supportRequestPromises);

@@ -19,7 +19,7 @@ export default async function createTicket(ticket: Ticket) {
         Authorization:
           "Basic " +
           Buffer.from(
-            `${ZENDESK_API_USER}/token:${ZENDESK_API_TOKEN}`,
+            `${ZENDESK_API_USER}/token:${ZENDESK_API_TOKEN}`
           ).toString("base64"),
       },
     });
@@ -34,7 +34,7 @@ export default async function createTicket(ticket: Ticket) {
     console.log(
       `Something went wrong when creating a ticket for this user '${
         ticket.requester_id
-      }': ${getErrorMessage(e)}`,
+      }': ${getErrorMessage(e)}`
     );
     return null;
   }
