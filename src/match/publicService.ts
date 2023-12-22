@@ -2,27 +2,29 @@ import type { SupportRequests } from "@prisma/client";
 import client from "../prismaClient";
 import { getAgent, getCurrentDate } from "../utils";
 import { updateTicket } from "../zendeskClient";
+import { ZENDESK_CUSTOM_FIELDS_DICIO } from "../constants";
 
 async function updateMsrZendeskTicketWithPublicService(
   zendeskTicketId: SupportRequests["zendeskTicketId"],
   msrState: SupportRequests["state"]
 ) {
   const agent = getAgent();
+
   const ticket = {
     id: zendeskTicketId,
     status: "pending",
     assignee_id: agent,
     custom_fields: [
       {
-        id: 360021879791,
+        id: ZENDESK_CUSTOM_FIELDS_DICIO["estado"],
         value: msrState,
       },
       {
-        id: 360014379412,
+        id: ZENDESK_CUSTOM_FIELDS_DICIO["status_acolhimento"],
         value: "encaminhamento__realizado_para_serviço_público",
       },
       {
-        id: 360017432652,
+        id: ZENDESK_CUSTOM_FIELDS_DICIO["data_encaminhamento"],
         value: String(getCurrentDate()),
       },
     ],
@@ -32,7 +34,9 @@ async function updateMsrZendeskTicketWithPublicService(
       public: false,
     },
   };
+
   const zendeskTicket = await updateTicket(ticket);
+
   return zendeskTicket ? zendeskTicket.id : null;
 }
 
