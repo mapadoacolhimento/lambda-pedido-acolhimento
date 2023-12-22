@@ -1,20 +1,20 @@
 import {
   MatchStage,
   MatchType,
+  SupportRequests,
   type VolunteerAvailability,
 } from "@prisma/client";
 import * as turf from "@turf/turf";
 import { createMatch } from "./createMatch";
 import { IDEAL_MATCH_MAX_DISTANCE } from "../constants";
-import type { SupportRequest } from "../types";
 
 export async function createIdealMatch(
-  supportRequest: SupportRequest,
+  supportRequest: SupportRequests,
   allVolunteers: VolunteerAvailability[]
 ) {
   const closestVolunteer = findClosestVolunteer(
-    supportRequest.lat,
-    supportRequest.lng,
+    supportRequest.lat as number | null,
+    supportRequest.lng as number | null,
     allVolunteers,
     IDEAL_MATCH_MAX_DISTANCE
   );
@@ -32,12 +32,12 @@ export async function createIdealMatch(
 }
 
 export async function createExpandedMatch(
-  supportRequest: SupportRequest,
+  supportRequest: SupportRequests,
   allVolunteers: VolunteerAvailability[]
 ) {
   const volunteerInTheSameCity = findVolunteerInTheSameCity(
-    supportRequest.city,
-    supportRequest.state,
+    supportRequest.city!,
+    supportRequest.state!,
     allVolunteers
   );
 
@@ -54,20 +54,20 @@ export async function createExpandedMatch(
 }
 
 export async function createOnlineMatch(
-  supportRequest: SupportRequest,
+  supportRequest: SupportRequests,
   allVolunteers: VolunteerAvailability[]
 ) {
   if (allVolunteers.length === 0) return null;
 
   const volunteersInTheSameState = filterVolunteersInTheSameState(
-    supportRequest.state,
+    supportRequest.state!,
     allVolunteers
   );
 
   if (volunteersInTheSameState.length > 0) {
     const closestVolunteerInTheSameState = findClosestVolunteer(
-      supportRequest.lat,
-      supportRequest.lng,
+      supportRequest.lat as number | null,
+      supportRequest.lng as number | null,
       volunteersInTheSameState,
       null
     );
@@ -85,8 +85,8 @@ export async function createOnlineMatch(
   }
 
   const closestVolunteer = findClosestVolunteer(
-    supportRequest.lat,
-    supportRequest.lng,
+    supportRequest.lat as number | null,
+    supportRequest.lng as number | null,
     allVolunteers,
     null
   );

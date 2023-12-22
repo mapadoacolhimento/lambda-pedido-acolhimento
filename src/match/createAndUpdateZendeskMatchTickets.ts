@@ -1,4 +1,8 @@
-import type { VolunteerAvailability, Volunteers } from "@prisma/client";
+import type {
+  SupportRequests,
+  VolunteerAvailability,
+  Volunteers,
+} from "@prisma/client";
 import client from "../prismaClient";
 import { createTicket, getUser, updateTicket } from "../zendeskClient";
 import { getAgent, getCurrentDate, getErrorMessage } from "../utils";
@@ -8,13 +12,13 @@ import {
   VOLUNTEER_SUPPORT_TYPE_DICIO,
   ZENDESK_SUBDOMAIN,
 } from "../constants";
-import type { ZendeskUser, SupportRequest } from "../types";
+import type { ZendeskUser } from "../types";
 
 type ZendeskTicketParams = {
   agent: number;
   volunteer: Volunteer;
   msr: ZendeskUser &
-    Pick<SupportRequest, "zendeskTicketId" | "supportType"> & {
+    Pick<SupportRequests, "zendeskTicketId" | "supportType"> & {
       zendeskUserId: bigint;
     };
 };
@@ -70,7 +74,7 @@ async function createVolunteerZendeskTicket({
 type MsrEmailParams = {
   volunteer: Volunteer;
   agent: number;
-  msr: ZendeskUser & Pick<SupportRequest, "supportType">;
+  msr: ZendeskUser & Pick<SupportRequests, "supportType">;
 };
 
 function getMsrEmail({ volunteer, agent, msr }: MsrEmailParams) {
@@ -108,7 +112,7 @@ type UpdateTicketParams = {
     zendeskTicketId: bigint;
   };
   msr: {
-    zendeskTicketId: SupportRequest["zendeskTicketId"];
+    zendeskTicketId: SupportRequests["zendeskTicketId"];
     email: string;
   };
 };
@@ -191,7 +195,7 @@ async function fetchMsrFromZendesk(msrId: bigint) {
 }
 
 export default async function createAndUpdateZendeskMatchTickets(
-  supportRequest: SupportRequest,
+  supportRequest: SupportRequests,
   volunteerAvailability: VolunteerAvailability
 ) {
   const volunteer = await fetchVolunteerFromDB(
