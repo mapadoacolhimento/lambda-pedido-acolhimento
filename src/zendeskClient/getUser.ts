@@ -6,20 +6,15 @@ import {
   ZENDESK_API_URL,
   ZENDESK_API_USER,
 } from "../constants";
-import type {
-  UpdateZendeskTicket,
-  ZendeskTicket,
-  ZendeskTicketRes,
-} from "../types";
+import type { ZendeskUser, ZendeskUserRes } from "../types";
 
-export default async function updateTicket(
-  ticket: UpdateZendeskTicket
-): Promise<ZendeskTicket | null> {
+export default async function getUser(
+  userId: bigint
+): Promise<ZendeskUser | null> {
   try {
-    const endpoint = ZENDESK_API_URL + "/tickets/" + ticket.id + ".json";
+    const endpoint = ZENDESK_API_URL + "/users/" + userId + ".json";
     const response = await fetch(endpoint, {
-      body: JSON.stringify(ticket),
-      method: "PUT",
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization:
@@ -34,14 +29,14 @@ export default async function updateTicket(
       throw new Error(response.statusText);
     }
 
-    const data = (await response.json()) as ZendeskTicketRes;
+    const data = (await response.json()) as ZendeskUserRes;
 
-    return data.ticket;
+    return data.user;
   } catch (e) {
     console.log(
-      `Something went wrong when updating this ticket '${
-        ticket.id
-      }': ${getErrorMessage(e)}`
+      `Something went wrong when fetching this user from Zendesk '${userId}': ${getErrorMessage(
+        e
+      )}`
     );
     return null;
   }

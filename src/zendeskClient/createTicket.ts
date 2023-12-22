@@ -6,9 +6,15 @@ import {
   ZENDESK_API_URL,
   ZENDESK_API_USER,
 } from "../constants";
-import type { Ticket } from "../types";
+import type {
+  CreateZendeskTicket,
+  ZendeskTicket,
+  ZendeskTicketRes,
+} from "../types";
 
-export default async function createTicket(ticket: Ticket) {
+export default async function createTicket(
+  ticket: CreateZendeskTicket
+): Promise<ZendeskTicket | null> {
   try {
     const endpoint = ZENDESK_API_URL + "/tickets.json";
     const response = await fetch(endpoint, {
@@ -28,8 +34,9 @@ export default async function createTicket(ticket: Ticket) {
       throw new Error(response.statusText);
     }
 
-    const data = await response.json();
-    return data;
+    const data = (await response.json()) as ZendeskTicketRes;
+
+    return data.ticket;
   } catch (e) {
     console.log(
       `Something went wrong when creating a ticket for this user '${

@@ -2,8 +2,8 @@ import type { SupportType } from "@prisma/client";
 
 export type SupportRequest = {
   supportRequestId: number;
-  msrId: number;
-  zendeskTicketId: number;
+  msrId: bigint;
+  zendeskTicketId: bigint;
   supportType: SupportType;
   city: string;
   state: string;
