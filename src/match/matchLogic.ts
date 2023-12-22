@@ -5,8 +5,8 @@ import {
 } from "@prisma/client";
 import * as turf from "@turf/turf";
 import { createMatch } from "./createMatch";
-import { IDEAL_MATCH_MAX_DISTANCE } from "../utils/constants";
-import type { SupportRequest } from "../types/supportRequest";
+import { IDEAL_MATCH_MAX_DISTANCE } from "../constants";
+import type { SupportRequest } from "../types";
 
 export async function createIdealMatch(
   supportRequest: SupportRequest,

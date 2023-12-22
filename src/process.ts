@@ -4,14 +4,8 @@ import type {
   APIGatewayProxyCallback,
 } from "aws-lambda";
 import { object, number } from "yup";
-import client from "./prismaClient";
 import type { SupportType, VolunteerAvailability } from "@prisma/client";
-import {
-  getErrorMessage,
-  isJsonString,
-  createSupportRequestSchema,
-  stringfyBigInt,
-} from "./utils";
+
 import {
   createExpandedMatch,
   createIdealMatch,
@@ -19,6 +13,15 @@ import {
   decideOnOnlineMatch,
 } from "./match/matchLogic";
 import { directToPublicService } from "./match/publicService";
+
+import client from "./prismaClient";
+import {
+  getErrorMessage,
+  isJsonString,
+  createSupportRequestSchema,
+  stringfyBigInt,
+} from "./utils";
+import type { SupportRequest } from "./types";
 
 const bodySchema = object({
   supportRequestId: number().required(),
@@ -45,7 +48,9 @@ const process = async (
       ? (JSON.parse(body) as unknown)
       : (Object.create(null) as Record<string, unknown>);
 
-    const supportRequest = await bodySchema.validate(parsedBody);
+    const supportRequest = (await bodySchema.validate(
+      parsedBody
+    )) as unknown as SupportRequest;
 
     const allVolunteers: VolunteerAvailability[] = await fetchVolunteers(
       supportRequest.supportType
