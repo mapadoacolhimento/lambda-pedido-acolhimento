@@ -1,6 +1,6 @@
 import("isomorphic-fetch");
 
-import { getErrorMessage } from "../utils";
+import { getErrorMessage, stringfyBigInt } from "../utils";
 import {
   ZENDESK_API_TOKEN,
   ZENDESK_API_URL,
@@ -16,9 +16,10 @@ export default async function updateTicket(
   ticket: UpdateZendeskTicket
 ): Promise<ZendeskTicket | null> {
   try {
-    const endpoint = ZENDESK_API_URL + "/tickets/" + ticket.id + ".json";
+    const endpoint =
+      ZENDESK_API_URL + "/tickets/" + ticket.id.toString() + ".json";
     const response = await fetch(endpoint, {
-      body: JSON.stringify(ticket),
+      body: JSON.stringify(stringfyBigInt(ticket)),
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

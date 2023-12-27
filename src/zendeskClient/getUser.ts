@@ -12,7 +12,7 @@ export default async function getUser(
   userId: bigint
 ): Promise<ZendeskUser | null> {
   try {
-    const endpoint = ZENDESK_API_URL + "/users/" + userId + ".json";
+    const endpoint = ZENDESK_API_URL + "/users/" + userId.toString() + ".json";
     const response = await fetch(endpoint, {
       method: "GET",
       headers: {

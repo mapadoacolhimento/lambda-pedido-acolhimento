@@ -1,6 +1,6 @@
 import("isomorphic-fetch");
 
-import { getErrorMessage } from "../utils";
+import { getErrorMessage, stringfyBigInt } from "../utils";
 import {
   ZENDESK_API_TOKEN,
   ZENDESK_API_URL,
@@ -18,7 +18,7 @@ export default async function createTicket(
   try {
     const endpoint = ZENDESK_API_URL + "/tickets.json";
     const response = await fetch(endpoint, {
-      body: JSON.stringify(ticket),
+      body: JSON.stringify(stringfyBigInt(ticket)),
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,9 +39,9 @@ export default async function createTicket(
     return data.ticket;
   } catch (e) {
     console.log(
-      `Something went wrong when creating a ticket for this user '${
-        ticket.requester_id
-      }': ${getErrorMessage(e)}`
+      `Something went wrong when creating a ticket for this user '${ticket.requester_id.toString()}': ${getErrorMessage(
+        e
+      )}`
     );
     return null;
   }
