@@ -15,7 +15,7 @@ export async function createMatch(
 ) {
   const volunteerZendeskTicketId = await createAndUpdateZendeskMatchTickets(
     supportRequest,
-    volunteerAvailability
+    volunteerAvailability["volunteer_id"]
   );
 
   const match = await client.matches.create({

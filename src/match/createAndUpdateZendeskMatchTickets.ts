@@ -13,10 +13,10 @@ import type { SupportRequest, ZendeskUser } from "../types";
 type ZendeskTicketParams = {
   agent: number;
   volunteer: Volunteer;
-  msr: ZendeskUser &
-    Pick<SupportRequest, "zendeskTicketId" | "supportType"> & {
-      zendeskUserId: bigint;
-    };
+  msr: Pick<SupportRequest, "zendeskTicketId" | "supportType"> & {
+    name: ZendeskUser["name"];
+    zendeskUserId: bigint;
+  };
 };
 
 async function createVolunteerZendeskTicket({
@@ -33,9 +33,7 @@ async function createVolunteerZendeskTicket({
     submitter_id: agent,
     assignee_id: agent,
     status: "pending",
-    subject: `[${volunteerSupportTypeInfo.occupation}] ${
-      volunteer.firstName as string
-    }`,
+    subject: `[${volunteerSupportTypeInfo.occupation}] ${volunteer.firstName}`,
     organization_id: volunteerSupportTypeInfo.organizationId,
     comment: {
       body: `Voluntária recebeu um pedido de acolhimento de ${msr.name}`,
@@ -64,7 +62,7 @@ async function createVolunteerZendeskTicket({
 
   const zendeskTicket = await createTicket(ticket);
 
-  return zendeskTicket;
+  return zendeskTicket ? zendeskTicket.id : null;
 }
 
 type MsrEmailParams = {
@@ -73,7 +71,7 @@ type MsrEmailParams = {
   msr: ZendeskUser & Pick<SupportRequest, "supportType">;
 };
 
-function getMsrEmail({ volunteer, agent, msr }: MsrEmailParams) {
+export function getMsrEmail({ volunteer, agent, msr }: MsrEmailParams) {
   const volunteerSupportTypeInfo =
     VOLUNTEER_SUPPORT_TYPE_DICIO[msr.supportType];
 
@@ -83,13 +81,11 @@ function getMsrEmail({ volunteer, agent, msr }: MsrEmailParams) {
   
   Conseguimos localizar uma ${volunteerSupportTypeInfo.occupation.toLowerCase()} disponível próxima a você. Estamos te enviando os dados abaixo para que entre em contato em até 30 dias. É muito importante atentar-se a esse prazo pois, após esse período, a sua vaga pode expirar. Não se preocupe, caso você não consiga, poderá retornar à fila de atendimento se cadastrando novamente pelo site.
   
-  ${volunteerSupportTypeInfo.occupation}: ${volunteer.firstName as string}
+  ${volunteerSupportTypeInfo.occupation}: ${volunteer.firstName}
   
   Telefone: ${volunteer.phone}
   
-  ${volunteerSupportTypeInfo.registryType}: ${
-    volunteer.registrationNumber as string
-  }
+  ${volunteerSupportTypeInfo.registryType}: ${volunteer.registrationNumber}
   
   Diante do contexto da pandemia do covid-19, sabemos que podem surgir algumas dificuldades para que receba o acolhimento necessário, especialmente à distância, que é a recomendação neste momento. Por isso, caso haja algum obstáculo que impossibilite que o seu atendimento aconteça de forma segura, por favor nos escreva e para te oferecermos mais informações sobre como buscar ajuda na rede pública de atendimento. Não se preocupe, você também poderá iniciar os atendimentos de modo presencial quando esse período tão difícil passar.
   
@@ -192,11 +188,9 @@ async function fetchMsrFromZendesk(msrId: bigint) {
 
 export default async function createAndUpdateZendeskMatchTickets(
   supportRequest: SupportRequest,
-  volunteerAvailability: VolunteerAvailability
+  volunteerId: VolunteerAvailability["volunteer_id"]
 ) {
-  const volunteer = await fetchVolunteerFromDB(
-    volunteerAvailability.volunteer_id
-  );
+  const volunteer = await fetchVolunteerFromDB(volunteerId);
   const msr = await fetchMsrFromZendesk(supportRequest.msrId);
 
   if (!volunteer || !msr) {
@@ -205,18 +199,18 @@ export default async function createAndUpdateZendeskMatchTickets(
 
   const agent = getAgent();
 
-  const volunteerZendeskTicket = await createVolunteerZendeskTicket({
+  const volunteerZendeskTicketId = await createVolunteerZendeskTicket({
     agent,
     volunteer,
     msr: {
-      ...msr,
+      name: msr.name,
       zendeskUserId: msr.id,
       zendeskTicketId: supportRequest.zendeskTicketId,
       supportType: supportRequest.supportType,
     },
   });
 
-  if (!volunteerZendeskTicket) {
+  if (!volunteerZendeskTicketId) {
     throw new Error("Couldn't create volunteer match ticket");
   }
 
@@ -233,7 +227,7 @@ export default async function createAndUpdateZendeskMatchTickets(
     agent,
     volunteer: {
       ...volunteer,
-      zendeskTicketId: volunteerZendeskTicket.id,
+      zendeskTicketId: volunteerZendeskTicketId,
     },
     msr: {
       zendeskTicketId: supportRequest.zendeskTicketId,
@@ -241,5 +235,5 @@ export default async function createAndUpdateZendeskMatchTickets(
     },
   });
 
-  return volunteerZendeskTicket.id;
+  return volunteerZendeskTicketId;
 }
