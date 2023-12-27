@@ -1,12 +1,12 @@
-import type { SupportRequests } from "@prisma/client";
 import client from "../prismaClient";
 import { getAgent, getCurrentDate } from "../utils";
 import { updateTicket } from "../zendeskClient";
 import { ZENDESK_CUSTOM_FIELDS_DICIO } from "../constants";
+import type { SupportRequest } from "../types";
 
 async function updateMsrZendeskTicketWithPublicService(
-  zendeskTicketId: SupportRequests["zendeskTicketId"],
-  msrState: SupportRequests["state"]
+  zendeskTicketId: SupportRequest["zendeskTicketId"],
+  msrState: SupportRequest["state"]
 ) {
   const agent = getAgent();
 

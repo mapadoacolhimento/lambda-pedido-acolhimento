@@ -1,20 +1,20 @@
 import {
   MatchStage,
   MatchType,
-  SupportRequests,
   type VolunteerAvailability,
 } from "@prisma/client";
 import * as turf from "@turf/turf";
 import { createMatch } from "./createMatch";
 import { IDEAL_MATCH_MAX_DISTANCE } from "../constants";
+import type { SupportRequest } from "../types";
 
 export async function createIdealMatch(
-  supportRequest: SupportRequests,
+  supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[]
 ) {
   const closestVolunteer = findClosestVolunteer(
-    supportRequest.lat as number | null,
-    supportRequest.lng as number | null,
+    supportRequest.lat,
+    supportRequest.lng,
     allVolunteers,
     IDEAL_MATCH_MAX_DISTANCE
   );
@@ -32,12 +32,12 @@ export async function createIdealMatch(
 }
 
 export async function createExpandedMatch(
-  supportRequest: SupportRequests,
+  supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[]
 ) {
   const volunteerInTheSameCity = findVolunteerInTheSameCity(
-    supportRequest.city!,
-    supportRequest.state!,
+    supportRequest.city,
+    supportRequest.state,
     allVolunteers
   );
 
@@ -54,20 +54,20 @@ export async function createExpandedMatch(
 }
 
 export async function createOnlineMatch(
-  supportRequest: SupportRequests,
+  supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[]
 ) {
   if (allVolunteers.length === 0) return null;
 
   const volunteersInTheSameState = filterVolunteersInTheSameState(
-    supportRequest.state!,
+    supportRequest.state,
     allVolunteers
   );
 
   if (volunteersInTheSameState.length > 0) {
     const closestVolunteerInTheSameState = findClosestVolunteer(
-      supportRequest.lat as number | null,
-      supportRequest.lng as number | null,
+      supportRequest.lat,
+      supportRequest.lng,
       volunteersInTheSameState,
       null
     );
@@ -85,8 +85,8 @@ export async function createOnlineMatch(
   }
 
   const closestVolunteer = findClosestVolunteer(
-    supportRequest.lat as number | null,
-    supportRequest.lng as number | null,
+    supportRequest.lat,
+    supportRequest.lng,
     allVolunteers,
     null
   );
@@ -119,8 +119,8 @@ export function filterVolunteersWithLatLng(
 }
 
 export function findClosestVolunteer(
-  msrLat: number | null,
-  msrLng: number | null,
+  msrLat: SupportRequest["lat"],
+  msrLng: SupportRequest["lng"],
   volunteers: VolunteerAvailability[],
   maxDistance: number | null
 ): VolunteerAvailability | null {
@@ -163,8 +163,8 @@ export function calcDistance(
 }
 
 export function findVolunteerInTheSameCity(
-  msrCity: string,
-  msrState: string,
+  msrCity: SupportRequest["city"],
+  msrState: SupportRequest["state"],
   volunteers: VolunteerAvailability[]
 ): VolunteerAvailability | null {
   if (msrCity === "not_found" || msrState === "not_found") return null;
@@ -176,7 +176,7 @@ export function findVolunteerInTheSameCity(
 }
 
 export function filterVolunteersInTheSameState(
-  msrState: string,
+  msrState: SupportRequest["state"],
   volunteers: VolunteerAvailability[]
 ) {
   if (msrState === "not_found") return [];

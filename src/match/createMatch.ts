@@ -1,14 +1,14 @@
 import type {
   MatchStage,
   MatchType,
-  SupportRequests,
   VolunteerAvailability,
 } from "@prisma/client";
 import client from "../prismaClient";
 import createAndUpdateZendeskMatchTickets from "./createAndUpdateZendeskMatchTickets";
+import type { SupportRequest } from "../types";
 
 export async function createMatch(
-  supportRequest: SupportRequests,
+  supportRequest: SupportRequest,
   volunteerAvailability: VolunteerAvailability,
   matchType: MatchType,
   matchStage: MatchStage
@@ -26,8 +26,8 @@ export async function createMatch(
       msrZendeskTicketId: supportRequest.zendeskTicketId,
       volunteerZendeskTicketId,
       supportType: supportRequest.supportType,
-      matchType: matchType,
-      matchStage: matchStage,
+      matchType,
+      matchStage,
       status: "waiting_contact",
       MatchStatusHistory: {
         create: {
@@ -72,14 +72,14 @@ export async function createMatch(
         id: volunteerAvailability.volunteer_id,
       },
       data: {
-        condition: "totally_booked",
+        condition: "indisponivel_sem_vagas",
       },
     });
 
     await client.volunteerStatusHistory.create({
       data: {
         volunteer_id: volunteerAvailability.volunteer_id,
-        status: "totally_booked",
+        status: "indisponivel_sem_vagas",
         created_at: new Date(),
       },
     });
@@ -89,8 +89,8 @@ export async function createMatch(
 }
 
 export function checkVolunteerAvailability(
-  currentMatches: number,
-  maxMatches: number
+  currentMatches: VolunteerAvailability["current_matches"],
+  maxMatches: VolunteerAvailability["max_matches"]
 ) {
   const isVolunteerAvailable = currentMatches + 1 < maxMatches ? true : false;
   return isVolunteerAvailable;
