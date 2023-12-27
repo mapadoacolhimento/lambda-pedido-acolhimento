@@ -1,8 +1,27 @@
 import type { APIGatewayProxyEvent, Context } from "aws-lambda";
-import process from "../process";
 import type { Decimal } from "@prisma/client/runtime/library";
+
+import process from "../process";
 import { prismaMock } from "../setupTests";
 import { stringfyBigInt } from "../utils";
+import * as createAndUpdateZendeskMatchTickets from "../match/createAndUpdateZendeskMatchTickets";
+import * as updateTicket from "../zendeskClient/updateTicket";
+import type { ZendeskTicket } from "../types";
+
+const createAndUpdateZendeskMatchTicketsMock = jest.spyOn(
+  createAndUpdateZendeskMatchTickets,
+  "default"
+);
+createAndUpdateZendeskMatchTicketsMock.mockImplementation(() =>
+  Promise.resolve(123123123 as unknown as bigint)
+);
+
+const updateTicketMock = jest.spyOn(updateTicket, "default");
+updateTicketMock.mockImplementation(() =>
+  Promise.resolve({
+    id: 123123123,
+  } as unknown as ZendeskTicket)
+);
 
 describe("/process endpoint", () => {
   it("should return an error res when no body is provided to the req", async () => {

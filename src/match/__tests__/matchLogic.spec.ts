@@ -1,3 +1,6 @@
+import type { VolunteerAvailability } from "@prisma/client";
+import type { Decimal } from "@prisma/client/runtime/library";
+
 import {
   filterVolunteersWithLatLng,
   calcDistance,
@@ -8,9 +11,16 @@ import {
   createExpandedMatch,
   createOnlineMatch,
 } from "../matchLogic";
-import type { Decimal } from "@prisma/client/runtime/library";
-import type { VolunteerAvailability } from "@prisma/client";
 import { prismaMock } from "../../setupTests";
+import * as createAndUpdateZendeskMatchTickets from "../createAndUpdateZendeskMatchTickets";
+
+const createAndUpdateZendeskMatchTicketsMock = jest.spyOn(
+  createAndUpdateZendeskMatchTickets,
+  "default"
+);
+createAndUpdateZendeskMatchTicketsMock.mockImplementation(() =>
+  Promise.resolve(123123123 as unknown as bigint)
+);
 
 describe("filterVolunteersWithLatLng()", () => {
   it("should filter only the volunteers with not null lat lng", () => {
