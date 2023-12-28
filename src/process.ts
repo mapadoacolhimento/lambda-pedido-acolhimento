@@ -16,7 +16,7 @@ import {
   createOnlineMatch,
   decideOnOnlineMatch,
 } from "./match/matchLogic";
-import { directToPublicService } from "./match/publicService";
+import directToPublicService from "./match/directToPublicService";
 
 import client from "./prismaClient";
 import {

@@ -25,7 +25,7 @@ async function updateMsrZendeskTicketWithPublicService(
       },
       {
         id: ZENDESK_CUSTOM_FIELDS_DICIO["data_encaminhamento"],
-        value: String(getCurrentDate()),
+        value: getCurrentDate(),
       },
     ],
     comment: {
@@ -40,7 +40,7 @@ async function updateMsrZendeskTicketWithPublicService(
   return zendeskTicket ? zendeskTicket.id : null;
 }
 
-export async function directToPublicService(supportRequestId: number) {
+export default async function directToPublicService(supportRequestId: number) {
   const updateSupportRequest = await client.supportRequests.update({
     where: {
       supportRequestId: supportRequestId,

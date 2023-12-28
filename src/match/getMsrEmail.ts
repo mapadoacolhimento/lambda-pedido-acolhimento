@@ -20,11 +20,13 @@ export default function getMsrEmail({ volunteer, agent, msr }: MsrEmailParams) {
   
   Conseguimos localizar uma ${volunteerSupportTypeInfo.occupation.toLowerCase()} disponível próxima a você. Estamos te enviando os dados abaixo para que entre em contato em até 30 dias. É muito importante atentar-se a esse prazo pois, após esse período, a sua vaga pode expirar. Não se preocupe, caso você não consiga, poderá retornar à fila de atendimento se cadastrando novamente pelo site.
   
-  ${volunteerSupportTypeInfo.occupation}: ${volunteer.firstName}
+  ${volunteerSupportTypeInfo.occupation}: ${volunteer.firstName.toString()}
   
   Telefone: ${volunteer.phone}
   
-  ${volunteerSupportTypeInfo.registryType}: ${volunteer.registrationNumber}
+  ${
+    volunteerSupportTypeInfo.registryType
+  }: ${volunteer.registrationNumber.toString()}
   
   Diante do contexto da pandemia do covid-19, sabemos que podem surgir algumas dificuldades para que receba o acolhimento necessário, especialmente à distância, que é a recomendação neste momento. Por isso, caso haja algum obstáculo que impossibilite que o seu atendimento aconteça de forma segura, por favor nos escreva e para te oferecermos mais informações sobre como buscar ajuda na rede pública de atendimento. Não se preocupe, você também poderá iniciar os atendimentos de modo presencial quando esse período tão difícil passar.
   

@@ -33,7 +33,9 @@ async function createVolunteerZendeskTicket({
     submitter_id: agent,
     assignee_id: agent,
     status: "pending",
-    subject: `[${volunteerSupportTypeInfo.occupation}] ${volunteer.firstName}`,
+    subject: `[${
+      volunteerSupportTypeInfo.occupation
+    }] ${volunteer.firstName.toString()}`,
     organization_id: volunteerSupportTypeInfo.organizationId,
     comment: {
       body: `Voluntária recebeu um pedido de acolhimento de ${msr.name}`,
@@ -115,7 +117,7 @@ async function updateMsrZendeskTicketWithMatch({
   return zendeskTicket;
 }
 
-export type Volunteer = Pick<
+type Volunteer = Pick<
   Volunteers,
   "firstName" | "zendeskUserId" | "phone" | "registrationNumber"
 >;
