@@ -40,7 +40,11 @@ async function updateMsrZendeskTicketWithPublicService(
   return zendeskTicket ? zendeskTicket.id : null;
 }
 
-export default async function directToPublicService(supportRequestId: number) {
+export type PublicService = Pick<SupportRequest, "state" | "zendeskTicketId">;
+
+export default async function directToPublicService(
+  supportRequestId: number
+): Promise<PublicService> {
   const updateSupportRequest = await client.supportRequests.update({
     where: {
       supportRequestId: supportRequestId,
