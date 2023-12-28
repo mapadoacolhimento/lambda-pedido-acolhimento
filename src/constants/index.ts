@@ -19,14 +19,17 @@ export const ZENDESK_CUSTOM_FIELDS_DICIO = {
   estado: 360021879791,
 };
 
+const LAWYER_ZENDESK_ORGANIZATION_ID = 360269610652;
+const THERAPIST_ZENDESK_ORGANIZATION_ID = 360282119532;
+
 export const VOLUNTEER_SUPPORT_TYPE_DICIO = {
   psychological: {
-    organizationId: 360282119532,
+    organizationId: THERAPIST_ZENDESK_ORGANIZATION_ID,
     occupation: "Psicóloga",
     registryType: "CRP",
   },
   legal: {
-    organizationId: 360269610652,
+    organizationId: LAWYER_ZENDESK_ORGANIZATION_ID,
     occupation: "Advogada",
     registryType: "OAB",
   },
