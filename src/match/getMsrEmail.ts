@@ -2,15 +2,12 @@ import type { Volunteers } from "@prisma/client";
 import { AGENT_DICIO, VOLUNTEER_SUPPORT_TYPE_DICIO } from "../constants";
 import type { SupportRequest, ZendeskUser } from "../types";
 
-type Volunteer = Pick<
-  Volunteers,
-  "firstName" | "zendeskUserId" | "phone" | "registrationNumber"
->;
+type Volunteer = Pick<Volunteers, "firstName" | "phone" | "registrationNumber">;
 
 type MsrEmailParams = {
   volunteer: Volunteer;
   agent: number;
-  msr: ZendeskUser & Pick<SupportRequest, "supportType">;
+  msr: Omit<ZendeskUser, "id"> & Pick<SupportRequest, "supportType">;
 };
 
 export default function getMsrEmail({ volunteer, agent, msr }: MsrEmailParams) {
