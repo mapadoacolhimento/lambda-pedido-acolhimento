@@ -4,26 +4,30 @@ import type {
   VolunteerAvailability,
 } from "@prisma/client";
 import client from "../prismaClient";
-import type { SupportRequest } from "../types/supportRequest";
+import createAndUpdateZendeskMatchTickets from "./createAndUpdateZendeskMatchTickets";
+import type { SupportRequest } from "../types";
 
 export async function createMatch(
   supportRequest: SupportRequest,
-  volunteer: VolunteerAvailability,
+  volunteerAvailability: VolunteerAvailability,
   matchType: MatchType,
   matchStage: MatchStage
 ) {
-  const volunteerZendeskTicketId = createVolunteerZendeskTicket();
+  const volunteerZendeskTicketId = await createAndUpdateZendeskMatchTickets(
+    supportRequest,
+    volunteerAvailability["volunteer_id"]
+  );
 
   const match = await client.matches.create({
     data: {
       supportRequestId: supportRequest.supportRequestId,
       msrId: supportRequest.msrId,
-      volunteerId: volunteer.volunteer_id,
+      volunteerId: volunteerAvailability.volunteer_id,
       msrZendeskTicketId: supportRequest.zendeskTicketId,
       volunteerZendeskTicketId,
       supportType: supportRequest.supportType,
-      matchType: matchType,
-      matchStage: matchStage,
+      matchType,
+      matchStage,
       status: "waiting_contact",
       MatchStatusHistory: {
         create: {
@@ -48,16 +52,16 @@ export async function createMatch(
   });
 
   const isVolunteerAvailable = checkVolunteerAvailability(
-    volunteer.current_matches,
-    volunteer.max_matches
+    volunteerAvailability.current_matches,
+    volunteerAvailability.max_matches
   );
 
   await client.volunteerAvailability.update({
     where: {
-      volunteer_id: volunteer.volunteer_id,
+      volunteer_id: volunteerAvailability.volunteer_id,
     },
     data: {
-      current_matches: volunteer.current_matches + 1,
+      current_matches: volunteerAvailability.current_matches + 1,
       is_available: isVolunteerAvailable,
     },
   });
@@ -65,17 +69,17 @@ export async function createMatch(
   if (!isVolunteerAvailable) {
     await client.volunteers.update({
       where: {
-        id: volunteer.volunteer_id,
+        id: volunteerAvailability.volunteer_id,
       },
       data: {
-        condition: "totally_booked",
+        condition: "indisponivel_sem_vagas",
       },
     });
 
     await client.volunteerStatusHistory.create({
       data: {
-        volunteer_id: volunteer.volunteer_id,
-        status: "totally_booked",
+        volunteer_id: volunteerAvailability.volunteer_id,
+        status: "indisponivel_sem_vagas",
         created_at: new Date(),
       },
     });
@@ -85,15 +89,9 @@ export async function createMatch(
 }
 
 export function checkVolunteerAvailability(
-  currentMatches: number,
-  maxMatches: number
+  currentMatches: VolunteerAvailability["current_matches"],
+  maxMatches: VolunteerAvailability["max_matches"]
 ) {
   const isVolunteerAvailable = currentMatches + 1 < maxMatches ? true : false;
   return isVolunteerAvailable;
-}
-
-function createVolunteerZendeskTicket() {
-  const zendeskTicketId = 1;
-
-  return zendeskTicketId;
 }

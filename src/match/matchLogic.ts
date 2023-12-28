@@ -5,8 +5,8 @@ import {
 } from "@prisma/client";
 import * as turf from "@turf/turf";
 import { createMatch } from "./createMatch";
-import { IDEAL_MATCH_MAX_DISTANCE } from "../utils/constants";
-import type { SupportRequest } from "../types/supportRequest";
+import { IDEAL_MATCH_MAX_DISTANCE } from "../constants";
+import type { SupportRequest } from "../types";
 
 export async function createIdealMatch(
   supportRequest: SupportRequest,
@@ -119,8 +119,8 @@ export function filterVolunteersWithLatLng(
 }
 
 export function findClosestVolunteer(
-  msrLat: number | null,
-  msrLng: number | null,
+  msrLat: SupportRequest["lat"],
+  msrLng: SupportRequest["lng"],
   volunteers: VolunteerAvailability[],
   maxDistance: number | null
 ): VolunteerAvailability | null {
@@ -163,8 +163,8 @@ export function calcDistance(
 }
 
 export function findVolunteerInTheSameCity(
-  msrCity: string,
-  msrState: string,
+  msrCity: SupportRequest["city"],
+  msrState: SupportRequest["state"],
   volunteers: VolunteerAvailability[]
 ): VolunteerAvailability | null {
   if (msrCity === "not_found" || msrState === "not_found") return null;
@@ -176,7 +176,7 @@ export function findVolunteerInTheSameCity(
 }
 
 export function filterVolunteersInTheSameState(
-  msrState: string,
+  msrState: SupportRequest["state"],
   volunteers: VolunteerAvailability[]
 ) {
   if (msrState === "not_found") return [];

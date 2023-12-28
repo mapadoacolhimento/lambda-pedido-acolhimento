@@ -1,3 +1,6 @@
+import type { VolunteerAvailability } from "@prisma/client";
+import type { Decimal } from "@prisma/client/runtime/library";
+
 import {
   filterVolunteersWithLatLng,
   calcDistance,
@@ -8,9 +11,16 @@ import {
   createExpandedMatch,
   createOnlineMatch,
 } from "../matchLogic";
-import type { Decimal } from "@prisma/client/runtime/library";
-import type { VolunteerAvailability } from "@prisma/client";
 import { prismaMock } from "../../setupTests";
+import * as createAndUpdateZendeskMatchTickets from "../createAndUpdateZendeskMatchTickets";
+
+const createAndUpdateZendeskMatchTicketsMock = jest.spyOn(
+  createAndUpdateZendeskMatchTickets,
+  "default"
+);
+createAndUpdateZendeskMatchTicketsMock.mockImplementation(() =>
+  Promise.resolve(123123123 as unknown as bigint)
+);
 
 describe("filterVolunteersWithLatLng()", () => {
   it("should filter only the volunteers with not null lat lng", () => {
@@ -122,8 +132,8 @@ describe("findClosestVolunteer()", () => {
       },
     ];
 
-    const msrLat = -23.45581927562912;
-    const msrLng = -45.066556703531184;
+    const msrLat = -23.45581927562912 as unknown as Decimal;
+    const msrLng = -45.066556703531184 as unknown as Decimal;
 
     const closesVolunteer = findClosestVolunteer(
       msrLat,
@@ -171,8 +181,8 @@ describe("findClosestVolunteer()", () => {
       },
     ];
 
-    const msrLat = -23.45581927562912;
-    const msrLng = -45.066556703531184;
+    const msrLat = -23.45581927562912 as unknown as Decimal;
+    const msrLng = -45.066556703531184 as unknown as Decimal;
 
     const closestVolunteer = findClosestVolunteer(
       msrLat,
@@ -236,8 +246,8 @@ describe("findClosestVolunteer()", () => {
       },
     ];
 
-    const msrLat = -23.556168561396397;
-    const msrLng = -46.67920269003776;
+    const msrLat = -23.556168561396397 as unknown as Decimal;
+    const msrLng = -46.67920269003776 as unknown as Decimal;
     const maxDistance = 20;
 
     const closestVolunteer = findClosestVolunteer(
@@ -520,11 +530,11 @@ describe("createIdealMatch()", () => {
   it("should return null if there are no volunteers within 20km", async () => {
     const supportRequest = {
       supportRequestId: 1,
-      msrId: 1,
-      zendeskTicketId: 1,
+      msrId: 1 as unknown as bigint,
+      zendeskTicketId: 1 as unknown as bigint,
       supportType: "psychological" as const,
-      lat: -23.556080048271628,
-      lng: -46.679234876547184,
+      lat: -23.556080048271628 as unknown as Decimal,
+      lng: -46.679234876547184 as unknown as Decimal,
       city: "SAO PAULO",
       state: "SP",
     };
@@ -559,11 +569,11 @@ describe("createIdealMatch()", () => {
   it("should return an ideal match if there is a volunteer within 20km", async () => {
     const supportRequest = {
       supportRequestId: 1,
-      msrId: 1,
-      zendeskTicketId: 1,
+      msrId: 1 as unknown as bigint,
+      zendeskTicketId: 1 as unknown as bigint,
       supportType: "psychological" as const,
-      lat: -23.55603087428766,
-      lng: -46.67928852072954,
+      lat: -23.55603087428766 as unknown as Decimal,
+      lng: -46.67928852072954 as unknown as Decimal,
       city: "SAO PAULO",
       state: "SP",
     };
@@ -617,8 +627,8 @@ describe("createExpandedMatch()", () => {
   it("should return null if there are no volunteers in the same city", async () => {
     const supportRequest = {
       supportRequestId: 1,
-      msrId: 1,
-      zendeskTicketId: 1,
+      msrId: 1 as unknown as bigint,
+      zendeskTicketId: 1 as unknown as bigint,
       supportType: "psychological" as const,
       lat: null,
       lng: null,
@@ -656,8 +666,8 @@ describe("createExpandedMatch()", () => {
   it("should return an expanded match if there is a volunteer in the same city", async () => {
     const supportRequest = {
       supportRequestId: 1,
-      msrId: 1,
-      zendeskTicketId: 1,
+      msrId: 1 as unknown as bigint,
+      zendeskTicketId: 1 as unknown as bigint,
       supportType: "psychological" as const,
       city: "SAO PAULO",
       state: "SP",
@@ -714,11 +724,11 @@ describe("createOnlineMatch()", () => {
   it("should return null if there are no volunteers available", async () => {
     const supportRequest = {
       supportRequestId: 1,
-      msrId: 1,
-      zendeskTicketId: 1,
+      msrId: 1 as unknown as bigint,
+      zendeskTicketId: 1 as unknown as bigint,
       supportType: "psychological" as const,
-      lat: -23.556148891818268,
-      lng: -46.67917050352835,
+      lat: -23.556148891818268 as unknown as Decimal,
+      lng: -46.67917050352835 as unknown as Decimal,
       city: "SAO PAULO",
       state: "SP",
     };
@@ -736,11 +746,11 @@ describe("createOnlineMatch()", () => {
   it("should return an online match in the are volunteers available", async () => {
     const supportRequest = {
       supportRequestId: 1,
-      msrId: 1,
-      zendeskTicketId: 1,
+      msrId: 1 as unknown as bigint,
+      zendeskTicketId: 1 as unknown as bigint,
       supportType: "psychological" as const,
-      lat: -23.556148891818268,
-      lng: -46.67917050352835,
+      lat: -23.556148891818268 as unknown as Decimal,
+      lng: -46.67917050352835 as unknown as Decimal,
       city: "SAO PAULO",
       state: "SP",
     };

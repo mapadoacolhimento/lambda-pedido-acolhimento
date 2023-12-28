@@ -13,3 +13,5 @@ beforeEach(() => {
 });
 
 export const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>;
+
+process.env["ZENDESK_SUBDOMAIN"] = "https://meudominio.zendesk.com";

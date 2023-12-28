@@ -1,18 +1,28 @@
 import("isomorphic-fetch");
 
-import { getErrorMessage } from "../utils";
+import { getErrorMessage, stringfyBigInt } from "../utils";
 import {
   ZENDESK_API_TOKEN,
   ZENDESK_API_URL,
   ZENDESK_API_USER,
 } from "../constants";
-import type { CreatedTicket } from "../types";
+import type {
+  UpdateZendeskTicket,
+  ZendeskTicket,
+  ZendeskTicketRes,
+} from "../types";
 
-export default async function updateTicket(ticket: CreatedTicket) {
+export default async function updateTicket(
+  ticket: UpdateZendeskTicket
+): Promise<ZendeskTicket | null> {
   try {
-    const endpoint = ZENDESK_API_URL + "/tickets/" + ticket.id + ".json";
+    const endpoint =
+      ZENDESK_API_URL + "/tickets/" + ticket.id.toString() + ".json";
+
     const response = await fetch(endpoint, {
-      body: JSON.stringify(ticket),
+      body: JSON.stringify({
+        ticket: stringfyBigInt(ticket),
+      }),
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -28,8 +38,9 @@ export default async function updateTicket(ticket: CreatedTicket) {
       throw new Error(response.statusText);
     }
 
-    const data = await response.json();
-    return data;
+    const data = (await response.json()) as ZendeskTicketRes;
+
+    return data.ticket;
   } catch (e) {
     console.log(
       `Something went wrong when updating this ticket '${
