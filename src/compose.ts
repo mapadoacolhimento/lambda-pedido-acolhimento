@@ -36,7 +36,7 @@ const bodySchema = array(
   .min(1)
   .strict();
 
-const create = async (
+const compose = async (
   event: APIGatewayEvent,
   _context: Context,
   callback: APIGatewayProxyCallback
@@ -104,4 +104,4 @@ const create = async (
   }
 };
 
-export default create;
+export default compose;
