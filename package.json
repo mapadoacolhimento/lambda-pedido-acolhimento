@@ -22,7 +22,8 @@
     "migrate:create": "prisma migrate dev --create-only",
     "migrate:dev": "prisma migrate dev",
     "migrate:diff": "prisma migrate diff",
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "seed": "node prisma/seed.js"
   },
   "author": "",
   "license": "MIT",
