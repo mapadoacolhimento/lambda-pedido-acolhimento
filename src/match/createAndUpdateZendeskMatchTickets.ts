@@ -8,14 +8,14 @@ import {
   VOLUNTEER_SUPPORT_TYPE_DICIO,
   ZENDESK_SUBDOMAIN,
 } from "../constants";
-import type { SupportRequest, ZendeskUser } from "../types";
+import type { SupportRequest, ZendeskTicket, ZendeskUser } from "../types";
 
 type ZendeskTicketParams = {
   agent: number;
   volunteer: Volunteer;
   msr: Pick<SupportRequest, "zendeskTicketId" | "supportType"> & {
     name: ZendeskUser["name"];
-    zendeskUserId: bigint;
+    zendeskUserId: ZendeskUser["id"];
   };
 };
 
@@ -70,7 +70,7 @@ async function createVolunteerZendeskTicket({
 type UpdateTicketParams = {
   agent: number;
   volunteer: Volunteer & {
-    zendeskTicketId: bigint;
+    zendeskTicketId: ZendeskTicket["id"];
   };
   msr: {
     zendeskTicketId: SupportRequest["zendeskTicketId"];
@@ -114,7 +114,7 @@ async function updateMsrZendeskTicketWithMatch({
 
   const zendeskTicket = await updateTicket(ticket);
 
-  return zendeskTicket;
+  return zendeskTicket ? zendeskTicket.id : null;
 }
 
 type Volunteer = Pick<
@@ -183,7 +183,7 @@ export default async function createAndUpdateZendeskMatchTickets(
     throw new Error("Couldn't create volunteer match ticket");
   }
 
-  const msrEmail = getMsrEmail({
+  const msrEmailContent = getMsrEmail({
     volunteer,
     agent,
     msr: {
@@ -200,7 +200,7 @@ export default async function createAndUpdateZendeskMatchTickets(
     },
     msr: {
       zendeskTicketId: supportRequest.zendeskTicketId,
-      email: msrEmail,
+      email: msrEmailContent,
     },
   });
 
