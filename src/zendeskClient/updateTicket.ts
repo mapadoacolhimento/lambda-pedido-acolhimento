@@ -18,8 +18,11 @@ export default async function updateTicket(
   try {
     const endpoint =
       ZENDESK_API_URL + "/tickets/" + ticket.id.toString() + ".json";
+
     const response = await fetch(endpoint, {
-      body: JSON.stringify(stringfyBigInt(ticket)),
+      body: JSON.stringify({
+        ticket: stringfyBigInt(ticket),
+      }),
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

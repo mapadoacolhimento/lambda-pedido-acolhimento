@@ -17,16 +17,17 @@ export default async function createTicket(
 ): Promise<ZendeskTicket | null> {
   try {
     const endpoint = ZENDESK_API_URL + "/tickets.json";
+
     const response = await fetch(endpoint, {
-      body: JSON.stringify(stringfyBigInt(ticket)),
+      body: JSON.stringify({ ticket: stringfyBigInt(ticket) }),
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization:
           "Basic " +
-          Buffer.from(
-            `${ZENDESK_API_USER}/token:${ZENDESK_API_TOKEN}`
-          ).toString("base64"),
+          Buffer.from(`${ZENDESK_API_USER}:${ZENDESK_API_TOKEN}`).toString(
+            "base64"
+          ),
       },
     });
 
