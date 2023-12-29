@@ -44,21 +44,11 @@ functions:
   auth:
     handler: handler.auth
 
-  create:
-    handler: handler.create
+  compose:
+    handler: handler.compose
     events:
       - httpApi:
-          path: /create
-          method: POST
-          authorizer:
-            name: auth
-            type: request
-
-  process:
-    handler: handler.process
-    events:
-      - httpApi:
-          path: /process
+          path: /compose
           method: POST
           authorizer:
             name: auth

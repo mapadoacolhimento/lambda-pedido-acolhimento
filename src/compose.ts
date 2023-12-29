@@ -3,21 +3,40 @@ import type {
   Context,
   APIGatewayProxyCallback,
 } from "aws-lambda";
-import { object, array } from "yup";
-import prismaClient from "./prismaClient";
-import {
-  getErrorMessage,
-  isJsonString,
-  normalizeCity,
-  createSupportRequestSchema,
-} from "./utils";
+import { SupportType, SupportRequestsStatus } from "@prisma/client";
 
-const bodySchema = array(object(createSupportRequestSchema).required())
+import { object, array, string, mixed, number, boolean } from "yup";
+
+import process from "./process";
+import prismaClient from "./prismaClient";
+import { getErrorMessage, isJsonString, normalizeCity } from "./utils";
+
+const bodySchema = array(
+  object({
+    msrId: number().required(),
+    zendeskTicketId: number().required(),
+    supportType: mixed<SupportType>()
+      .oneOf(Object.values(SupportType))
+      .required(),
+    status: mixed<SupportRequestsStatus>()
+      .oneOf(Object.values(SupportRequestsStatus))
+      .required(),
+    supportExpertise: string().nullable().defined(),
+    priority: number().nullable().defined(),
+    hasDisability: boolean().nullable().defined(),
+    requiresLibras: boolean().nullable().defined(),
+    acceptsOnlineSupport: boolean().required(),
+    lat: number().nullable().defined(),
+    lng: number().nullable().defined(),
+    city: string().required(),
+    state: string().required(),
+  }).required()
+)
   .required()
   .min(1)
   .strict();
 
-const create = async (
+const compose = async (
   event: APIGatewayEvent,
   _context: Context,
   callback: APIGatewayProxyCallback
@@ -58,11 +77,9 @@ const create = async (
     );
 
     const supportRequests = await Promise.all(supportRequestPromises);
-    const res = supportRequests.map((request) => ({
-      ...request,
-      msrId: request.msrId.toString(),
-      zendeskTicketId: request.zendeskTicketId.toString(),
-    }));
+    const processSupportRequest = supportRequests.map(process);
+
+    const res = await Promise.all(processSupportRequest);
 
     return callback(null, {
       statusCode: 200,
@@ -87,4 +104,4 @@ const create = async (
   }
 };
 
-export default create;
+export default compose;
