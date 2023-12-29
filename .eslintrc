@@ -24,7 +24,7 @@
   },
   "overrides": [
     {
-      "files": ["prisma/*.js"],
+      "files": ["prisma/*.mjs"],
       "extends": ["plugin:@typescript-eslint/disable-type-checked"]
     }
   ]
