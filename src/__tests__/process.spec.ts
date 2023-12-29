@@ -1,4 +1,4 @@
-import type { APIGatewayProxyEvent, Context } from "aws-lambda";
+import type { SupportRequests } from "@prisma/client";
 import type { Decimal } from "@prisma/client/runtime/library";
 
 import process from "../process";
@@ -23,46 +23,9 @@ updateTicketMock.mockImplementation(() =>
   } as unknown as ZendeskTicket)
 );
 
-describe("/process endpoint", () => {
-  it("should return an error res when no body is provided to the req", async () => {
-    const callback = jest.fn();
-    await process(
-      {
-        body: null,
-      } as APIGatewayProxyEvent,
-      {} as Context,
-      callback
-    );
-    expect(callback).toHaveBeenCalledWith(null, {
-      statusCode: 400,
-      body: JSON.stringify({
-        error: "Empty request body",
-      }),
-    });
-  });
-
-  it("should return an error res when req body is invalid", async () => {
-    const callback = jest.fn();
-    await process(
-      {
-        body: JSON.stringify({
-          msrId: null,
-        }),
-      } as APIGatewayProxyEvent,
-      {} as Context,
-      callback
-    );
-    expect(callback).toHaveBeenCalledWith(null, {
-      statusCode: 400,
-      body: JSON.stringify({
-        error: `Validation error: state is a required field`,
-      }),
-    });
-  });
-
+describe("process", () => {
   it("should return an error res when prisma req fails", async () => {
     prismaMock.supportRequests.update.mockRejectedValue(false);
-    const callback = jest.fn();
     const body = {
       supportRequestId: 1,
       msrId: 1,
@@ -78,24 +41,12 @@ describe("/process endpoint", () => {
       lng: -46.67783830352818,
       city: "SAO PAULO",
       state: "SP",
-    };
-    await process(
-      {
-        body: JSON.stringify(body),
-      } as APIGatewayProxyEvent,
-      {} as Context,
-      callback
-    );
-    expect(callback).toHaveBeenCalledWith(null, {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: "false",
-      }),
-    });
+    } as unknown as SupportRequests;
+    const res = await process(body);
+    expect(res).toStrictEqual(null);
   });
 
   it("should return successful res when support request is directed to public service", async () => {
-    const callback = jest.fn();
     const body = {
       supportRequestId: 1,
       msrId: 1,
@@ -111,7 +62,7 @@ describe("/process endpoint", () => {
       lng: 23.32,
       city: "SAO PAULO",
       state: "SP",
-    };
+    } as unknown as SupportRequests;
     const supportRequest = {
       ...body,
       msrId: BigInt(1),
@@ -127,24 +78,11 @@ describe("/process endpoint", () => {
     prismaMock.supportRequests.update.mockResolvedValueOnce(supportRequest);
     prismaMock.volunteerAvailability.findMany.mockResolvedValueOnce([]);
 
-    await process(
-      {
-        body: JSON.stringify(body),
-      } as APIGatewayProxyEvent,
-      {} as Context,
-      callback
-    );
-
-    expect(callback).toHaveBeenCalledWith(null, {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: stringfyBigInt(supportRequest),
-      }),
-    });
+    const res = await process(body);
+    expect(res).toStrictEqual(stringfyBigInt(supportRequest));
   });
 
   it("should return successful res when support request receives an Ideal Match", async () => {
-    const callback = jest.fn();
     const body = {
       supportRequestId: 1,
       msrId: 1,
@@ -160,7 +98,7 @@ describe("/process endpoint", () => {
       lng: 23.32,
       city: "SAO PAULO",
       state: "SP",
-    };
+    } as unknown as SupportRequests;
     const supportRequest = {
       ...body,
       msrId: BigInt(1),
@@ -208,24 +146,12 @@ describe("/process endpoint", () => {
     ]);
     prismaMock.matches.create.mockResolvedValueOnce(match);
 
-    await process(
-      {
-        body: JSON.stringify(body),
-      } as APIGatewayProxyEvent,
-      {} as Context,
-      callback
-    );
+    const res = await process(body);
 
-    expect(callback).toHaveBeenCalledWith(null, {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: stringfyBigInt(match),
-      }),
-    });
+    expect(res).toStrictEqual(stringfyBigInt(match));
   });
 
   it("should return successful res when support request receives an Expanded Match", async () => {
-    const callback = jest.fn();
     const body = {
       supportRequestId: 1,
       msrId: 1,
@@ -241,7 +167,7 @@ describe("/process endpoint", () => {
       lng: 23.32,
       city: "SAO PAULO",
       state: "SP",
-    };
+    } as unknown as SupportRequests;
     const supportRequest = {
       ...body,
       msrId: BigInt(1),
@@ -289,19 +215,8 @@ describe("/process endpoint", () => {
     ]);
     prismaMock.matches.create.mockResolvedValueOnce(match);
 
-    await process(
-      {
-        body: JSON.stringify(body),
-      } as APIGatewayProxyEvent,
-      {} as Context,
-      callback
-    );
+    const res = await process(body);
 
-    expect(callback).toHaveBeenCalledWith(null, {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: stringfyBigInt(match),
-      }),
-    });
+    expect(res).toStrictEqual(stringfyBigInt(match));
   });
 });

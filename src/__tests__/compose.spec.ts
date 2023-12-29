@@ -1,18 +1,39 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { APIGatewayProxyEvent, Context } from "aws-lambda";
+import type { Matches } from "@prisma/client";
 import type { Decimal } from "@prisma/client/runtime/library";
-import create from "../create";
-import { prismaMock } from "../setupTests";
 
-describe("/create endpoint", () => {
+import compose from "../compose";
+import * as process from "../process";
+import { prismaMock } from "../setupTests";
+import { stringfyBigInt } from "../utils";
+
+const mockProcess = jest.spyOn(process, "default");
+const mockMatch = stringfyBigInt({
+  matchId: 1,
+  supportRequestId: 1,
+  msrId: BigInt(1),
+  volunteerId: 1,
+  msrZendeskTicketId: BigInt(1),
+  volunteerZendeskTicketId: BigInt(2),
+  supportType: "psychological" as const,
+  matchType: "msr" as const,
+  matchStage: "ideal" as const,
+  status: "waiting_contact" as const,
+  updatedAt: new Date(),
+  createdAt: new Date(),
+}) as Matches;
+mockProcess.mockImplementation(() => Promise.resolve(mockMatch));
+
+describe("/compose endpoint", () => {
   it("should return an error res when no body is provided to the req", async () => {
     const callback = jest.fn();
-    await create(
+    await compose(
       {
         body: null,
       } as APIGatewayProxyEvent,
       {} as Context,
-      callback,
+      callback
     );
     expect(callback).toHaveBeenCalledWith(null, {
       statusCode: 400,
@@ -24,7 +45,7 @@ describe("/create endpoint", () => {
 
   it("should return an error res when req body is invalid", async () => {
     const callback = jest.fn();
-    await create(
+    await compose(
       {
         body: JSON.stringify([
           {
@@ -33,7 +54,7 @@ describe("/create endpoint", () => {
         ]),
       } as APIGatewayProxyEvent,
       {} as Context,
-      callback,
+      callback
     );
     expect(callback).toHaveBeenCalledWith(null, {
       statusCode: 400,
@@ -63,12 +84,12 @@ describe("/create endpoint", () => {
         status: "open",
       },
     ];
-    await create(
+    await compose(
       {
         body: JSON.stringify(body),
       } as APIGatewayProxyEvent,
       {} as Context,
-      callback,
+      callback
     );
     expect(callback).toHaveBeenCalledWith(null, {
       statusCode: 500,
@@ -124,29 +145,22 @@ describe("/create endpoint", () => {
       updatedAt: new Date(),
     };
     prismaMock.supportRequests.create.mockResolvedValueOnce(
-      mockPsySupportRequest,
+      mockPsySupportRequest
     );
     prismaMock.supportRequests.create.mockResolvedValueOnce(
-      mockLegalSupportRequest,
+      mockLegalSupportRequest
     );
-    await create(
+    await compose(
       {
         body: JSON.stringify([psySupportRequest, legalSupportRequest]),
       } as APIGatewayProxyEvent,
       {} as Context,
-      callback,
-    );
-    const expectedRes = [mockPsySupportRequest, mockLegalSupportRequest].map(
-      (m) => ({
-        ...m,
-        msrId: m.msrId.toString(),
-        zendeskTicketId: m.zendeskTicketId.toString(),
-      }),
+      callback
     );
     expect(callback).toHaveBeenCalledWith(null, {
       statusCode: 200,
       body: JSON.stringify({
-        message: expectedRes,
+        message: [mockMatch, mockMatch],
       }),
     });
     expect(prismaMock.supportRequests.create).toHaveBeenCalledTimes(2);
