@@ -3,7 +3,9 @@ import type {
   Context,
   APIGatewayProxyCallback,
 } from "aws-lambda";
+import type { SupportRequests } from "@prisma/client";
 import { object, array } from "yup";
+
 import prismaClient from "./prismaClient";
 import {
   getErrorMessage,
@@ -40,14 +42,16 @@ const create = async (
       ? (JSON.parse(body) as unknown)
       : (Object.create(null) as Record<string, unknown>);
 
-    const validatedBody = await bodySchema.validate(parsedBody);
+    const validatedBody = (await bodySchema.validate(
+      parsedBody
+    )) as unknown as SupportRequests[];
 
     const supportRequestPromises = validatedBody.map(
       async (supportRequest) =>
         await prismaClient.supportRequests.create({
           data: {
             ...supportRequest,
-            city: normalizeCity(supportRequest.city),
+            city: normalizeCity(supportRequest.city || "not_found"),
             SupportRequestStatusHistory: {
               create: {
                 status: supportRequest.status,
