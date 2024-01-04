@@ -154,7 +154,7 @@ async function main() {
 
   const newMatchFeatureFlag = await prisma.featureFlag.create({
     data: {
-      featureName: "NOVO_MATCH",
+      featureName: "NEW_MATCH",
       featureEnabled: true,
     },
   });
