@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { APIGatewayProxyEvent, Context } from "aws-lambda";
-import type { Matches } from "@prisma/client";
+import type { FeatureFlag, Matches } from "@prisma/client";
 import type { Decimal } from "@prisma/client/runtime/library";
 
 import compose from "../compose";
@@ -99,7 +99,7 @@ describe("/compose endpoint", () => {
     });
   });
 
-  it("should return successful res when prisma validation and prisma req work", async () => {
+  describe("Successful req", () => {
     const callback = jest.fn();
     const defaultBody = {
       supportExpertise: null,
@@ -144,47 +144,97 @@ describe("/compose endpoint", () => {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    prismaMock.supportRequests.create.mockResolvedValueOnce(
-      mockPsySupportRequest
-    );
-    prismaMock.supportRequests.create.mockResolvedValueOnce(
-      mockLegalSupportRequest
-    );
-    await compose(
-      {
-        body: JSON.stringify([psySupportRequest, legalSupportRequest]),
-      } as APIGatewayProxyEvent,
-      {} as Context,
-      callback
-    );
-    expect(callback).toHaveBeenCalledWith(null, {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: [mockMatch, mockMatch],
-      }),
+
+    beforeEach(() => {
+      prismaMock.supportRequests.create.mockResolvedValueOnce(
+        mockPsySupportRequest
+      );
+      prismaMock.supportRequests.create.mockResolvedValueOnce(
+        mockLegalSupportRequest
+      );
     });
-    expect(prismaMock.supportRequests.create).toHaveBeenCalledTimes(2);
-    expect(prismaMock.supportRequests.create).toHaveBeenNthCalledWith(1, {
-      data: {
-        ...psySupportRequest,
-        city: "SAO PAULO",
-        SupportRequestStatusHistory: {
-          create: {
-            status: "open",
+
+    it("should call prisma with correct support request payload", async () => {
+      await compose(
+        {
+          body: JSON.stringify([psySupportRequest, legalSupportRequest]),
+        } as APIGatewayProxyEvent,
+        {} as Context,
+        callback
+      );
+      expect(prismaMock.supportRequests.create).toHaveBeenCalledTimes(2);
+      expect(prismaMock.supportRequests.create).toHaveBeenNthCalledWith(1, {
+        data: {
+          ...psySupportRequest,
+          city: "SAO PAULO",
+          SupportRequestStatusHistory: {
+            create: {
+              status: "open",
+            },
           },
         },
-      },
-    });
-    expect(prismaMock.supportRequests.create).toHaveBeenNthCalledWith(2, {
-      data: {
-        ...legalSupportRequest,
-        city: "SAO PAULO",
-        SupportRequestStatusHistory: {
-          create: {
-            status: "duplicated",
+      });
+      expect(prismaMock.supportRequests.create).toHaveBeenNthCalledWith(2, {
+        data: {
+          ...legalSupportRequest,
+          city: "SAO PAULO",
+          SupportRequestStatusHistory: {
+            create: {
+              status: "duplicated",
+            },
           },
         },
-      },
+      });
+    });
+
+    describe("When NOVO_MATCH feature flag is", () => {
+      describe("enabled", () => {
+        beforeEach(() => {
+          prismaMock.featureFlag.findUnique.mockResolvedValueOnce({
+            featureEnabled: true,
+          } as FeatureFlag);
+        });
+        it("should return a res with match payload", async () => {
+          await compose(
+            {
+              body: JSON.stringify([psySupportRequest, legalSupportRequest]),
+            } as APIGatewayProxyEvent,
+            {} as Context,
+            callback
+          );
+          expect(callback).toHaveBeenCalledWith(null, {
+            statusCode: 200,
+            body: JSON.stringify({
+              message: [mockMatch, mockMatch],
+            }),
+          });
+        });
+      });
+      describe("disabled", () => {
+        beforeEach(() => {
+          prismaMock.featureFlag.findUnique.mockResolvedValueOnce({
+            featureEnabled: false,
+          } as FeatureFlag);
+        });
+        it("should return a res with support request payload", async () => {
+          await compose(
+            {
+              body: JSON.stringify([psySupportRequest, legalSupportRequest]),
+            } as APIGatewayProxyEvent,
+            {} as Context,
+            callback
+          );
+          expect(callback).toHaveBeenCalledWith(null, {
+            statusCode: 200,
+            body: JSON.stringify({
+              message: [
+                stringfyBigInt(mockPsySupportRequest),
+                stringfyBigInt(mockLegalSupportRequest),
+              ],
+            }),
+          });
+        });
+      });
     });
   });
 });
