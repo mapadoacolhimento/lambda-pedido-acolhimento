@@ -12,7 +12,12 @@ import { object, array, string, mixed, number, boolean } from "yup";
 
 import process from "./process";
 import prismaClient from "./prismaClient";
-import { getErrorMessage, isJsonString, normalizeCity } from "./utils";
+import {
+  getErrorMessage,
+  isJsonString,
+  normalizeCity,
+  stringfyBigInt,
+} from "./utils";
 
 const bodySchema = array(
   object({
@@ -82,9 +87,15 @@ const compose = async (
     );
 
     const supportRequests = await Promise.all(supportRequestPromises);
-    const processSupportRequest = supportRequests.map(process);
+    const isNewMatchEnabled = await getNewMatchFeatureFlag();
+    let res;
 
-    const res = await Promise.all(processSupportRequest);
+    if (isNewMatchEnabled) {
+      const processSupportRequest = supportRequests.map(process);
+      res = await Promise.all(processSupportRequest);
+    } else {
+      res = supportRequests.map(stringfyBigInt);
+    }
 
     return callback(null, {
       statusCode: 200,
@@ -108,5 +119,18 @@ const compose = async (
     });
   }
 };
+
+async function getNewMatchFeatureFlag() {
+  const isEnabled = await prismaClient.featureFlag.findUnique({
+    where: {
+      featureName: "NEW_MATCH",
+    },
+    select: {
+      featureEnabled: true,
+    },
+  });
+
+  return !!isEnabled?.featureEnabled;
+}
 
 export default compose;
