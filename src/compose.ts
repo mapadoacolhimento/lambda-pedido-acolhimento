@@ -130,7 +130,7 @@ async function getNewMatchFeatureFlag() {
     },
   });
 
-  return !!isEnabled?.featureEnabled;
+  return isEnabled ? isEnabled.featureEnabled : false;
 }
 
 export default compose;
