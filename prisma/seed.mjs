@@ -152,11 +152,19 @@ async function main() {
   //   },
   // });
 
+  const newMatchFeatureFlag = await prisma.featureFlag.create({
+    data: {
+      featureName: "NOVO_MATCH",
+      featureEnabled: true,
+    },
+  });
+
   console.log({
     therapistVolunteer,
     therapistVolunteerAvailability,
     lawyerVolunteer,
     lawyerVolunteerAvailability,
+    newMatchFeatureFlag,
     // psychologicalSupportRequest,
     // legalSupportRequest,
   });
