@@ -26,10 +26,10 @@ const featureFlag = async (
 
     const isFeatureFlagEnabled = await prismaClient.featureFlag.findUnique({
       where: {
-        feature_name: featureFlagName,
+        featureName: featureFlagName,
       },
       select: {
-        feature_enabled: true,
+        featureEnabled: true,
       },
     });
 
@@ -43,7 +43,7 @@ const featureFlag = async (
     return callback(null, {
       statusCode: 200,
       body: JSON.stringify({
-        isFeatureFlagEnabled: isFeatureFlagEnabled.feature_enabled,
+        isFeatureFlagEnabled: !!isFeatureFlagEnabled?.featureEnabled,
       }),
     });
   } catch (e) {
