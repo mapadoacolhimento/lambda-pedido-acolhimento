@@ -140,8 +140,8 @@ async function fetchVolunteerFromDB(
 
     return volunteer;
   } catch (e) {
-    console.log(
-      `Something went wrong when fetching this volunteer from db '${volunteerId}': ${getErrorMessage(
+    console.error(
+      `[fetchVolunteerFromDB] - Something went wrong when fetching this volunteer from db '${volunteerId}': ${getErrorMessage(
         e
       )}`
     );

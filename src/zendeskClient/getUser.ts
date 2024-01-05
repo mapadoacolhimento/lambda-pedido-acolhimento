@@ -33,8 +33,8 @@ export default async function getUser(
 
     return data.user;
   } catch (e) {
-    console.log(
-      `Something went wrong when fetching this user from Zendesk '${userId}': ${getErrorMessage(
+    console.error(
+      `[getUser] - Something went wrong when fetching this user from Zendesk '${userId}': ${getErrorMessage(
         e
       )}`
     );

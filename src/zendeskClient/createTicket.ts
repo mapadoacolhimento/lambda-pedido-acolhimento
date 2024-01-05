@@ -39,8 +39,8 @@ export default async function createTicket(
 
     return data.ticket;
   } catch (e) {
-    console.log(
-      `Something went wrong when creating a ticket for this user '${ticket.requester_id.toString()}': ${getErrorMessage(
+    console.error(
+      `[createTicket] - Something went wrong when creating a ticket for this user '${ticket.requester_id.toString()}': ${getErrorMessage(
         e
       )}`
     );

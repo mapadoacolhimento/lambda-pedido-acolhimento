@@ -50,6 +50,8 @@ const compose = async (
 
     const { body } = event;
     if (!body) {
+      console.error("[compose] - [400]: Empty request body");
+
       return callback(null, {
         statusCode: 400,
         body: JSON.stringify({
@@ -95,16 +97,24 @@ const compose = async (
   } catch (e) {
     const error = e as Record<string, unknown>;
     if (error["name"] === "ValidationError") {
+      const errorMsg = `Validation error: ${getErrorMessage(error)}`;
+
+      console.error(`[compose] - [400]: ${errorMsg}`);
+
       return callback(null, {
         statusCode: 400,
         body: JSON.stringify({
-          error: `Validation error: ${getErrorMessage(e)}`,
+          error: errorMsg,
         }),
       });
     }
+
+    const errorMsg = getErrorMessage(error);
+    console.error(`[compose] - [500]: ${errorMsg}`);
+
     return callback(null, {
       statusCode: 500,
-      body: JSON.stringify({ error: getErrorMessage(error) }),
+      body: JSON.stringify({ error: errorMsg }),
     });
   }
 };
