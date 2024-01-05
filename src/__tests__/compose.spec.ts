@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { APIGatewayProxyEvent, Context } from "aws-lambda";
-import type { FeatureFlag, Matches } from "@prisma/client";
+import type { Matches } from "@prisma/client";
 import type { Decimal } from "@prisma/client/runtime/library";
 
 import compose from "../compose";
 import * as process from "../process";
+import * as prisma from "../prismaClient";
 import { prismaMock } from "../setupTests";
 import { stringfyBigInt } from "../utils";
 
 const mockProcess = jest.spyOn(process, "default");
+const mockIsFeatureFlagEnabled = jest.spyOn(prisma, "isFeatureFlagEnabled");
 const mockMatch = stringfyBigInt({
   matchId: 1,
   supportRequestId: 1,
@@ -190,9 +192,7 @@ describe("/compose endpoint", () => {
     describe("When NOVO_MATCH feature flag is", () => {
       describe("enabled", () => {
         beforeEach(() => {
-          prismaMock.featureFlag.findUnique.mockResolvedValueOnce({
-            featureEnabled: true,
-          } as FeatureFlag);
+          mockIsFeatureFlagEnabled.mockResolvedValueOnce(true);
         });
         it("should return a res with match payload", async () => {
           await compose(
@@ -212,9 +212,7 @@ describe("/compose endpoint", () => {
       });
       describe("disabled", () => {
         beforeEach(() => {
-          prismaMock.featureFlag.findUnique.mockResolvedValueOnce({
-            featureEnabled: false,
-          } as FeatureFlag);
+          mockIsFeatureFlagEnabled.mockResolvedValueOnce(false);
         });
         it("should return a res with support request payload", async () => {
           await compose(
