@@ -1,4 +1,4 @@
-import prismaClient from "./prismaClient";
+import { isFeatureFlagEnabled } from "./prismaClient";
 import { getErrorMessage } from "./utils";
 import type {
   APIGatewayEvent,
@@ -24,16 +24,9 @@ const featureFlag = async (
       });
     }
 
-    const isFeatureFlagEnabled = await prismaClient.featureFlag.findUnique({
-      where: {
-        featureName: featureFlagName,
-      },
-      select: {
-        featureEnabled: true,
-      },
-    });
+    const isEnabled = await isFeatureFlagEnabled(featureFlagName);
 
-    if (!isFeatureFlagEnabled) {
+    if (!isEnabled) {
       return callback(null, {
         statusCode: 404,
         body: "No feature flag with this name was found.",
@@ -43,7 +36,7 @@ const featureFlag = async (
     return callback(null, {
       statusCode: 200,
       body: JSON.stringify({
-        isFeatureFlagEnabled: !!isFeatureFlagEnabled?.featureEnabled,
+        isFeatureFlagEnabled: isEnabled,
       }),
     });
   } catch (e) {

@@ -11,13 +11,14 @@ import {
 import { object, array, string, mixed, number, boolean } from "yup";
 
 import process from "./process";
-import prismaClient from "./prismaClient";
+import prismaClient, { isFeatureFlagEnabled } from "./prismaClient";
 import {
   getErrorMessage,
   isJsonString,
   normalizeCity,
   stringfyBigInt,
 } from "./utils";
+import { NEW_MATCH_FEATURE_FLAG } from "./constants";
 
 const bodySchema = array(
   object({
@@ -87,7 +88,9 @@ const compose = async (
     );
 
     const supportRequests = await Promise.all(supportRequestPromises);
-    const isNewMatchEnabled = await getNewMatchFeatureFlag();
+    const isNewMatchEnabled = await isFeatureFlagEnabled(
+      NEW_MATCH_FEATURE_FLAG
+    );
     let res;
 
     if (isNewMatchEnabled) {
@@ -119,18 +122,5 @@ const compose = async (
     });
   }
 };
-
-async function getNewMatchFeatureFlag() {
-  const isEnabled = await prismaClient.featureFlag.findUnique({
-    where: {
-      featureName: "NEW_MATCH",
-    },
-    select: {
-      featureEnabled: true,
-    },
-  });
-
-  return isEnabled ? isEnabled.featureEnabled : false;
-}
 
 export default compose;
