@@ -25,6 +25,7 @@ custom:
     apiKey: ${env:NEW_RELIC_API_KEY}
     cloudWatchFilter: "*"
     nrRegion: 'eu'
+    enableFunctionLogs: true
 
 provider:
   name: aws
