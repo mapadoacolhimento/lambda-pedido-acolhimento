@@ -11,8 +11,14 @@ import {
 import { object, array, string, mixed, number, boolean } from "yup";
 
 import process from "./process";
-import prismaClient from "./prismaClient";
-import { getErrorMessage, isJsonString, normalizeCity } from "./utils";
+import prismaClient, { isFeatureFlagEnabled } from "./prismaClient";
+import {
+  getErrorMessage,
+  isJsonString,
+  normalizeCity,
+  stringfyBigInt,
+} from "./utils";
+import { NEW_MATCH_FEATURE_FLAG } from "./constants";
 
 const bodySchema = array(
   object({
@@ -84,9 +90,17 @@ const compose = async (
     );
 
     const supportRequests = await Promise.all(supportRequestPromises);
-    const processSupportRequest = supportRequests.map(process);
+    const isNewMatchEnabled = await isFeatureFlagEnabled(
+      NEW_MATCH_FEATURE_FLAG
+    );
+    let res;
 
-    const res = await Promise.all(processSupportRequest);
+    if (isNewMatchEnabled) {
+      const processSupportRequest = supportRequests.map(process);
+      res = await Promise.all(processSupportRequest);
+    } else {
+      res = supportRequests.map(stringfyBigInt);
+    }
 
     return callback(null, {
       statusCode: 200,

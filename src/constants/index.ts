@@ -34,3 +34,5 @@ export const VOLUNTEER_SUPPORT_TYPE_DICIO = {
     registryType: "OAB",
   },
 };
+
+export const NEW_MATCH_FEATURE_FLAG = "NEW_MATCH";

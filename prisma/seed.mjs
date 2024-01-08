@@ -16,7 +16,6 @@ async function main() {
       last_name: "Local",
       email: "dev+psi@mapa.org.br",
       phone: "11911991199",
-      whatsapp: "11911991199",
       zipcode: "01303020",
       state: "SP",
       city: "SAO PAULO",
@@ -68,7 +67,6 @@ async function main() {
       last_name: "Local",
       email: "dev+adv@mapa.org.br",
       phone: "11911991199",
-      whatsapp: "11911991199",
       zipcode: "01303020",
       state: "SP",
       city: "SAO PAULO",
@@ -152,11 +150,19 @@ async function main() {
   //   },
   // });
 
+  const newMatchFeatureFlag = await prisma.featureFlag.create({
+    data: {
+      featureName: "NEW_MATCH",
+      featureEnabled: true,
+    },
+  });
+
   console.log({
     therapistVolunteer,
     therapistVolunteerAvailability,
     lawyerVolunteer,
     lawyerVolunteerAvailability,
+    newMatchFeatureFlag,
     // psychologicalSupportRequest,
     // legalSupportRequest,
   });
