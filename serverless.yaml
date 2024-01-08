@@ -20,6 +20,12 @@ custom:
   serverless-offline:
     httpPort: 5000
     ignoreJWTSignature: true
+  newRelic:
+    accountId: ${env:NEW_RELIC_ACCOUNT_ID}
+    apiKey: ${env:NEW_RELIC_API_KEY}
+    cloudWatchFilter: "*"
+    nrRegion: 'eu'
+    enableFunctionLogs: true
 
 provider:
   name: aws
@@ -74,3 +80,4 @@ functions:
 plugins:
   - serverless-webpack
   - serverless-offline
+  - serverless-newrelic-lambda-layers

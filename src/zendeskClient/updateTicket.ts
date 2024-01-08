@@ -42,8 +42,8 @@ export default async function updateTicket(
 
     return data.ticket;
   } catch (e) {
-    console.log(
-      `Something went wrong when updating this ticket '${
+    console.error(
+      `[updateTicket] - Something went wrong when updating this ticket '${
         ticket.id
       }': ${getErrorMessage(e)}`
     );

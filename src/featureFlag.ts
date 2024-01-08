@@ -18,6 +18,10 @@ const featureFlag = async (
       : null;
 
     if (!featureFlagName) {
+      console.error(
+        "[featureFlag] - 400: No feature flag name provided. Try again."
+      );
+
       return callback(null, {
         statusCode: 400,
         body: "No feature flag name provided. Try again.",
@@ -48,9 +52,13 @@ const featureFlag = async (
     });
   } catch (e) {
     const error = e as Record<string, unknown>;
+    const errorMsg = getErrorMessage(error);
+
+    console.error(`[featureFlag] - 500: ${errorMsg}`);
+
     return callback(null, {
       statusCode: 500,
-      body: getErrorMessage(error),
+      body: errorMsg,
     });
   }
 };

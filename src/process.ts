@@ -54,8 +54,8 @@ const process = async (
 
     return stringfyBigInt(publicService) as PublicService;
   } catch (e) {
-    console.log(
-      `Something went wrong while processing this support request '${
+    console.error(
+      `[process] - Something went wrong while processing this support request '${
         supportRequest.supportRequestId
       }': ${getErrorMessage(e)}`
     );
