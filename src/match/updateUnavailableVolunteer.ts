@@ -1,9 +1,9 @@
 import type { VolunteerAvailability } from "@prisma/client";
 import client from "../prismaClient";
-import updateUser from "../zendeskClient/updateUser";
+import { updateUser } from "../zendeskClient";
 import type { ZendeskUser } from "../types";
 
-export async function updateUnavailableVolunteer(
+export default async function updateUnavailableVolunteer(
   volunteerId: VolunteerAvailability["volunteer_id"]
 ) {
   const volunteer = await client.volunteers.update({
@@ -23,14 +23,17 @@ export async function updateUnavailableVolunteer(
     },
   });
 
-  if (!volunteer.zendeskUserId) {
+  if (!volunteer || !volunteer.zendeskUserId)
     throw new Error("Couldn't fetch volunteer from db");
-  }
 
   const volunteerZendeskUser: Pick<ZendeskUser, "id" | "user_fields"> = {
     id: volunteer.zendeskUserId,
     user_fields: { condition: "indisponivel_sem_vagas" },
   };
+  const updatedVolunteer = await updateUser(volunteerZendeskUser);
 
-  await updateUser(volunteerZendeskUser);
+  if (!updatedVolunteer)
+    throw new Error("Couldn't update volunteer Zendesk status");
+
+  return updatedVolunteer;
 }

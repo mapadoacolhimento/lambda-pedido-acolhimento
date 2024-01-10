@@ -6,7 +6,7 @@ import type {
 import client from "../prismaClient";
 import createAndUpdateZendeskMatchTickets from "./createAndUpdateZendeskMatchTickets";
 import type { SupportRequest } from "../types";
-import { updateUnavailableVolunteer } from "./updateUnavailableVolunteer";
+import updateUnavailableVolunteer from "./updateUnavailableVolunteer";
 
 export async function createMatch(
   supportRequest: SupportRequest,
