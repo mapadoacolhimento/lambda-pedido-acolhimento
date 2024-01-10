@@ -6,6 +6,7 @@ import type {
 import client from "../prismaClient";
 import createAndUpdateZendeskMatchTickets from "./createAndUpdateZendeskMatchTickets";
 import type { SupportRequest } from "../types";
+import { updateUnavailableVolunteer } from "./updateUnavailableVolunteer";
 
 export async function createMatch(
   supportRequest: SupportRequest,
@@ -66,24 +67,8 @@ export async function createMatch(
     },
   });
 
-  if (!isVolunteerAvailable) {
-    await client.volunteers.update({
-      where: {
-        id: volunteerAvailability.volunteer_id,
-      },
-      data: {
-        condition: "indisponivel_sem_vagas",
-      },
-    });
-
-    await client.volunteerStatusHistory.create({
-      data: {
-        volunteer_id: volunteerAvailability.volunteer_id,
-        status: "indisponivel_sem_vagas",
-        created_at: new Date(),
-      },
-    });
-  }
+  if (!isVolunteerAvailable)
+    await updateUnavailableVolunteer(volunteerAvailability.volunteer_id);
 
   return match;
 }

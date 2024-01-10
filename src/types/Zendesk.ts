@@ -1,10 +1,17 @@
 export type ZendeskUser = {
   id: bigint;
   name: string;
+  user_fields: {
+    condition: string;
+  };
 };
 
 export type ZendeskUserRes = {
   user: ZendeskUser;
+};
+
+export type UpdateZendeskUser = Partial<Omit<ZendeskUser, "id">> & {
+  id: bigint;
 };
 
 export type ZendeskTicket = {
