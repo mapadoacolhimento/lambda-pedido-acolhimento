@@ -7,7 +7,7 @@ type Volunteer = Pick<Volunteers, "firstName" | "phone" | "registrationNumber">;
 type MsrEmailParams = {
   volunteer: Volunteer;
   agent: number;
-  msr: Omit<ZendeskUser, "id"> & Pick<SupportRequest, "supportType">;
+  msr: Partial<Omit<ZendeskUser, "id">> & Pick<SupportRequest, "supportType">;
 };
 
 export default function getMsrEmail({ volunteer, agent, msr }: MsrEmailParams) {
