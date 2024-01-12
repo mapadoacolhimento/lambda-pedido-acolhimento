@@ -41,6 +41,17 @@ describe("updateUnavailableVolunteer", () => {
     );
   });
 
+  it("should call updateUser function with correct payload", async () => {
+    prismaMock.volunteers.update.mockResolvedValueOnce(mockVolunteerFromDB);
+    updateUserMock.mockResolvedValueOnce(mockVolunteerFromZendesk);
+    await updateUnavailableVolunteer(mockVolunteerId);
+
+    expect(updateUserMock).toHaveBeenCalledWith({
+      id: mockVolunteerFromDB.zendeskUserId,
+      user_fields: { condition: "indisponivel_sem_vagas" },
+    });
+  });
+
   it("should update volunteer zendesk status to indisponivel_sem_vagas", async () => {
     prismaMock.volunteers.update.mockResolvedValueOnce(mockVolunteerFromDB);
     updateUserMock.mockResolvedValueOnce(mockVolunteerFromZendesk);
