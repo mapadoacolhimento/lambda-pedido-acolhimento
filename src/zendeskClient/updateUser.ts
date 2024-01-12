@@ -38,7 +38,7 @@ export default async function updateUser(
     return data.user;
   } catch (e) {
     console.error(
-      `[updateUser] - Something went wrong when updating this user '${
+      `[updateUser] - Something went wrong when updating this user on Zendesk '${
         user.id
       }': ${getErrorMessage(e)}`
     );
