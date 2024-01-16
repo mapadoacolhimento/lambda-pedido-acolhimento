@@ -106,7 +106,7 @@ async function updateMsrZendeskTicketWithMatch({
       },
     ],
     comment: {
-      body: msr.email,
+      html_body: msr.email,
       author_id: agent,
       public: true,
     },

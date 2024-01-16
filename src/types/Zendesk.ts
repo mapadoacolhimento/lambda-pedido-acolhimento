@@ -1,6 +1,7 @@
 export type ZendeskUser = {
   id: bigint;
   name: string;
+  email: string;
   user_fields: {
     condition: string;
   };
