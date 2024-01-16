@@ -14,7 +14,7 @@ async function main() {
       condition: "disponivel",
       firstName: "Teste Psi",
       last_name: "Local",
-      email: "dev+psi@mapa.org.br",
+      email: "dev.psi.mapa@gmail.com",
       phone: "11911991199",
       zipcode: "01303020",
       state: "SP",
@@ -65,7 +65,7 @@ async function main() {
       condition: "disponivel",
       firstName: "Teste Advogada",
       last_name: "Local",
-      email: "dev+adv@mapa.org.br",
+      email: "dev.adv.mapa@gmail.com",
       phone: "11911991199",
       zipcode: "01303020",
       state: "SP",
@@ -157,12 +157,24 @@ async function main() {
     },
   });
 
+  const city = await prisma.cities.create({
+    data: {
+      city_value: "SAO PAULO",
+      city_label: "SÃO PAULO",
+      state: "SP",
+      ibge_code: 123,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+  });
+
   console.log({
     therapistVolunteer,
     therapistVolunteerAvailability,
     lawyerVolunteer,
     lawyerVolunteerAvailability,
     newMatchFeatureFlag,
+    city,
     // psychologicalSupportRequest,
     // legalSupportRequest,
   });
