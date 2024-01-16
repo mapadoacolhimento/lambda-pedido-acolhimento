@@ -102,6 +102,16 @@ const compose = async (
       res = supportRequests.map(stringfyBigInt);
     }
 
+    const validRes = res.find(Boolean);
+    if (!validRes) {
+      const tickets = validatedBody
+        .map((supportRequest) => supportRequest.zendeskTicketId.toString())
+        .join(",");
+      throw new Error(
+        `Invalid res when creating support request or processing it for these tickets: '${tickets}'`
+      );
+    }
+
     return callback(null, {
       statusCode: 200,
       body: JSON.stringify({
