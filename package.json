@@ -16,7 +16,7 @@
     "test:stage": "jest --findRelatedTests --passWithNoTests",
     "test:ci": "jest --ci",
     "clean:build": "rimraf .serverless dist",
-    "db:start": "docker compose up -d",
+    "db:start": "docker-compose up -d",
     "db:push": "prisma db push",
     "migrate:deploy": "prisma migrate deploy",
     "migrate:create": "prisma migrate dev --create-only",
