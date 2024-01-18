@@ -37,7 +37,11 @@ const mockMsrFromZendesk = {
   name: "Teste MSR",
 } as ZendeskUser;
 const mockCurrentDate = "2023-12-28";
-const mockMsrEmail = "msr email";
+const mockMsrEmail = {
+  html_body: "msr email",
+  public: true,
+  author_id: 1,
+};
 
 describe("createAndUpdateZendeskMatchTickets", () => {
   getAgentMock.mockImplementation(() => mockAgentNumber);
@@ -168,7 +172,7 @@ describe("createAndUpdateZendeskMatchTickets", () => {
           },
         ],
         comment: {
-          body: "msr email",
+          html_body: "msr email",
           author_id: 1,
           public: true,
         },
@@ -238,7 +242,7 @@ describe("createAndUpdateZendeskMatchTickets", () => {
           },
         ],
         comment: {
-          body: "msr email",
+          html_body: "msr email",
           author_id: 1,
           public: true,
         },
