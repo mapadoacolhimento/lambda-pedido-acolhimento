@@ -1,15 +1,50 @@
 import crypto from "crypto";
 import type { Volunteers } from "@prisma/client";
+import { isProduction } from "../utils";
 import { AGENT_DICIO, VOLUNTEER_SUPPORT_TYPE_DICIO } from "../constants";
 import type { SupportRequest, ZendeskUser } from "../types";
 
 type Volunteer = Pick<Volunteers, "firstName" | "phone" | "registrationNumber">;
+type Msr = Pick<ZendeskUser, "email" | "name"> &
+  Pick<SupportRequest, "supportType">;
 
 type MsrEmailParams = {
-  volunteer: Volunteer;
+  volunteer?: Volunteer;
   agent: number;
-  msr: Partial<Omit<ZendeskUser, "id">> & Pick<SupportRequest, "supportType">;
+  msr: Msr;
+  isMatch: boolean;
 };
+
+export default function getMsrEmail({
+  volunteer,
+  agent,
+  msr,
+  isMatch,
+}: MsrEmailParams) {
+  const encryptedEmail = encrypt(msr.email);
+  const surveyLink = process.env["SURVEY_LINK"];
+
+  const msrSurveyLink = `${surveyLink}?user_id=${encryptedEmail}`;
+  const agentName = AGENT_DICIO[agent] || "Equipe";
+
+  const msrMessage =
+    isMatch && volunteer
+      ? matchEmailTemplate({
+          volunteer,
+          msr,
+          agentName,
+          surveyLink: msrSurveyLink,
+        })
+      : publicServiceEmailTemplate(msr.name, agentName, msrSurveyLink);
+
+  const zendeskComment = {
+    html_body: msrMessage,
+    author_id: agent,
+    public: isProduction() ? true : false,
+  };
+
+  return zendeskComment;
+}
 
 function encrypt(data: string) {
   const encryptionMethod = process.env["ENCRYPTION_METHOD"]!;
@@ -34,17 +69,27 @@ function encrypt(data: string) {
   ).toString("base64");
 }
 
-export default function getMsrEmail({ volunteer, agent, msr }: MsrEmailParams) {
+type MatchEmailTemplate = {
+  volunteer: Volunteer;
+  agentName: string;
+  msr: {
+    supportType: SupportRequest["supportType"];
+    name: ZendeskUser["name"];
+  };
+  surveyLink: string;
+};
+
+function matchEmailTemplate({
+  msr,
+  volunteer,
+  agentName,
+  surveyLink,
+}: MatchEmailTemplate) {
   const volunteerSupportTypeInfo =
     VOLUNTEER_SUPPORT_TYPE_DICIO[msr.supportType];
 
-  const encryptedEmail = encrypt(msr.email!);
-  const surveyLink = process.env["SURVEY_LINK"];
-
-  const msrSurveyLink = `${surveyLink}?user_id=${encryptedEmail}`;
-
   return `
-    <p>Olá ${msr.name}!
+    <p>Olá ${msr.name || ""}!
     </br>
     </br>
     Boa notícia!
@@ -76,7 +121,7 @@ export default function getMsrEmail({ volunteer, agent, msr }: MsrEmailParams) {
     Além disso, <span style="font-weight: bold">o nosso time está conduzindo uma pesquisa para entender melhor a efetividade dos atendimentos prestados pelas nossas voluntárias. Para isso, precisamos que as mulheres que buscam nossa ajuda, compartilhem suas experiências e perspectivas conosco. Pode nos ajudar?</span>
     </br>
     </br>
-    <a href="${msrSurveyLink}">Quero preencher o formulário!</a>
+    <a href="${surveyLink}">Quero preencher o formulário!</a>
     </br>
     </br>
     <span style="font-weight: bold">Lembrando que o preenchimento desse formulário é totalmente opcional e não impactará no atendimento que você receberá.</span> Caso ele te cause qualquer desconforto, estamos aqui para te acolher. Nos escreva para <a href="mailto:atendimento@mapadoacolhimento.org">atendimento@mapadoacolhimento.org</a>.
@@ -88,7 +133,51 @@ export default function getMsrEmail({ volunteer, agent, msr }: MsrEmailParams) {
     Um abraço,
     </br>
     </br>
-    ${AGENT_DICIO[agent]} do Mapa do Acolhimento 💜
+    ${agentName} do Mapa do Acolhimento 💜
     </p>
     `;
+}
+
+function publicServiceEmailTemplate(
+  msrName: ZendeskUser["name"],
+  agentName: string,
+  surveyLink: string
+) {
+  return `
+  <p>Olá, ${msrName}!
+  </br>
+  </br>
+  Obrigada por aguardar!
+  </br>
+  </br>
+  Infelizmente não encontramos uma voluntária disponível na sua localidade para que você receba o atendimento qualificado que precisa!
+  </br>
+  </br>
+  Mas, para que não fique desamparada e ainda possa receber o atendimento necessário, <span style="font-weight:bold">orientamos que busque atendimento via rede de proteção às mulheres! É possível que você conheça todos os serviços públicos da rede de enfrentamento à violência contra as mulheres clicando neste link: <a href="https://bit.ly/GuiaServPublico">https://bit.ly/GuiaServPublico</a></span>. Caso queira encontrar o serviço disponível mais próximo da sua localização, além de receber informações sobre os principais canais de denúncia e protocolos de segurança, acesse aqui: <a href="https://bit.ly/mapa_servicos_publicos">https://bit.ly/mapa_servicos_publicos</a>.
+  </br>
+  </br>
+  <span style="font-weight:bold">Também te indicamos a Cartilha #ComoMeProteger</span> que possui orientações sobre (1) como identificar a violência doméstica; (2) o que é o ciclo de violência; (3) o que é e como traçar um plano de segurança; (4) como se proteger e onde buscar ajuda; (5) como e onde obter acesso à justiça, abortamento legal e renda básica emergencial; além de (6) um detalhado passo-a-passo de segurança digital. Baixe aqui: <a href="https://bit.ly/CartilhaComoMeProteger">https://bit.ly/CartilhaComoMeProteger</a>.
+  </br>
+  </br>
+  (!!) Lembrando que por uma questão de segurança, as informações desta cartilha não podem cair em mãos erradas, por isso, pedimos para que você faça o download e guarde-o em um local seguro! 
+  </br>
+  </br>
+  Além disso, <span style="font-weight: bold;">o nosso time está conduzindo uma pesquisa para entender melhor a efetividade do serviço que prestamos.</span> Para isso, <span style="font-weight:bold">precisamos que as mulheres que buscam nossa ajuda, compartilhem suas experiências e perspectivas conosco. Pode nos ajudar?</span>
+  </br>
+  </br>
+  <a href=${surveyLink}>Quero preencher o formulário!</a>
+  </br>
+  </br>
+  Lembrando que o preenchimento desse formulário é totalmente opcional. Caso ele te cause qualquer desconforto, estamos aqui para te acolher. Nos escreva para <a href="mailto:atendimento@mapadoacolhimento.org">atendimento@mapadoacolhimento.org</a>
+  </br>
+  </br>
+  Estamos juntas! 
+  </br>
+  </br>
+  Um abraço,
+  </br>
+  </br>
+  ${agentName} do Mapa do Acolhimento
+  </p>
+  `;
 }
