@@ -165,7 +165,7 @@ function publicServiceEmailTemplate(
   Além disso, <span style="font-weight: bold;">o nosso time está conduzindo uma pesquisa para entender melhor a efetividade do serviço que prestamos.</span> Para isso, <span style="font-weight:bold">precisamos que as mulheres que buscam nossa ajuda, compartilhem suas experiências e perspectivas conosco. Pode nos ajudar?</span>
   </br>
   </br>
-  <a href=${surveyLink}>Quero preencher o formulário!</a>
+  <a href="${surveyLink}">Quero preencher o formulário!</a>
   </br>
   </br>
   Lembrando que o preenchimento desse formulário é totalmente opcional. Caso ele te cause qualquer desconforto, estamos aqui para te acolher. Nos escreva para <a href="mailto:atendimento@mapadoacolhimento.org">atendimento@mapadoacolhimento.org</a>
