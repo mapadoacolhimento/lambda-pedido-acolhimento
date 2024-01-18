@@ -19,6 +19,20 @@ export async function createMatch(
     volunteerAvailability["volunteer_id"]
   );
 
+  await client.supportRequests.update({
+    where: {
+      supportRequestId: supportRequest.supportRequestId,
+    },
+    data: {
+      status: "matched",
+      SupportRequestStatusHistory: {
+        create: {
+          status: "matched",
+        },
+      },
+    },
+  });
+
   const match = await client.matches.create({
     data: {
       supportRequestId: supportRequest.supportRequestId,
@@ -33,20 +47,6 @@ export async function createMatch(
       MatchStatusHistory: {
         create: {
           status: "waiting_contact",
-        },
-      },
-    },
-  });
-
-  await client.supportRequests.update({
-    where: {
-      supportRequestId: supportRequest.supportRequestId,
-    },
-    data: {
-      status: "matched",
-      SupportRequestStatusHistory: {
-        create: {
-          status: "matched",
         },
       },
     },
