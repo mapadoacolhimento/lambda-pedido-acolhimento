@@ -23,7 +23,8 @@
     "migrate:dev": "prisma migrate dev",
     "migrate:diff": "prisma migrate diff",
     "generate": "prisma generate",
-    "db:seed": "node prisma/seed.mjs"
+    "db:seed": "node prisma/seed.mjs",
+    "db:reset": "prisma migrate reset && npm run db:seed"
   },
   "author": "",
   "license": "MIT",

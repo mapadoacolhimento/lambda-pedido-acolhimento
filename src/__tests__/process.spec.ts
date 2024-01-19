@@ -6,7 +6,8 @@ import { prismaMock } from "../setupTests";
 import { stringfyBigInt } from "../utils";
 import * as createAndUpdateZendeskMatchTickets from "../match/createAndUpdateZendeskMatchTickets";
 import * as updateTicket from "../zendeskClient/updateTicket";
-import type { ZendeskTicket } from "../types";
+import * as getUser from "../zendeskClient/getUser";
+import type { ZendeskTicket, ZendeskUser } from "../types";
 
 const createAndUpdateZendeskMatchTicketsMock = jest.spyOn(
   createAndUpdateZendeskMatchTickets,
@@ -17,6 +18,8 @@ createAndUpdateZendeskMatchTicketsMock.mockImplementation(() =>
 );
 
 const updateTicketMock = jest.spyOn(updateTicket, "default");
+const getUserMock = jest.spyOn(getUser, "default");
+
 updateTicketMock.mockImplementation(() =>
   Promise.resolve({
     id: 123123123,
@@ -75,6 +78,10 @@ describe("process", () => {
       createdAt: new Date(),
     };
 
+    getUserMock.mockResolvedValueOnce({
+      name: "Teste MSR",
+      email: "test@email.com",
+    } as ZendeskUser);
     prismaMock.supportRequests.update.mockResolvedValueOnce(supportRequest);
     prismaMock.volunteerAvailability.findMany.mockResolvedValueOnce([]);
 

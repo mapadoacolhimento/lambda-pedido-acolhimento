@@ -1,23 +1,33 @@
 import client from "../prismaClient";
+import getMsrEmail from "./getMsrEmail";
 import { getAgent, getCurrentDate } from "../utils";
-import { updateTicket } from "../zendeskClient";
+import { getUser, updateTicket } from "../zendeskClient";
 import { ZENDESK_CUSTOM_FIELDS_DICIO } from "../constants";
-import type { SupportRequest } from "../types";
+import type { SupportRequest, ZendeskUser } from "../types";
 
-async function updateMsrZendeskTicketWithPublicService(
-  zendeskTicketId: SupportRequest["zendeskTicketId"],
-  msrState: SupportRequest["state"]
-) {
+async function fetchMsrFromZendesk(msrId: bigint) {
+  const msr = await getUser(msrId);
+
+  return msr;
+}
+
+type UpdateTicketMsr = Pick<
+  SupportRequest,
+  "zendeskTicketId" | "state" | "supportType"
+> &
+  Pick<ZendeskUser, "email" | "name">;
+
+async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
   const agent = getAgent();
 
   const ticket = {
-    id: zendeskTicketId,
+    id: msr.zendeskTicketId,
     status: "pending",
     assignee_id: agent,
     custom_fields: [
       {
         id: ZENDESK_CUSTOM_FIELDS_DICIO["estado"],
-        value: msrState,
+        value: msr.state,
       },
       {
         id: ZENDESK_CUSTOM_FIELDS_DICIO["status_acolhimento"],
@@ -28,11 +38,10 @@ async function updateMsrZendeskTicketWithPublicService(
         value: getCurrentDate(),
       },
     ],
-    comment: {
-      body: `Ticket da MSR foi atualizado após ela ser encaminhada para um serviço público`,
-      author_id: agent,
-      public: false,
-    },
+    comment: getMsrEmail({
+      agent,
+      msr,
+    }),
   };
 
   const zendeskTicket = await updateTicket(ticket);
@@ -40,7 +49,10 @@ async function updateMsrZendeskTicketWithPublicService(
   return zendeskTicket ? zendeskTicket.id : null;
 }
 
-export type PublicService = Pick<SupportRequest, "state" | "zendeskTicketId">;
+export type PublicService = Pick<
+  SupportRequest,
+  "state" | "zendeskTicketId" | "supportType" | "msrId"
+>;
 
 export default async function directToPublicService(
   supportRequestId: number
@@ -60,13 +72,22 @@ export default async function directToPublicService(
     select: {
       state: true,
       zendeskTicketId: true,
+      supportType: true,
+      msrId: true,
     },
   });
 
-  await updateMsrZendeskTicketWithPublicService(
-    updateSupportRequest.zendeskTicketId,
-    updateSupportRequest.state
-  );
+  const zendeskUser = await fetchMsrFromZendesk(updateSupportRequest.msrId);
+
+  if (!zendeskUser) {
+    throw new Error("Couldn't fetch msr from zendesk");
+  }
+
+  await updateMsrZendeskTicketWithPublicService({
+    ...updateSupportRequest,
+    email: zendeskUser.email,
+    name: zendeskUser.name,
+  });
 
   return updateSupportRequest;
 }

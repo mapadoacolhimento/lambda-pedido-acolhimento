@@ -72,10 +72,8 @@ type UpdateTicketParams = {
   volunteer: Volunteer & {
     zendeskTicketId: ZendeskTicket["id"];
   };
-  msr: {
-    zendeskTicketId: SupportRequest["zendeskTicketId"];
-    email: string;
-  };
+  msr: Pick<SupportRequest, "zendeskTicketId" | "supportType"> &
+    Pick<ZendeskUser, "email" | "name">;
 };
 
 async function updateMsrZendeskTicketWithMatch({
@@ -105,11 +103,11 @@ async function updateMsrZendeskTicketWithMatch({
         value: getCurrentDate(),
       },
     ],
-    comment: {
-      body: msr.email,
-      author_id: agent,
-      public: true,
-    },
+    comment: getMsrEmail({
+      msr,
+      volunteer,
+      agent,
+    }),
   };
 
   const zendeskTicket = await updateTicket(ticket);
@@ -183,15 +181,6 @@ export default async function createAndUpdateZendeskMatchTickets(
     throw new Error("Couldn't create volunteer match ticket");
   }
 
-  const msrEmailContent = getMsrEmail({
-    volunteer,
-    agent,
-    msr: {
-      ...msr,
-      supportType: supportRequest.supportType,
-    },
-  });
-
   await updateMsrZendeskTicketWithMatch({
     agent,
     volunteer: {
@@ -200,7 +189,9 @@ export default async function createAndUpdateZendeskMatchTickets(
     },
     msr: {
       zendeskTicketId: supportRequest.zendeskTicketId,
-      email: msrEmailContent,
+      email: msr.email,
+      supportType: supportRequest.supportType,
+      name: msr.name,
     },
   });
 

@@ -4,11 +4,12 @@ import directToPublicService from "../directToPublicService";
 import * as zendeskClient from "../../zendeskClient";
 import * as getAgent from "../../utils/getAgent";
 import * as getCurrentDate from "../../utils/getCurrentDate";
-import type { ZendeskTicket } from "../../types";
+import type { ZendeskTicket, ZendeskUser } from "../../types";
 
 import { prismaMock } from "../../setupTests";
 
 const updateTicketMock = jest.spyOn(zendeskClient, "updateTicket");
+const getUserMock = jest.spyOn(zendeskClient, "getUser");
 const getAgentMock = jest.spyOn(getAgent, "default");
 const getCurrentDateMock = jest.spyOn(getCurrentDate, "default");
 
@@ -26,9 +27,22 @@ describe("directToPublicService", () => {
     const mockMsrZendeskTicket = {
       id: 123412341234 as unknown as bigint,
     } as ZendeskTicket;
+    const mockMsrZendeskUser = {
+      name: "Teste MSR",
+      email: "test@email.com",
+    } as ZendeskUser;
     prismaMock.supportRequests.update.mockResolvedValue(mockSupportRequest);
     updateTicketMock.mockResolvedValueOnce(mockMsrZendeskTicket);
     getCurrentDateMock.mockImplementation(() => mockCurrentDate);
+    getUserMock.mockResolvedValue(mockMsrZendeskUser);
+  });
+
+  it("should throw an error if no msr is found in Zendesk", async () => {
+    getUserMock.mockResolvedValueOnce(null);
+
+    await expect(directToPublicService(2)).rejects.toThrow(
+      "Couldn't fetch msr from zendesk"
+    );
   });
 
   it("should update support request with correct params", async () => {
@@ -49,6 +63,8 @@ describe("directToPublicService", () => {
       select: {
         state: true,
         zendeskTicketId: true,
+        supportType: true,
+        msrId: true,
       },
     });
   });
@@ -73,12 +89,19 @@ describe("directToPublicService", () => {
           value: "2023-12-28",
         },
       ],
-      comment: {
-        body: `Ticket da MSR foi atualizado após ela ser encaminhada para um serviço público`,
-        author_id: 1,
-        public: false,
-      },
     };
-    expect(updateTicketMock).toHaveBeenNthCalledWith(1, publicServiceTicket);
+    expect(updateTicketMock).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining(publicServiceTicket)
+    );
+    expect(updateTicketMock).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        comment: expect.objectContaining({
+          author_id: 1,
+          public: false,
+        }),
+      })
+    );
   });
 });
