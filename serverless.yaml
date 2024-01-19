@@ -57,7 +57,7 @@ functions:
 
   compose:
     handler: handler.compose
-    timeout: 60
+    timeout: 30 # max timeout for api gateway
     events:
       - httpApi:
           path: /compose
