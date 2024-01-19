@@ -18,7 +18,7 @@ import {
   normalizeCity,
   stringfyBigInt,
 } from "./utils";
-import { NEW_MATCH_FEATURE_FLAG } from "./constants";
+import { MSR_TEST_ZENDESK_USER_ID, NEW_MATCH_FEATURE_FLAG } from "./constants";
 
 const bodySchema = array(
   object({
@@ -93,9 +93,14 @@ const compose = async (
     const isNewMatchEnabled = await isFeatureFlagEnabled(
       NEW_MATCH_FEATURE_FLAG
     );
+    const isTestMsr =
+      supportRequests.filter(
+        (s) => s.msrId.toString() === MSR_TEST_ZENDESK_USER_ID
+      ).length === supportRequests.length;
+
     let res;
 
-    if (isNewMatchEnabled) {
+    if (isNewMatchEnabled || isTestMsr) {
       const processSupportRequest = supportRequests.map(process);
       res = await Promise.all(processSupportRequest);
     } else {
