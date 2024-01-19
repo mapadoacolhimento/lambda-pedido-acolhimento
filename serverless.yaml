@@ -57,6 +57,7 @@ functions:
 
   compose:
     handler: handler.compose
+    timeout: 60
     events:
       - httpApi:
           path: /compose
