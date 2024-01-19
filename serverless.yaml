@@ -49,7 +49,6 @@ provider:
     SURVEY_LINK: ${env:SURVEY_LINK}
     SECRET_IV: ${env:SECRET_IV}
     ENCRYPTION_METHOD: ${env:ENCRYPTION_METHOD}
-    NODE_ENV: ${env:NODE_ENV}
 
 functions:
   auth:
