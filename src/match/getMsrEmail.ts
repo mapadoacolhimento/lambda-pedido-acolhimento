@@ -12,30 +12,23 @@ type MsrEmailParams = {
   volunteer?: Volunteer;
   agent: number;
   msr: Msr;
-  isMatch: boolean;
 };
 
-export default function getMsrEmail({
-  volunteer,
-  agent,
-  msr,
-  isMatch,
-}: MsrEmailParams) {
+export default function getMsrEmail({ volunteer, agent, msr }: MsrEmailParams) {
   const encryptedEmail = encrypt(msr.email);
   const surveyLink = process.env["SURVEY_LINK"];
 
   const msrSurveyLink = `${surveyLink}?user_id=${encryptedEmail}`;
   const agentName = AGENT_DICIO[agent] || "Equipe";
 
-  const msrMessage =
-    isMatch && volunteer
-      ? matchEmailTemplate({
-          volunteer,
-          msr,
-          agentName,
-          surveyLink: msrSurveyLink,
-        })
-      : publicServiceEmailTemplate(msr.name, agentName, msrSurveyLink);
+  const msrMessage = volunteer
+    ? matchEmailTemplate({
+        volunteer,
+        msr,
+        agentName,
+        surveyLink: msrSurveyLink,
+      })
+    : publicServiceEmailTemplate(msr.name, agentName, msrSurveyLink);
 
   const zendeskComment = {
     html_body: msrMessage,

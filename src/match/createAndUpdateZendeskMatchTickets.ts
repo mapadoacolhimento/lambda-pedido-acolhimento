@@ -107,7 +107,6 @@ async function updateMsrZendeskTicketWithMatch({
       msr,
       volunteer,
       agent,
-      isMatch: true,
     }),
   };
 

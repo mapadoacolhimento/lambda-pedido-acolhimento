@@ -41,7 +41,6 @@ async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
     comment: getMsrEmail({
       agent,
       msr,
-      isMatch: false,
     }),
   };
 

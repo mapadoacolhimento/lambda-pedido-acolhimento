@@ -16,7 +16,6 @@ describe("getMsrEmail", () => {
           name: "Teste Msr Jur",
           supportType: "legal",
         },
-        isMatch: true,
       });
     });
     it("should return the correct comment payload", () => {
@@ -69,7 +68,6 @@ describe("getMsrEmail", () => {
           name: "Teste Msr Psi",
           supportType: "psychological",
         },
-        isMatch: true,
       });
     });
     it("should return the correct comment payload", () => {
@@ -117,7 +115,6 @@ describe("getMsrEmail", () => {
           name: "Teste Msr Pub",
           supportType: "psychological",
         },
-        isMatch: false,
       });
     });
     it("should return the correct comment payload", () => {
