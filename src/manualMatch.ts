@@ -3,13 +3,18 @@ import type {
   Context,
   APIGatewayProxyCallback,
 } from "aws-lambda";
+import client from "./prismaClient";
+// import { createMatch, checkVolunteerAvailability } from "./match/createMatch";
+// import type {  MatchStage,
+//   MatchType
+// } from "@prisma/client";
 
 interface RequestBody {
   msrZendeskTicketId: number;
   volunteerEmail: string;
 }
 
-export default function handler(
+export default async function handler(
   event: APIGatewayEvent,
   _context: Context,
   callback: APIGatewayProxyCallback
@@ -48,18 +53,51 @@ export default function handler(
       });
     }
 
-    return callback(null, {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: "Go Serverless v3.0! Your function executed successfully!",
-        input: event,
-        msrZendeskTicketId: msrZendeskTicketId,
-        volunteerEmail: volunteerEmail,
-      }),
+    // Buscar o supportRequest usando o ZendeskTicketId
+    const supportRequest = await client.supportRequests.findUnique({
+      where: { zendeskTicketId: msrZendeskTicketId },
     });
+
+    if (!supportRequest) {
+      return callback(null, {
+        statusCode: 404,
+        body: JSON.stringify({
+          error: `SupportRequest not found for ZendeskTicketId ${msrZendeskTicketId}`,
+        }),
+      });
+    }
+
+    const volunteer = await client.volunteers.findFirst({
+      where: { email: volunteerEmail },
+    });
+
+    if (!volunteer) {
+      return callback(null, {
+        statusCode: 404,
+        body: JSON.stringify({
+          error: `Volunteer not found for email ${volunteerEmail}`,
+        }),
+      });
+    }
+
+    // Buscar a volunteerAvailability usando o volunteer_id
+    const volunteerAvailability = await client.volunteerAvailability.findUnique(
+      {
+        where: { volunteer_id: volunteer.id },
+      }
+    );
+
+    if (volunteerAvailability) {
+      return callback(null, {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: "SUPPORT REQUEST",
+          volunteerAvailability,
+        }),
+      });
+    }
   } catch (error) {
     console.error("Error:", error);
-
     return callback(null, {
       statusCode: 500,
       body: JSON.stringify({
