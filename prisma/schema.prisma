@@ -451,6 +451,7 @@ enum MatchStage {
   expanded
   online
   old
+  manual
 
   @@map("match_stage")
   @@schema("match")
