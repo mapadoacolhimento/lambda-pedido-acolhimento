@@ -4,10 +4,7 @@ import type {
   APIGatewayProxyCallback,
 } from "aws-lambda";
 import client from "./prismaClient";
-// import { createMatch, checkVolunteerAvailability } from "./match/createMatch";
-// import type {  MatchStage,
-//   MatchType
-// } from "@prisma/client";
+import { createMatch, checkVolunteerAvailability } from "./match/createMatch";
 
 interface RequestBody {
   msrZendeskTicketId: number;
@@ -22,6 +19,7 @@ export default async function handler(
   try {
     const body = event.body;
 
+    // Check if the request body exists
     if (!body) {
       return callback(null, {
         statusCode: 400,
@@ -53,7 +51,7 @@ export default async function handler(
       });
     }
 
-    // Buscar o supportRequest usando o ZendeskTicketId
+    // Fetch the supportRequest using ZendeskTicketId
     const supportRequest = await client.supportRequests.findUnique({
       where: { zendeskTicketId: msrZendeskTicketId },
     });
@@ -67,6 +65,7 @@ export default async function handler(
       });
     }
 
+    // Fetch the volunteer using email
     const volunteer = await client.volunteers.findFirst({
       where: { email: volunteerEmail },
     });
@@ -80,19 +79,46 @@ export default async function handler(
       });
     }
 
-    // Buscar a volunteerAvailability usando o volunteer_id
     const volunteerAvailability = await client.volunteerAvailability.findUnique(
       {
         where: { volunteer_id: volunteer.id },
       }
     );
 
-    if (volunteerAvailability) {
+    if (!volunteerAvailability) {
+      return callback(null, {
+        statusCode: 404,
+        body: JSON.stringify({
+          error: `VolunteerAvailability not found for volunteer_id ${volunteer.id}`,
+        }),
+      });
+    }
+
+    // Check volunteer's availability
+    const isVolunteerAvailable = checkVolunteerAvailability(
+      volunteerAvailability.current_matches,
+      volunteerAvailability.max_matches
+    );
+
+    if (isVolunteerAvailable) {
+      const match = await createMatch(
+        supportRequest,
+        volunteerAvailability,
+        "manual",
+        "manual"
+      );
       return callback(null, {
         statusCode: 200,
         body: JSON.stringify({
-          message: "SUPPORT REQUEST",
-          volunteerAvailability,
+          message: "Match created successfully!",
+          match,
+        }),
+      });
+    } else {
+      return callback(null, {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: "Volunteer is not available for a match",
         }),
       });
     }
