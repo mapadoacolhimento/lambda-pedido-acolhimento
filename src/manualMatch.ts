@@ -21,10 +21,12 @@ export default async function handler(
 
     // Check if the request body exists
     if (!body) {
+      const errorMessage = "Request body is required";
+      console.error(errorMessage);
       return callback(null, {
         statusCode: 400,
         body: JSON.stringify({
-          error: "Request body is required",
+          error: errorMessage,
         }),
       });
     }
@@ -34,19 +36,26 @@ export default async function handler(
     const { msrZendeskTicketId, volunteerEmail } = parsedBody;
 
     if (!msrZendeskTicketId) {
+      const errorMessage =
+        "Zendesk Ticket Id from MSR is required in the request body";
+      console.error(errorMessage);
+
       return callback(null, {
         statusCode: 400,
         body: JSON.stringify({
-          error: "Zendesk Ticket Id from MSR is required in the request body",
+          error: errorMessage,
         }),
       });
     }
 
     if (!volunteerEmail) {
+      const errorMessage = "Volunteer email is required in the request body";
+      console.error(errorMessage);
+
       return callback(null, {
         statusCode: 400,
         body: JSON.stringify({
-          error: "Volunteer email is required in the request body",
+          error: errorMessage,
         }),
       });
     }
@@ -57,10 +66,13 @@ export default async function handler(
     });
 
     if (!supportRequest) {
+      const errorMessage = `SupportRequest not found for ZendeskTicketId ${msrZendeskTicketId}`;
+      console.error(errorMessage);
+
       return callback(null, {
         statusCode: 404,
         body: JSON.stringify({
-          error: `SupportRequest not found for ZendeskTicketId ${msrZendeskTicketId}`,
+          error: errorMessage,
         }),
       });
     }
@@ -71,10 +83,13 @@ export default async function handler(
     });
 
     if (!volunteer) {
+      const errorMessage = `Volunteer not found for email ${volunteerEmail}`;
+      console.error(errorMessage);
+
       return callback(null, {
         statusCode: 404,
         body: JSON.stringify({
-          error: `Volunteer not found for email ${volunteerEmail}`,
+          error: errorMessage,
         }),
       });
     }
@@ -86,14 +101,18 @@ export default async function handler(
     );
 
     if (!volunteerAvailability) {
+      const errorMessage = `VolunteerAvailability not found for volunteer_id ${volunteer.id}`;
+      console.error(errorMessage);
+
       return callback(null, {
         statusCode: 404,
         body: JSON.stringify({
-          error: `VolunteerAvailability not found for volunteer_id ${volunteer.id}`,
+          error: errorMessage,
         }),
       });
     }
 
+    // Remover <------------------------
     // Check volunteer's availability
     const isVolunteerAvailable = checkVolunteerAvailability(
       volunteerAvailability.current_matches,
@@ -115,10 +134,13 @@ export default async function handler(
         }),
       });
     } else {
+      const errorMessage = "Volunteer is not available for a match";
+      console.error(errorMessage);
+
       return callback(null, {
         statusCode: 400,
         body: JSON.stringify({
-          error: "Volunteer is not available for a match",
+          error: errorMessage,
         }),
       });
     }
