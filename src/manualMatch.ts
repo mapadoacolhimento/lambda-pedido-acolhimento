@@ -5,11 +5,7 @@ import type {
 } from "aws-lambda";
 import client from "./prismaClient";
 import { createMatch, checkVolunteerAvailability } from "./match/createMatch";
-
-interface RequestBody {
-  msrZendeskTicketId: number;
-  volunteerEmail: string;
-}
+import { isJsonString } from "./utils";
 
 export default async function handler(
   event: APIGatewayEvent,
@@ -31,9 +27,14 @@ export default async function handler(
       });
     }
 
-    const parsedBody: RequestBody = JSON.parse(body);
+    const parsedBody = isJsonString(body)
+      ? (JSON.parse(body) as unknown)
+      : (Object.create(null) as Record<string, unknown>);
 
-    const { msrZendeskTicketId, volunteerEmail } = parsedBody || {};
+    const { msrZendeskTicketId, volunteerEmail } = (parsedBody || {}) as {
+      msrZendeskTicketId?: number;
+      volunteerEmail?: string;
+    };
 
     if (!msrZendeskTicketId) {
       const errorMessage =
