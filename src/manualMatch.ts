@@ -33,7 +33,7 @@ export default async function handler(
 
     const parsedBody: RequestBody = JSON.parse(body);
 
-    const { msrZendeskTicketId, volunteerEmail } = parsedBody;
+    const { msrZendeskTicketId, volunteerEmail } = parsedBody || {};
 
     if (!msrZendeskTicketId) {
       const errorMessage =
