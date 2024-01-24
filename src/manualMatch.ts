@@ -4,7 +4,7 @@ import type {
   APIGatewayProxyCallback,
 } from "aws-lambda";
 import client from "./prismaClient";
-import { createMatch, checkVolunteerAvailability } from "./match/createMatch";
+import { createMatch } from "./match/createMatch";
 import { isJsonString } from "./utils";
 
 export default async function handler(
@@ -107,25 +107,6 @@ export default async function handler(
 
       return callback(null, {
         statusCode: 404,
-        body: JSON.stringify({
-          error: errorMessage,
-        }),
-      });
-    }
-
-    // Remover <------------------------
-    // Check volunteer's availability
-    const isVolunteerAvailable = checkVolunteerAvailability(
-      volunteerAvailability.current_matches,
-      volunteerAvailability.max_matches
-    );
-
-    if (!isVolunteerAvailable) {
-      const errorMessage = "Volunteer is not available for a match";
-      console.error(errorMessage);
-
-      return callback(null, {
-        statusCode: 400,
         body: JSON.stringify({
           error: errorMessage,
         }),
