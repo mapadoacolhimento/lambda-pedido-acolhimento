@@ -76,6 +76,8 @@ function matchEmailTemplate({
   msr,
   volunteer,
   agentName,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // @ts-expect-error we are going to disable sending the link for now
   surveyLink,
 }: MatchEmailTemplate) {
   const volunteerSupportTypeInfo =
@@ -111,15 +113,6 @@ function matchEmailTemplate({
     Todos os atendimentos do Mapa do Acolhimento devem ser gratuitos pelo tempo que durarem. <span style="font-weight: bold">Caso você seja cobrada, comunique imediatamente à nossa equipe.</span>
     </br>
     </br>
-    Além disso, <span style="font-weight: bold">o nosso time está conduzindo uma pesquisa para entender melhor a efetividade dos atendimentos prestados pelas nossas voluntárias. Para isso, precisamos que as mulheres que buscam nossa ajuda, compartilhem suas experiências e perspectivas conosco. Pode nos ajudar?</span>
-    </br>
-    </br>
-    <a href="${surveyLink}">Quero preencher o formulário!</a>
-    </br>
-    </br>
-    <span style="font-weight: bold">Lembrando que o preenchimento desse formulário é totalmente opcional e não impactará no atendimento que você receberá.</span> Caso ele te cause qualquer desconforto, estamos aqui para te acolher. Nos escreva para <a href="mailto:atendimento@mapadoacolhimento.org">atendimento@mapadoacolhimento.org</a>.
-    </br>
-    </br>
     Agradecemos pela coragem, pela confiança e esperamos que seja bem acolhida! Pedimos que entre em contato para compartilhar a sua experiência de atendimento.
     </br>
     </br>
@@ -134,6 +127,8 @@ function matchEmailTemplate({
 function publicServiceEmailTemplate(
   msrName: ZendeskUser["name"],
   agentName: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // @ts-expect-error we are going to disable sending the link for now
   surveyLink: string
 ) {
   return `
@@ -153,15 +148,6 @@ function publicServiceEmailTemplate(
   </br>
   </br>
   (!!) Lembrando que por uma questão de segurança, as informações desta cartilha não podem cair em mãos erradas, por isso, pedimos para que você faça o download e guarde-o em um local seguro! 
-  </br>
-  </br>
-  Além disso, <span style="font-weight: bold;">o nosso time está conduzindo uma pesquisa para entender melhor a efetividade do serviço que prestamos.</span> Para isso, <span style="font-weight:bold">precisamos que as mulheres que buscam nossa ajuda, compartilhem suas experiências e perspectivas conosco. Pode nos ajudar?</span>
-  </br>
-  </br>
-  <a href="${surveyLink}">Quero preencher o formulário!</a>
-  </br>
-  </br>
-  Lembrando que o preenchimento desse formulário é totalmente opcional. Caso ele te cause qualquer desconforto, estamos aqui para te acolher. Nos escreva para <a href="mailto:atendimento@mapadoacolhimento.org">atendimento@mapadoacolhimento.org</a>
   </br>
   </br>
   Estamos juntas! 
