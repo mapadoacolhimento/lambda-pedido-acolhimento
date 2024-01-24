@@ -120,21 +120,7 @@ export default async function handler(
       volunteerAvailability.max_matches
     );
 
-    if (isVolunteerAvailable) {
-      const match = await createMatch(
-        supportRequest,
-        volunteerAvailability,
-        "manual",
-        "manual"
-      );
-      return callback(null, {
-        statusCode: 200,
-        body: JSON.stringify({
-          message: "Match created successfully!",
-          match,
-        }),
-      });
-    } else {
+    if (!isVolunteerAvailable) {
       const errorMessage = "Volunteer is not available for a match";
       console.error(errorMessage);
 
@@ -145,6 +131,21 @@ export default async function handler(
         }),
       });
     }
+
+    const match = await createMatch(
+      supportRequest,
+      volunteerAvailability,
+      "manual",
+      "manual"
+    );
+
+    return callback(null, {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: "Match created successfully!",
+        match,
+      }),
+    });
   } catch (error) {
     console.error("Error:", error);
     return callback(null, {
