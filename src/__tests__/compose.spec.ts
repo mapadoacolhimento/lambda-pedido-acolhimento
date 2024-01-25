@@ -104,7 +104,7 @@ describe("/compose endpoint", () => {
   describe("Successful req", () => {
     const callback = jest.fn();
     const defaultBody = {
-      supportExpertise: null,
+      supportExpertise: "not_found",
       priority: null,
       hasDisability: false,
       requiresLibras: false,

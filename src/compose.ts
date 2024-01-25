@@ -79,6 +79,7 @@ const compose = async (
         await prismaClient.supportRequests.create({
           data: {
             ...supportRequest,
+            supportExpertise: "not_found",
             city: normalizeCity(supportRequest.city || "not_found"),
             SupportRequestStatusHistory: {
               create: {
