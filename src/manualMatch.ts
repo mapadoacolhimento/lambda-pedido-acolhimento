@@ -3,9 +3,18 @@ import type {
   Context,
   APIGatewayProxyCallback,
 } from "aws-lambda";
+import { object, number, string } from "yup";
+
 import client from "./prismaClient";
 import { createMatch } from "./match/createMatch";
-import { isJsonString } from "./utils";
+import { getErrorMessage, isJsonString, stringfyBigInt } from "./utils";
+
+const bodySchema = object({
+  msrZendeskTicketId: number().required(),
+  volunteerEmail: string().required(),
+})
+  .required()
+  .strict();
 
 export default async function handler(
   event: APIGatewayEvent,
@@ -17,8 +26,9 @@ export default async function handler(
 
     // Check if the request body exists
     if (!body) {
-      const errorMessage = "Request body is required";
-      console.error(errorMessage);
+      const errorMessage = "Empty request body";
+      console.error(`[manual-match] - [400]: ${errorMessage}`);
+
       return callback(null, {
         statusCode: 400,
         body: JSON.stringify({
@@ -31,35 +41,9 @@ export default async function handler(
       ? (JSON.parse(body) as unknown)
       : (Object.create(null) as Record<string, unknown>);
 
-    const { msrZendeskTicketId, volunteerEmail } = (parsedBody || {}) as {
-      msrZendeskTicketId?: number;
-      volunteerEmail?: string;
-    };
+    const validatedBody = await bodySchema.validate(parsedBody);
 
-    if (!msrZendeskTicketId) {
-      const errorMessage =
-        "Zendesk Ticket Id from MSR is required in the request body";
-      console.error(errorMessage);
-
-      return callback(null, {
-        statusCode: 400,
-        body: JSON.stringify({
-          error: errorMessage,
-        }),
-      });
-    }
-
-    if (!volunteerEmail) {
-      const errorMessage = "Volunteer email is required in the request body";
-      console.error(errorMessage);
-
-      return callback(null, {
-        statusCode: 400,
-        body: JSON.stringify({
-          error: errorMessage,
-        }),
-      });
-    }
+    const { msrZendeskTicketId, volunteerEmail } = validatedBody;
 
     // Fetch the supportRequest using ZendeskTicketId
     const supportRequest = await client.supportRequests.findUnique({
@@ -67,15 +51,9 @@ export default async function handler(
     });
 
     if (!supportRequest) {
-      const errorMessage = `SupportRequest not found for ZendeskTicketId ${msrZendeskTicketId}`;
-      console.error(errorMessage);
+      const errorMessage = `support_request not found for zendesk_ticket_id '${msrZendeskTicketId}'`;
 
-      return callback(null, {
-        statusCode: 404,
-        body: JSON.stringify({
-          error: errorMessage,
-        }),
-      });
+      return callback(null, notFoundErrorPayload(errorMessage));
     }
 
     // Fetch the volunteer using email
@@ -84,15 +62,9 @@ export default async function handler(
     });
 
     if (!volunteer) {
-      const errorMessage = `Volunteer not found for email ${volunteerEmail}`;
-      console.error(errorMessage);
+      const errorMessage = `volunteer not found for email: '${volunteerEmail}'`;
 
-      return callback(null, {
-        statusCode: 404,
-        body: JSON.stringify({
-          error: errorMessage,
-        }),
-      });
+      return callback(null, notFoundErrorPayload(errorMessage));
     }
 
     const volunteerAvailability = await client.volunteerAvailability.findUnique(
@@ -102,15 +74,9 @@ export default async function handler(
     );
 
     if (!volunteerAvailability) {
-      const errorMessage = `VolunteerAvailability not found for volunteer_id ${volunteer.id}`;
-      console.error(errorMessage);
+      const errorMessage = `volunteer_availability not found for volunteer_id '${volunteer.id}'`;
 
-      return callback(null, {
-        statusCode: 404,
-        body: JSON.stringify({
-          error: errorMessage,
-        }),
-      });
+      return callback(null, notFoundErrorPayload(errorMessage));
     }
 
     const match = await createMatch(
@@ -123,17 +89,41 @@ export default async function handler(
     return callback(null, {
       statusCode: 200,
       body: JSON.stringify({
-        message: "Match created successfully!",
-        match,
+        message: stringfyBigInt(match),
       }),
     });
-  } catch (error) {
-    console.error("Error:", error);
+  } catch (e) {
+    const error = e as Record<string, unknown>;
+    if (error["name"] === "ValidationError") {
+      const errorMsg = `Validation error: ${getErrorMessage(error)}`;
+
+      console.error(`[manual-match] - [400]: ${errorMsg}`);
+
+      return callback(null, {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: errorMsg,
+        }),
+      });
+    }
+
+    const errorMsg = getErrorMessage(error);
+    console.error(`[manual-match] - [500]: ${errorMsg}`);
+
     return callback(null, {
       statusCode: 500,
-      body: JSON.stringify({
-        error: "Internal Server Error",
-      }),
+      body: JSON.stringify({ error: errorMsg }),
     });
   }
+}
+
+function notFoundErrorPayload(errorMessage: string) {
+  console.error(`[manual-match] - [404]: ${errorMessage}`);
+
+  return {
+    statusCode: 404,
+    body: JSON.stringify({
+      error: errorMessage,
+    }),
+  };
 }
