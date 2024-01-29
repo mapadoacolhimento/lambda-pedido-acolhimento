@@ -48,7 +48,7 @@ describe("getMsrEmail", () => {
       expect(email["html_body"]).toContain("Gabriela");
     });
     it("should contain survey link", () => {
-      expect(email["html_body"]).not.toContain(
+      expect(email["html_body"]).toContain(
         "https://qualtrics.com/form?user_id=NTdmNWE4NzE2NzgwZGY5YTllZTA0NmQxYjA0NGE3YmMxOWQxOGI2MThmNTcxZjlkNjhhNDcxNWY0ZmQ2YWU1YQ=="
       );
     });
@@ -100,7 +100,7 @@ describe("getMsrEmail", () => {
       expect(email["html_body"]).toContain("Ana");
     });
     it("should contain survey link", () => {
-      expect(email["html_body"]).not.toContain(
+      expect(email["html_body"]).toContain(
         "https://qualtrics.com/form?user_id=NWEwMWVkMTk0MDExYTJjZTYxMTczMWY0M2I2MzY1OTcyODAyOWQzZjE1NTRmNTM1NjVmMTI2MGVmYjExMWIzMA=="
       );
     });
@@ -135,7 +135,7 @@ describe("getMsrEmail", () => {
       expect(email["html_body"]).toContain("Ana");
     });
     it("should contain survey link", () => {
-      expect(email["html_body"]).not.toContain(
+      expect(email["html_body"]).toContain(
         "https://qualtrics.com/form?user_id=MWY0ZjAyMmQ1YjU5YTc1MzE1MWExNTJjOGViZDlmMWNkMTc3MTRhOTBlN2NhN2MzNjM5NGFhMzA4MjQwZGI5Mw=="
       );
     });
