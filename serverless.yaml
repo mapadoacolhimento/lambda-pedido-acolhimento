@@ -72,6 +72,14 @@ functions:
           path: /sign
           method: GET
 
+  manualMatch:
+    handler: handler.manualMatch
+    timeout: 30
+    events:
+      - httpApi:
+          path: /manual-match
+          method: POST
+
   feature-flag:
     handler: handler.featureFlag
     events:
