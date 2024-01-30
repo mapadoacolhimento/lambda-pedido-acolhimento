@@ -180,7 +180,7 @@ model Volunteers {
   condition                String                   @db.VarChar(30)
   firstName                String                   @map("first_name") @db.VarChar(200)
   last_name                String                   @db.VarChar(200)
-  email                    String                   @unique(map: "volunteers_email_0093da6f_uniq") @db.VarChar(254)
+  email                    String                   @db.VarChar(254)
   phone                    String                   @db.VarChar(100)
   zipcode                  String                   @db.VarChar(9)
   state                    String                   @db.VarChar(9)
@@ -210,7 +210,6 @@ model Volunteers {
   volunteers_formdata      volunteers_formdata?     @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_volunteer_form_data_id_ec6c5a18_fk_volunteer")
 
   @@index([form_data_id], map: "volunteers_volunteer_form_data_id_ec6c5a18")
-  @@index([email], map: "volunteers_email_0093da6f_like")
   @@map("volunteers")
   @@schema("public")
 }
