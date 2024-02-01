@@ -70,27 +70,37 @@ const compose = async (
       ? (JSON.parse(body) as unknown)
       : (Object.create(null) as Record<string, unknown>);
 
-    const validatedBody = (await bodySchema.validate(
+    const validatedSupportRequestsBody = (await bodySchema.validate(
       parsedBody
     )) as unknown as SupportRequests[];
 
-    const supportRequestPromises = validatedBody.map(
-      async (supportRequest) =>
-        await prismaClient.supportRequests.create({
+    const supportRequestPromises = validatedSupportRequestsBody.map(
+      async (supportRequest) => {
+        const status =
+          supportRequest.state === "INT" ? "closed" : supportRequest.status;
+
+        return await prismaClient.supportRequests.create({
           data: {
             ...supportRequest,
             supportExpertise: "not_found",
             city: normalizeCity(supportRequest.city || "not_found"),
+            status: status,
             SupportRequestStatusHistory: {
               create: {
-                status: supportRequest.status,
+                status: status,
               },
             },
           },
-        })
+        });
+      }
     );
 
     const supportRequests = await Promise.all(supportRequestPromises);
+    const openSupportRequests = supportRequests.filter(
+      (supportRequest) => supportRequest.status === "open"
+    );
+
+    let res;
     const isNewMatchEnabled = await isFeatureFlagEnabled(
       NEW_MATCH_FEATURE_FLAG
     );
@@ -99,10 +109,10 @@ const compose = async (
         (s) => s.msrId.toString() === MSR_TEST_ZENDESK_USER_ID
       ).length === supportRequests.length;
 
-    let res;
+    const shouldCreateMatch = isNewMatchEnabled || isTestMsr;
 
-    if (isNewMatchEnabled || isTestMsr) {
-      const processSupportRequest = supportRequests.map(process);
+    if (shouldCreateMatch && openSupportRequests.length > 0) {
+      const processSupportRequest = openSupportRequests.map(process);
       res = await Promise.all(processSupportRequest);
     } else {
       res = supportRequests.map(stringfyBigInt);
@@ -110,9 +120,10 @@ const compose = async (
 
     const validRes = res.find(Boolean);
     if (!validRes) {
-      const tickets = validatedBody
+      const tickets = openSupportRequests
         .map((supportRequest) => supportRequest.zendeskTicketId.toString())
         .join(",");
+
       throw new Error(
         `Invalid res when creating support request or processing it for these tickets: '${tickets}'`
       );
