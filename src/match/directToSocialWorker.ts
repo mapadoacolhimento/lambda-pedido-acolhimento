@@ -2,7 +2,7 @@ import client from "../prismaClient";
 import getMsrEmail from "./getMsrEmail";
 import { getAgent, getCurrentDate } from "../utils";
 import { getUser, updateTicket } from "../zendeskClient";
-import { PUBLIC_SERVICE, ZENDESK_CUSTOM_FIELDS_DICIO } from "../constants";
+import { SOCIAL_WORKER, ZENDESK_CUSTOM_FIELDS_DICIO } from "../constants";
 import type { SupportRequest, ZendeskUser } from "../types";
 
 async function fetchMsrFromZendesk(msrId: bigint) {
@@ -17,7 +17,7 @@ type UpdateTicketMsr = Pick<
 > &
   Pick<ZendeskUser, "email" | "name">;
 
-async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
+async function updateMsrZendeskTicketWithSocialworker(msr: UpdateTicketMsr) {
   const agent = getAgent();
 
   const ticket = {
@@ -41,7 +41,7 @@ async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
     comment: getMsrEmail({
       agent,
       msr,
-      referralType: PUBLIC_SERVICE
+      referralType: SOCIAL_WORKER
     }),
   };
 
@@ -50,14 +50,14 @@ async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
   return zendeskTicket ? zendeskTicket.id : null;
 }
 
-export type PublicService = Pick<
+export type SocialWorker = Pick<
   SupportRequest,
   "state" | "zendeskTicketId" | "supportType" | "msrId"
 >;
 
-export default async function directToPublicService(
+export default async function directToSocialWorker(
   supportRequestId: number
-): Promise<PublicService> {
+): Promise<SocialWorker> {
   const updateSupportRequest = await client.supportRequests.update({
     where: {
       supportRequestId: supportRequestId,
@@ -84,7 +84,7 @@ export default async function directToPublicService(
     throw new Error("Couldn't fetch msr from zendesk");
   }
 
-  await updateMsrZendeskTicketWithPublicService({
+  await updateMsrZendeskTicketWithSocialworker({
     ...updateSupportRequest,
     email: zendeskUser.email,
     name: zendeskUser.name,

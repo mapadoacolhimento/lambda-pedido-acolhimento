@@ -3,6 +3,7 @@ import type { Volunteers } from "@prisma/client";
 import { isProduction } from "../utils";
 import { AGENT_DICIO, VOLUNTEER_SUPPORT_TYPE_DICIO } from "../constants";
 import type { SupportRequest, ZendeskUser } from "../types";
+import { PUBLIC_SERVICE, SOCIAL_WORKER } from "../constants";
 
 type Volunteer = Pick<Volunteers, "firstName" | "phone" | "registrationNumber">;
 type Msr = Pick<ZendeskUser, "email" | "name"> &
@@ -12,15 +13,17 @@ type MsrEmailParams = {
   volunteer?: Volunteer;
   agent: number;
   msr: Msr;
+  referralType?: number;
 };
 
-export default function getMsrEmail({ volunteer, agent, msr }: MsrEmailParams) {
+export default function getMsrEmail({ volunteer, agent, msr,referralType }: MsrEmailParams) {
   const encryptedEmail = encrypt(msr.email);
   const surveyLink = process.env["SURVEY_LINK"];
+  const socialWorkerCalendarLink = process.env["CAL_LINK"];
 
   const msrSurveyLink = `${surveyLink}?user_id=${encryptedEmail}`;
   const agentName = AGENT_DICIO[agent] || "Equipe";
-
+  //adicionar opcao de social worker
   const msrMessage = volunteer
     ? matchEmailTemplate({
         volunteer,
@@ -28,7 +31,8 @@ export default function getMsrEmail({ volunteer, agent, msr }: MsrEmailParams) {
         agentName,
         surveyLink: msrSurveyLink,
       })
-    : publicServiceEmailTemplate(msr.name, agentName, msrSurveyLink);
+    : referralType === PUBLIC_SERVICE? publicServiceEmailTemplate(msr.name, agentName, msrSurveyLink)
+    : socialWorkerEmailTemplate(msr.name,socialWorkerCalendarLink);
 
   const zendeskComment = {
     html_body: msrMessage,
@@ -172,5 +176,57 @@ function publicServiceEmailTemplate(
   </br>
   ${agentName} do Mapa do Acolhimento
   </p>
+  `;
+}
+function socialWorkerEmailTemplate(
+  msrName: ZendeskUser["name"],
+  socialWorkerCalendarLink: string
+) {
+  return `
+  <p>Olá, ${msrName}!</p>
+  </br>
+  </br>
+  Esperamos que esteja bem, na medida do possível <3
+  </br>
+  </br>
+  Estamos entrando em contato porque <span style="font-weight: bold;">infelizmente ainda não encontramos voluntárias disponíveis em seu município para seu atendimento</span>!
+  </br>
+  </br>
+  Assim, para que possamos compreender melhor as suas necessidades e a situação de violência em que se encontra, a fim de te oferecer o suporte e encaminhamento qualificado que precisa, <span style="font-weight: bold;">te convidamos à conversar com uma assistente social de nossa equipe</span>!
+  </br>
+  </br>
+  Vamos lá?!
+  </br>
+  </br>
+  ➡️ <span style="font-weight: bold;">Como funciona?</span>
+  Para que possa passar por uma <span style="font-weight: bold;">atendimento social remoto</span> com a assistente social indicada, você precisa acessar este <a href="${socialWorkerCalendarLink}">link</a> e selecionar o melhor dia e horário para seu atendimento! 
+  </br>
+  </br>
+  Ao selecionar, o agendamento será confirmado e você receberá uma notificação no seu e-mail <span style="font-weight: bold;">com o horário, dia e link do Google Meet para a realização do atendimento.</span>
+  </br>
+  </br>
+  Com isso, basta aguardar o dia do encontro chegar e entrar na sala do Google Meet! Nossa assistente social estará te esperando lá!
+  </br>
+  </br>
+  A profissional te fará algumas perguntas relacionadas à renda, escolaridade, situação de violência vivenciada, entre outras questões, para que <span style="font-weight: bold;">depois desse atendimento</span>, possamos te oferecer a orientação mais adequada ao seu caso.
+</br>
+</br>
+  ➡️ <span style="font-weight: bold;">O que acontece depois do atendimento social?</span>
+  Após análise técnica realizada pela assistente social, poderemos te oferecer <span style="font-weight: bold;">dois encaminhamentos</span>:
+  Você poderá ser encaminhada para uma voluntária de outro Estado, para receber atendimento remoto;
+  <span style="font-weight: bold;">E/ou</span> você poderá ser encaminhada para o serviço público de proteção às mulheres da sua região que possa atender, apropriadamente, a sua demanda.
+  </br>
+  </br>
+  A assistente social te oferecerá todas as informações necessárias para que tenha a ajuda que precisa! Não se preocupe <3
+  </br>
+  </br>
+  (!) Caso tenha alguma dúvida sobre esse processo ou não possa comparecer no atendimento agendado e precise remarcar, <span style="font-weight: bold;">basta entrar em contato conosco no e-mail:   <a href="mailto:atendimento@mapadoacolhimento.org">atendimento@mapadoacolhimento.org</a>.</span> Te retornaremos por lá com as orientações necessárias!
+  </br>
+  </br>
+  Estamos juntas! 
+  </br>
+  </br>
+  Um abraço forte,
+  Equipe do Mapa do Acolhimento 💜
   `;
 }

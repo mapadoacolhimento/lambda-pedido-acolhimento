@@ -38,3 +38,7 @@ export const VOLUNTEER_SUPPORT_TYPE_DICIO = {
 export const NEW_MATCH_FEATURE_FLAG = "NEW_MATCH";
 
 export const MSR_TEST_ZENDESK_USER_ID = "22858077211028";
+
+export const ONLINE_MATCH = 1
+export const PUBLIC_SERVICE = 2
+export const SOCIAL_WORKER = 3 

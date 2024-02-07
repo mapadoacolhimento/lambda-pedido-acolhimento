@@ -7,6 +7,8 @@ import * as turf from "@turf/turf";
 import { createMatch } from "./createMatch";
 import { IDEAL_MATCH_MAX_DISTANCE } from "../constants";
 import type { SupportRequest } from "../types";
+import { ONLINE_MATCH, PUBLIC_SERVICE, SOCIAL_WORKER } from "../constants";
+
 
 export async function createIdealMatch(
   supportRequest: SupportRequest,
@@ -185,9 +187,18 @@ export function filterVolunteersInTheSameState(
 }
 
 export function decideOnOnlineMatch() {
-  const randomNum = Math.floor(Math.random() * 100);
+  const randomNum = Math.random();
 
-  const shouldReceiveAnOnlineMatch = randomNum % 2 === 0;
+  const shouldReceiveAnOnlineMatch = 1/3;
+  const shouldDirectToPublicService = 1/3;
+  const shouldDirectToSocialWorker = 1/3;
 
-  return shouldReceiveAnOnlineMatch;
+  if (randomNum < shouldReceiveAnOnlineMatch) {
+    return ONLINE_MATCH
+  } else if (randomNum < shouldDirectToPublicService + shouldDirectToSocialWorker) {
+    return PUBLIC_SERVICE
+  
+  } else {
+    return SOCIAL_WORKER;
+  }
 }
