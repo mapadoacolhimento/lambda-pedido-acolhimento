@@ -185,18 +185,20 @@ export function filterVolunteersInTheSameState(
   return volunteers.filter((volunteer) => volunteer.state === msrState);
 }
 
-export function decideOnRandomization(): number {
+export function decideOnRandomization(
+  isSocialWorkerFlagEnabled: boolean
+): number {
   const randomNum = Math.random();
 
-  const shouldReceiveAnOnlineMatch = 1 / 3;
-  const shouldDirectToPublicService = 1 / 3;
-  const shouldDirectToSocialWorker = 1 / 3;
+  const shouldReceiveAnOnlineMatch = isSocialWorkerFlagEnabled ? 1 / 3 : 1 / 2;
+  const shouldDirectToPublicService = isSocialWorkerFlagEnabled ? 1 / 3 : 1;
+  const shouldDirectToSocialWorker = isSocialWorkerFlagEnabled ? 1 / 3 : 0;
 
-  if (randomNum < shouldReceiveAnOnlineMatch) {
+  if (randomNum <= shouldReceiveAnOnlineMatch) {
     return ONLINE_MATCH;
   }
 
-  if (randomNum < shouldDirectToPublicService + shouldDirectToSocialWorker) {
+  if (randomNum <= shouldDirectToPublicService + shouldDirectToSocialWorker) {
     return PUBLIC_SERVICE;
   }
 

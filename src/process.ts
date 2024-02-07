@@ -19,15 +19,22 @@ import directToSocialWorker, {
   SocialWorker,
 } from "./match/directToSocialWorker";
 
-import client from "./prismaClient";
+import client, { isFeatureFlagEnabled } from "./prismaClient";
 import { getErrorMessage, stringfyBigInt } from "./utils";
-import { ONLINE_MATCH, SOCIAL_WORKER } from "./constants";
+import {
+  ONLINE_MATCH,
+  SOCIAL_WORKER,
+  SOCIAL_WORKER_FEATURE_FLAG,
+} from "./constants";
 
 async function getRandomReferral(
   supportRequest: SupportRequests,
   allVolunteers: VolunteerAvailability[]
 ) {
-  const shouldForwardTo = decideOnRandomization();
+  const isSocialWorkerFlagEnabled = await isFeatureFlagEnabled(
+    SOCIAL_WORKER_FEATURE_FLAG
+  );
+  const shouldForwardTo = decideOnRandomization(isSocialWorkerFlagEnabled);
 
   switch (shouldForwardTo) {
     case ONLINE_MATCH:
