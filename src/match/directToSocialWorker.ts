@@ -41,7 +41,7 @@ async function updateMsrZendeskTicketWithSocialworker(msr: UpdateTicketMsr) {
     comment: getMsrEmail({
       agent,
       msr,
-      referralType: SOCIAL_WORKER
+      referralType: SOCIAL_WORKER,
     }),
   };
 
@@ -63,10 +63,10 @@ export default async function directToSocialWorker(
       supportRequestId: supportRequestId,
     },
     data: {
-      status: "public_service",
+      status: "social_worker",
       SupportRequestStatusHistory: {
         create: {
-          status: "public_service",
+          status: "social_worker",
         },
       },
     },
