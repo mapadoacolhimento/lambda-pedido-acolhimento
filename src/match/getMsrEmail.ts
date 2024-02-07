@@ -3,7 +3,7 @@ import type { Volunteers } from "@prisma/client";
 import { isProduction } from "../utils";
 import { AGENT_DICIO, VOLUNTEER_SUPPORT_TYPE_DICIO } from "../constants";
 import type { SupportRequest, ZendeskUser } from "../types";
-import { PUBLIC_SERVICE, SOCIAL_WORKER } from "../constants";
+import { PUBLIC_SERVICE } from "../constants";
 
 type Volunteer = Pick<Volunteers, "firstName" | "phone" | "registrationNumber">;
 type Msr = Pick<ZendeskUser, "email" | "name"> &
@@ -23,7 +23,7 @@ export default function getMsrEmail({ volunteer, agent, msr,referralType }: MsrE
 
   const msrSurveyLink = `${surveyLink}?user_id=${encryptedEmail}`;
   const agentName = AGENT_DICIO[agent] || "Equipe";
-  //adicionar opcao de social worker
+
   const msrMessage = volunteer
     ? matchEmailTemplate({
         volunteer,
@@ -32,7 +32,7 @@ export default function getMsrEmail({ volunteer, agent, msr,referralType }: MsrE
         surveyLink: msrSurveyLink,
       })
     : referralType === PUBLIC_SERVICE? publicServiceEmailTemplate(msr.name, agentName, msrSurveyLink)
-    : socialWorkerEmailTemplate(msr.name,socialWorkerCalendarLink);
+    : socialWorkerEmailTemplate(msr.name, socialWorkerCalendarLink);
 
   const zendeskComment = {
     html_body: msrMessage,
@@ -180,7 +180,7 @@ function publicServiceEmailTemplate(
 }
 function socialWorkerEmailTemplate(
   msrName: ZendeskUser["name"],
-  socialWorkerCalendarLink: string
+  socialWorkerCalendarLink?: string
 ) {
   return `
   <p>Olá, ${msrName}!</p>

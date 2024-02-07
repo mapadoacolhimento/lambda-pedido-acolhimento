@@ -17,7 +17,7 @@ import directToPublicService, {
 
 import directToSocialWorker, {
   SocialWorker,
-} from "./match/directToSocialworker";
+} from "./match/directToSocialWorker";
 
 
 import client from "./prismaClient";
@@ -53,11 +53,11 @@ const process = async (
          allVolunteers
         );
         if (onlineMatch) return stringfyBigInt(onlineMatch) as Matches;
-      
-       case SOCIAL_WORKER:
-          const solcialWorker = await directToSocialWorker(supportRequest.supportRequestId)
-          return stringfyBigInt(solcialWorker) as SocialWorker;
-        }
+        break;
+      case SOCIAL_WORKER:
+        const solcialWorker = await directToSocialWorker(supportRequest.supportRequestId)
+        return stringfyBigInt(solcialWorker) as SocialWorker;
+    }
 
     const publicService = await directToPublicService(
       supportRequest.supportRequestId
