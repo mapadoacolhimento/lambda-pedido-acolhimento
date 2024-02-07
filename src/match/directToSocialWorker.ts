@@ -2,7 +2,11 @@ import client from "../prismaClient";
 import getMsrEmail from "./getMsrEmail";
 import { getAgent, getCurrentDate } from "../utils";
 import { getUser, updateTicket } from "../zendeskClient";
-import { SOCIAL_WORKER, ZENDESK_CUSTOM_FIELDS_DICIO } from "../constants";
+import {
+  SOCIAL_WORKER,
+  SOCIAL_WORKER_ZENDESK_USER_ID,
+  ZENDESK_CUSTOM_FIELDS_DICIO,
+} from "../constants";
 import type { SupportRequest, ZendeskUser } from "../types";
 
 async function fetchMsrFromZendesk(msrId: bigint) {
@@ -23,7 +27,7 @@ async function updateMsrZendeskTicketWithSocialworker(msr: UpdateTicketMsr) {
   const ticket = {
     id: msr.zendeskTicketId,
     status: "pending",
-    assignee_id: agent, // TBD
+    assignee_id: SOCIAL_WORKER_ZENDESK_USER_ID,
     custom_fields: [
       {
         id: ZENDESK_CUSTOM_FIELDS_DICIO["estado"],

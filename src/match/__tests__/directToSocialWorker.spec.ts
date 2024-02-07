@@ -7,6 +7,7 @@ import * as getCurrentDate from "../../utils/getCurrentDate";
 import type { ZendeskTicket, ZendeskUser } from "../../types";
 
 import { prismaMock } from "../../setupTests";
+import { SOCIAL_WORKER_ZENDESK_USER_ID } from "../../constants";
 
 const updateTicketMock = jest.spyOn(zendeskClient, "updateTicket");
 const getUserMock = jest.spyOn(zendeskClient, "getUser");
@@ -74,7 +75,7 @@ describe("directToSocialWorker", () => {
     const socialWorkerTicket = {
       id: 123123123,
       status: "pending",
-      assignee_id: 1,
+      assignee_id: SOCIAL_WORKER_ZENDESK_USER_ID,
       custom_fields: [
         {
           id: 360021879791,

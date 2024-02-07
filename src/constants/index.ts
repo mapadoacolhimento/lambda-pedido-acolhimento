@@ -42,3 +42,5 @@ export const MSR_TEST_ZENDESK_USER_ID = "22858077211028";
 export const ONLINE_MATCH = 1;
 export const PUBLIC_SERVICE = 2;
 export const SOCIAL_WORKER = 3;
+
+export const SOCIAL_WORKER_ZENDESK_USER_ID = 415747628191;
