@@ -17,7 +17,7 @@ type MsrEmailParams = {
   volunteer?: Volunteer;
   agent: number;
   msr: Msr;
-  referralType: number;
+  referralType?: number;
 };
 
 export default function getMsrEmail({

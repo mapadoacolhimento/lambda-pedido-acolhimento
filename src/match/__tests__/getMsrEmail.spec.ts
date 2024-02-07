@@ -1,3 +1,4 @@
+import { PUBLIC_SERVICE, SOCIAL_WORKER } from "../../constants";
 import getMsrEmail from "../getMsrEmail";
 
 describe("getMsrEmail", () => {
@@ -115,6 +116,7 @@ describe("getMsrEmail", () => {
           name: "Teste Msr Pub",
           supportType: "psychological",
         },
+        referralType: PUBLIC_SERVICE,
       });
     });
     it("should return the correct comment payload", () => {
@@ -138,6 +140,40 @@ describe("getMsrEmail", () => {
       expect(email["html_body"]).toContain(
         "https://qualtrics.com/form?user_id=MWY0ZjAyMmQ1YjU5YTc1MzE1MWExNTJjOGViZDlmMWNkMTc3MTRhOTBlN2NhN2MzNjM5NGFhMzA4MjQwZGI5Mw=="
       );
+    });
+  });
+  describe("Social Worker", () => {
+    let email = {} as Record<string, unknown>;
+    beforeAll(() => {
+      email = getMsrEmail({
+        agent: 377577169651,
+        msr: {
+          email: "test+social+worker@email.com",
+          name: "Teste Msr Ass Social",
+          supportType: "psychological",
+        },
+        referralType: SOCIAL_WORKER,
+      });
+    });
+    it("should return the correct comment payload", () => {
+      expect(email).toStrictEqual(
+        expect.objectContaining({
+          author_id: 377577169651,
+          public: false,
+        })
+      );
+    });
+    it("should contain correct msr name", () => {
+      expect(email["html_body"]).toContain("Teste Msr Ass Social");
+    });
+    it("should mention social worker", () => {
+      expect(email["html_body"]).toContain("assistente social");
+    });
+    it("should contain correct agent name", () => {
+      expect(email["html_body"]).toContain("Equipe");
+    });
+    it("should contain Cal.com link", () => {
+      expect(email["html_body"]).toContain("https://cal.com/xxxx");
     });
   });
 });
