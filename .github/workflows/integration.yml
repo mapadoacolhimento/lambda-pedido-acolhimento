@@ -82,6 +82,7 @@ jobs:
           SURVEY_LINK=${{ secrets.SURVEY_LINK }}
           SECRET_IV=${{ secrets.SECRET_IV }}
           ENCRYPTION_METHOD=${{ secrets.ENCRYPTION_METHOD }}
+          CAL_LINK=${{ secrets.CAL_LINK }}
           EOF
 
       - name: Install serverless globally
