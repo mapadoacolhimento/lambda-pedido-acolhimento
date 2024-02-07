@@ -426,7 +426,7 @@ enum SupportType {
 enum SupportRequestsStatus {
   open
   matched
-  social_assistant
+  social_worker
   public_service
   duplicated
   closed
