@@ -150,11 +150,17 @@ async function main() {
   //   },
   // });
 
-  const newMatchFeatureFlag = await prisma.featureFlag.create({
-    data: {
-      featureName: "NEW_MATCH",
-      featureEnabled: true,
-    },
+  const newMatchFeatureFlag = await prisma.featureFlag.createMany({
+    data: [
+      {
+        featureName: "NEW_MATCH",
+        featureEnabled: true,
+      },
+      {
+        featureName: "SOCIAL_WORKER",
+        featureEnabled: true,
+      },
+    ],
   });
 
   const city = await prisma.cities.create({
