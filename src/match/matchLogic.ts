@@ -9,7 +9,6 @@ import { IDEAL_MATCH_MAX_DISTANCE } from "../constants";
 import type { SupportRequest } from "../types";
 import { ONLINE_MATCH, PUBLIC_SERVICE, SOCIAL_WORKER } from "../constants";
 
-
 export async function createIdealMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[]
@@ -186,19 +185,20 @@ export function filterVolunteersInTheSameState(
   return volunteers.filter((volunteer) => volunteer.state === msrState);
 }
 
-export function decideOnOnlineMatch() {
+export function decideOnRandomization(): number {
   const randomNum = Math.random();
 
-  const shouldReceiveAnOnlineMatch = 1/3;
-  const shouldDirectToPublicService = 1/3;
-  const shouldDirectToSocialWorker = 1/3;
+  const shouldReceiveAnOnlineMatch = 1 / 3;
+  const shouldDirectToPublicService = 1 / 3;
+  const shouldDirectToSocialWorker = 1 / 3;
 
   if (randomNum < shouldReceiveAnOnlineMatch) {
-    return ONLINE_MATCH
-  } else if (randomNum < shouldDirectToPublicService + shouldDirectToSocialWorker) {
-    return PUBLIC_SERVICE
-  
-  } else {
-    return SOCIAL_WORKER;
+    return ONLINE_MATCH;
   }
+
+  if (randomNum < shouldDirectToPublicService + shouldDirectToSocialWorker) {
+    return PUBLIC_SERVICE;
+  }
+
+  return SOCIAL_WORKER;
 }

@@ -9,7 +9,7 @@ import {
   createExpandedMatch,
   createIdealMatch,
   createOnlineMatch,
-  decideOnOnlineMatch,
+  decideOnRandomization,
 } from "./match/matchLogic";
 import directToPublicService, {
   PublicService,
@@ -19,11 +19,27 @@ import directToSocialWorker, {
   SocialWorker,
 } from "./match/directToSocialWorker";
 
-
 import client from "./prismaClient";
 import { getErrorMessage, stringfyBigInt } from "./utils";
 import { ONLINE_MATCH, SOCIAL_WORKER } from "./constants";
 
+async function getRandomReferral(
+  supportRequest: SupportRequests,
+  allVolunteers: VolunteerAvailability[]
+) {
+  const shouldForwardTo = decideOnRandomization();
+
+  switch (shouldForwardTo) {
+    case ONLINE_MATCH:
+      return await createOnlineMatch(supportRequest, allVolunteers);
+
+    case SOCIAL_WORKER:
+      return await directToSocialWorker(supportRequest.supportRequestId);
+
+    default:
+      return await directToPublicService(supportRequest.supportRequestId);
+  }
+}
 
 const process = async (
   supportRequest: SupportRequests
@@ -32,7 +48,7 @@ const process = async (
     const allVolunteers: VolunteerAvailability[] = await fetchVolunteers(
       supportRequest.supportType
     );
-    
+
     const idealMatch = await createIdealMatch(supportRequest, allVolunteers);
 
     if (idealMatch) return stringfyBigInt(idealMatch) as Matches;
@@ -44,20 +60,16 @@ const process = async (
 
     if (expandedMatch) return stringfyBigInt(expandedMatch) as Matches;
 
-    const shouldForwardTo = decideOnOnlineMatch();
+    const randomReferralMatch = await getRandomReferral(
+      supportRequest,
+      allVolunteers
+    );
 
-    switch (shouldForwardTo){
-      case ONLINE_MATCH: 
-        const onlineMatch = await createOnlineMatch(
-          supportRequest,
-         allVolunteers
-        );
-        if (onlineMatch) return stringfyBigInt(onlineMatch) as Matches;
-        break;
-      case SOCIAL_WORKER:
-        const solcialWorker = await directToSocialWorker(supportRequest.supportRequestId)
-        return stringfyBigInt(solcialWorker) as SocialWorker;
-    }
+    if (randomReferralMatch)
+      return stringfyBigInt(randomReferralMatch) as
+        | Matches
+        | SocialWorker
+        | PublicService;
 
     const publicService = await directToPublicService(
       supportRequest.supportRequestId
