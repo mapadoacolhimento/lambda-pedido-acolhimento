@@ -23,7 +23,7 @@ async function updateMsrZendeskTicketWithSocialworker(msr: UpdateTicketMsr) {
   const ticket = {
     id: msr.zendeskTicketId,
     status: "pending",
-    assignee_id: agent,
+    assignee_id: agent, // TBD
     custom_fields: [
       {
         id: ZENDESK_CUSTOM_FIELDS_DICIO["estado"],
@@ -31,7 +31,7 @@ async function updateMsrZendeskTicketWithSocialworker(msr: UpdateTicketMsr) {
       },
       {
         id: ZENDESK_CUSTOM_FIELDS_DICIO["status_acolhimento"],
-        value: "encaminhamento__realizado_para_serviço_público",
+        value: "encaminhamento__assistente_social",
       },
       {
         id: ZENDESK_CUSTOM_FIELDS_DICIO["data_encaminhamento"],
