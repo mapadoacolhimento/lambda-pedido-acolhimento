@@ -201,7 +201,7 @@ function socialWorkerEmailTemplate(
   const socialWorkerCalendarLink = process.env["CAL_LINK"];
 
   return `
-  <p>Olá, ${msrName}!</p>
+  <p>Olá, ${msrName}!
   </br>
   </br>
   Esperamos que esteja bem, na medida do possível <3
@@ -254,6 +254,8 @@ function socialWorkerEmailTemplate(
   </br>
   </br>
   Um abraço forte,
-  Equipe do Mapa do Acolhimento 💜
+  </br>
+  </br>
+  Equipe do Mapa do Acolhimento 💜</p>
   `;
 }
