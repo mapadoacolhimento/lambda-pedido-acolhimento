@@ -2,7 +2,11 @@ import client from "../prismaClient";
 import getMsrEmail from "./getMsrEmail";
 import { getAgent, getCurrentDate } from "../utils";
 import { getUser, updateTicket } from "../zendeskClient";
-import { PUBLIC_SERVICE, ZENDESK_CUSTOM_FIELDS_DICIO } from "../constants";
+import {
+  SOCIAL_WORKER,
+  SOCIAL_WORKER_ZENDESK_USER_ID,
+  ZENDESK_CUSTOM_FIELDS_DICIO,
+} from "../constants";
 import type { SupportRequest, ZendeskUser } from "../types";
 
 async function fetchMsrFromZendesk(msrId: bigint) {
@@ -17,13 +21,13 @@ type UpdateTicketMsr = Pick<
 > &
   Pick<ZendeskUser, "email" | "name">;
 
-async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
+async function updateMsrZendeskTicketWithSocialworker(msr: UpdateTicketMsr) {
   const agent = getAgent();
 
   const ticket = {
     id: msr.zendeskTicketId,
     status: "pending",
-    assignee_id: agent,
+    assignee_id: SOCIAL_WORKER_ZENDESK_USER_ID,
     custom_fields: [
       {
         id: ZENDESK_CUSTOM_FIELDS_DICIO["estado"],
@@ -31,7 +35,7 @@ async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
       },
       {
         id: ZENDESK_CUSTOM_FIELDS_DICIO["status_acolhimento"],
-        value: "encaminhamento__realizado_para_serviço_público",
+        value: "encaminhamento__assistente_social",
       },
       {
         id: ZENDESK_CUSTOM_FIELDS_DICIO["data_encaminhamento"],
@@ -41,7 +45,7 @@ async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
     comment: getMsrEmail({
       agent,
       msr,
-      referralType: PUBLIC_SERVICE
+      referralType: SOCIAL_WORKER,
     }),
   };
 
@@ -50,23 +54,23 @@ async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
   return zendeskTicket ? zendeskTicket.id : null;
 }
 
-export type PublicService = Pick<
+export type SocialWorker = Pick<
   SupportRequest,
   "state" | "zendeskTicketId" | "supportType" | "msrId"
 >;
 
-export default async function directToPublicService(
+export default async function directToSocialWorker(
   supportRequestId: number
-): Promise<PublicService> {
+): Promise<SocialWorker> {
   const updateSupportRequest = await client.supportRequests.update({
     where: {
       supportRequestId: supportRequestId,
     },
     data: {
-      status: "public_service",
+      status: "social_worker",
       SupportRequestStatusHistory: {
         create: {
-          status: "public_service",
+          status: "social_worker",
         },
       },
     },
@@ -84,7 +88,7 @@ export default async function directToPublicService(
     throw new Error("Couldn't fetch msr from zendesk");
   }
 
-  await updateMsrZendeskTicketWithPublicService({
+  await updateMsrZendeskTicketWithSocialworker({
     ...updateSupportRequest,
     email: zendeskUser.email,
     name: zendeskUser.name,

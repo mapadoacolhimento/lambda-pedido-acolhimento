@@ -9,18 +9,48 @@ import {
   createExpandedMatch,
   createIdealMatch,
   createOnlineMatch,
-  decideOnOnlineMatch,
+  decideOnRandomization,
 } from "./match/matchLogic";
 import directToPublicService, {
   PublicService,
 } from "./match/directToPublicService";
 
-import client from "./prismaClient";
+import directToSocialWorker, {
+  SocialWorker,
+} from "./match/directToSocialWorker";
+
+import client, { isFeatureFlagEnabled } from "./prismaClient";
 import { getErrorMessage, stringfyBigInt } from "./utils";
+import {
+  ONLINE_MATCH,
+  SOCIAL_WORKER,
+  SOCIAL_WORKER_FEATURE_FLAG,
+} from "./constants";
+
+async function getRandomReferral(
+  supportRequest: SupportRequests,
+  allVolunteers: VolunteerAvailability[]
+) {
+  const isSocialWorkerFlagEnabled = await isFeatureFlagEnabled(
+    SOCIAL_WORKER_FEATURE_FLAG
+  );
+  const shouldForwardTo = decideOnRandomization(isSocialWorkerFlagEnabled);
+
+  switch (shouldForwardTo) {
+    case ONLINE_MATCH:
+      return await createOnlineMatch(supportRequest, allVolunteers);
+
+    case SOCIAL_WORKER:
+      return await directToSocialWorker(supportRequest.supportRequestId);
+
+    default:
+      return await directToPublicService(supportRequest.supportRequestId);
+  }
+}
 
 const process = async (
   supportRequest: SupportRequests
-): Promise<Matches | PublicService | null> => {
+): Promise<Matches | PublicService | SocialWorker | null> => {
   try {
     const allVolunteers: VolunteerAvailability[] = await fetchVolunteers(
       supportRequest.supportType
@@ -37,16 +67,16 @@ const process = async (
 
     if (expandedMatch) return stringfyBigInt(expandedMatch) as Matches;
 
-    const shouldReceiveAnOnlineMatch = decideOnOnlineMatch();
+    const randomReferralMatch = await getRandomReferral(
+      supportRequest,
+      allVolunteers
+    );
 
-    if (shouldReceiveAnOnlineMatch) {
-      const onlineMatch = await createOnlineMatch(
-        supportRequest,
-        allVolunteers
-      );
-
-      if (onlineMatch) return stringfyBigInt(onlineMatch) as Matches;
-    }
+    if (randomReferralMatch)
+      return stringfyBigInt(randomReferralMatch) as
+        | Matches
+        | SocialWorker
+        | PublicService;
 
     const publicService = await directToPublicService(
       supportRequest.supportRequestId

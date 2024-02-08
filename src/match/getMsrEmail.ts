@@ -1,8 +1,13 @@
 import crypto from "crypto";
 import type { Volunteers } from "@prisma/client";
 import { isProduction } from "../utils";
-import { AGENT_DICIO, VOLUNTEER_SUPPORT_TYPE_DICIO } from "../constants";
+import {
+  AGENT_DICIO,
+  SOCIAL_WORKER,
+  VOLUNTEER_SUPPORT_TYPE_DICIO,
+} from "../constants";
 import type { SupportRequest, ZendeskUser } from "../types";
+import { PUBLIC_SERVICE } from "../constants";
 
 type Volunteer = Pick<Volunteers, "firstName" | "phone" | "registrationNumber">;
 type Msr = Pick<ZendeskUser, "email" | "name"> &
@@ -12,26 +17,41 @@ type MsrEmailParams = {
   volunteer?: Volunteer;
   agent: number;
   msr: Msr;
+  referralType?: number;
 };
 
-export default function getMsrEmail({ volunteer, agent, msr }: MsrEmailParams) {
+export default function getMsrEmail({
+  volunteer,
+  agent,
+  msr,
+  referralType = 0,
+}: MsrEmailParams) {
   const encryptedEmail = encrypt(msr.email);
   const surveyLink = process.env["SURVEY_LINK"];
 
   const msrSurveyLink = `${surveyLink}?user_id=${encryptedEmail}`;
   const agentName = AGENT_DICIO[agent] || "Equipe";
 
-  const msrMessage = volunteer
+  const referralEmailTemplate: Record<number, string> = {
+    [PUBLIC_SERVICE]: publicServiceEmailTemplate(
+      msr.name,
+      agentName,
+      msrSurveyLink
+    ),
+    [SOCIAL_WORKER]: socialWorkerEmailTemplate(msr.name, msrSurveyLink),
+  };
+
+  const emailTemplate = volunteer
     ? matchEmailTemplate({
         volunteer,
         msr,
         agentName,
         surveyLink: msrSurveyLink,
       })
-    : publicServiceEmailTemplate(msr.name, agentName, msrSurveyLink);
+    : referralEmailTemplate[referralType];
 
   const zendeskComment = {
-    html_body: msrMessage,
+    html_body: emailTemplate,
     author_id: agent,
     public: isProduction() ? true : false,
   };
@@ -105,7 +125,7 @@ function matchEmailTemplate({
     No momento de contato com a voluntária, por favor, identifique que você buscou ajuda via Mapa do Acolhimento. <span style="font-weight: bold">Ela possui um prazo de 48 horas para retorná-la.</span>
     </br>
     </br>
-    <span style="font-weight: bold">Caso você e a profissional indicada estejam distantes e haja algum impeditivo para que o seu atendimento remoto aconteça de forma segura,</span> por favor nos escreva para te oferecermos mais informações sobre como buscar ajuda presencial na rede pública de atendimento. 
+    <span style="font-weight: bold">Caso você e a profissional indicada estejam distantes e haja algum impeditivo para que o seu atendimento remoto aconteça de forma segura,</span> por favor nos escreva para te oferecermos mais informações sobre como buscar ajuda presencial na rede pública de atendimento.
     </br>
     </br>
     Todos os atendimentos do Mapa do Acolhimento devem ser gratuitos pelo tempo que durarem. <span style="font-weight: bold">Caso você seja cobrada, comunique imediatamente à nossa equipe.</span>
@@ -152,7 +172,7 @@ function publicServiceEmailTemplate(
   <span style="font-weight:bold">Também te indicamos a Cartilha #ComoMeProteger</span> que possui orientações sobre (1) como identificar a violência doméstica; (2) o que é o ciclo de violência; (3) o que é e como traçar um plano de segurança; (4) como se proteger e onde buscar ajuda; (5) como e onde obter acesso à justiça, abortamento legal e renda básica emergencial; além de (6) um detalhado passo-a-passo de segurança digital. Baixe aqui: <a href="https://bit.ly/CartilhaComoMeProteger">https://bit.ly/CartilhaComoMeProteger</a>.
   </br>
   </br>
-  (!!) Lembrando que por uma questão de segurança, as informações desta cartilha não podem cair em mãos erradas, por isso, pedimos para que você faça o download e guarde-o em um local seguro! 
+  (!!) Lembrando que por uma questão de segurança, as informações desta cartilha não podem cair em mãos erradas, por isso, pedimos para que você faça o download e guarde-o em um local seguro!
   </br>
   </br>
   Além disso, <span style="font-weight: bold;">o nosso time está conduzindo uma pesquisa para entender melhor a efetividade do serviço que prestamos.</span> Para isso, <span style="font-weight:bold">precisamos que as mulheres que buscam nossa ajuda, compartilhem suas experiências e perspectivas conosco. Pode nos ajudar?</span>
@@ -164,7 +184,7 @@ function publicServiceEmailTemplate(
   Lembrando que o preenchimento desse formulário é totalmente opcional. Caso ele te cause qualquer desconforto, estamos aqui para te acolher. Nos escreva para <a href="mailto:atendimento@mapadoacolhimento.org">atendimento@mapadoacolhimento.org</a>
   </br>
   </br>
-  Estamos juntas! 
+  Estamos juntas!
   </br>
   </br>
   Um abraço,
@@ -172,5 +192,66 @@ function publicServiceEmailTemplate(
   </br>
   ${agentName} do Mapa do Acolhimento
   </p>
+  `;
+}
+function socialWorkerEmailTemplate(
+  msrName: ZendeskUser["name"],
+  surveyLink: string
+) {
+  const socialWorkerCalendarLink = process.env["CAL_LINK"];
+
+  return `
+  <p>Olá, ${msrName}!
+  </br>
+  </br>
+  Esperamos que esteja bem, na medida do possível <3
+  </br>
+  </br>
+  Estamos entrando em contato porque <span style="font-weight: bold;">infelizmente ainda não encontramos voluntárias disponíveis em seu município para seu atendimento.</span>
+  </br>
+  </br>
+  Assim, para que possamos compreender melhor as suas necessidades e a situação de violência em que se encontra, a fim de te oferecer o suporte e encaminhamento qualificado que precisa, <span style="font-weight: bold;">te convidamos à conversar com uma assistente social de nossa equipe.</span>
+  </br>
+  </br>
+  Vamos lá?!
+  </br>
+  </br>
+  ➡️ <span style="font-weight: bold;">Como funciona?</span>
+  </br>
+  Para que possa passar por um <span style="font-weight: bold;">atendimento social remoto</span> com a assistente social indicada, você precisa acessar este link: <a href="${socialWorkerCalendarLink}">${socialWorkerCalendarLink}</a> <span style="font-weight: bold;">e selecionar o melhor dia e horário para seu atendimento!</span>
+  </br>
+  </br>
+  Ao selecionar, o agendamento será confirmado e você receberá uma notificação no seu e-mail <span style="font-weight: bold;">com o horário, dia e link do Google Meet para a realização do atendimento.</span>
+  </br>
+  </br>
+  Com isso, basta aguardar o dia do encontro chegar e entrar na sala do Google Meet! Nossa assistente social estará te esperando lá!
+  </br>
+  </br>
+  A profissional te fará algumas perguntas relacionadas à renda, escolaridade, situação de violência vivenciada, entre outras questões, para que <span style="font-weight: bold;">depois desse atendimento</span>, possamos te oferecer a orientação mais adequada ao seu caso.
+  </br>
+  </br>
+  ➡️ <span style="font-weight: bold;">O que acontece depois do atendimento social?</span>
+  </br>
+  Após análise técnica realizada pela assistente social, você será encaminhada para o serviço público de proteção às mulheres da sua região que possa atender, apropriadamente, a sua demanda. A assistente social te oferecerá todas as informações necessárias para que tenha a ajuda que precisa! Não se preocupe <3
+  </br>
+  </br>
+  (!) Caso tenha alguma dúvida sobre esse processo ou não possa comparecer no atendimento agendado e precise remarcar, <span style="font-weight: bold;">basta entrar em contato conosco no e-mail:   <a href="mailto:atendimento@mapadoacolhimento.org">atendimento@mapadoacolhimento.org</a>.</span> Te retornaremos por lá com as orientações necessárias!
+  </br>
+  </br>
+  ➡️ Além disso, <span style="font-weight: bold;">o nosso time está conduzindo uma pesquisa para entender melhor a efetividade do serviço que prestamos.</span> Para isso, <span style="font-weight:bold">precisamos que as mulheres que buscam nossa ajuda, compartilhem suas experiências e perspectivas conosco. Pode nos ajudar?</span>
+  </br>
+  </br>
+  <a href="${surveyLink}">Quero preencher o formulário!</a>
+  </br>
+  </br>
+  Lembrando que o preenchimento desse formulário é totalmente opcional. Caso ele te cause qualquer desconforto, estamos aqui para te acolher.
+  </br>
+  </br>
+  Estamos juntas!
+  </br>
+  </br>
+  Um abraço forte,
+  </br>
+  Equipe do Mapa do Acolhimento 💜</p>
   `;
 }

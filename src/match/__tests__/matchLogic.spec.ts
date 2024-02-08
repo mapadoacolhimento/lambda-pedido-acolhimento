@@ -10,6 +10,7 @@ import {
   createIdealMatch,
   createExpandedMatch,
   createOnlineMatch,
+  decideOnRandomization,
 } from "../matchLogic";
 import { prismaMock } from "../../setupTests";
 import * as createAndUpdateZendeskMatchTickets from "../createAndUpdateZendeskMatchTickets";
@@ -797,5 +798,36 @@ describe("createOnlineMatch()", () => {
     );
 
     expect(onlineMatch).toStrictEqual(match);
+  });
+});
+
+describe("decideOnRandomization", () => {
+  describe("Social worker feature flag is ENABLED", () => {
+    it("should return an ONLINE_MATCH when random number is less or equal to then 1/3", () => {
+      jest.spyOn(global.Math, "random").mockReturnValue(0.2);
+      expect(decideOnRandomization(true)).toStrictEqual(1);
+    });
+    it("should return a PUBLIC_SERVICE when random number is between 1/3 and 2/3", () => {
+      jest.spyOn(global.Math, "random").mockReturnValue(0.4);
+      expect(decideOnRandomization(true)).toStrictEqual(2);
+    });
+    it("should return a SOCIAL_WORKER when random number is between 2/3 and 1", () => {
+      jest.spyOn(global.Math, "random").mockReturnValue(0.75);
+      expect(decideOnRandomization(true)).toStrictEqual(3);
+    });
+  });
+  describe("Social worker feature flag is DISABLED", () => {
+    it("should return an ONLINE_MATCH when random number is less than or equal to 1/2", () => {
+      jest.spyOn(global.Math, "random").mockReturnValue(0.2);
+      expect(decideOnRandomization(false)).toStrictEqual(1);
+    });
+    it("should return a PUBLIC_SERVICE when random number is greater than 1/2", () => {
+      jest.spyOn(global.Math, "random").mockReturnValue(0.6);
+      expect(decideOnRandomization(false)).toStrictEqual(2);
+    });
+    it("should return a PUBLIC_SERVICE when random number is between 2/3 and 1", () => {
+      jest.spyOn(global.Math, "random").mockReturnValue(0.75);
+      expect(decideOnRandomization(false)).toStrictEqual(2);
+    });
   });
 });
