@@ -428,7 +428,6 @@ enum SupportRequestsStatus {
   matched
   social_worker
   public_service
-  public_service_with_social_worker
   duplicated
   closed
   special_case
