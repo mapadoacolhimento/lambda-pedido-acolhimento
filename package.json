@@ -16,15 +16,7 @@
     "test:stage": "jest --findRelatedTests --passWithNoTests",
     "test:ci": "jest --ci",
     "clean:build": "rimraf .serverless dist",
-    "db:start": "docker compose up -d",
-    "db:push": "prisma db push",
-    "migrate:deploy": "prisma migrate deploy",
-    "migrate:create": "prisma migrate dev --create-only",
-    "migrate:dev": "prisma migrate dev",
-    "migrate:diff": "prisma migrate diff",
-    "generate": "prisma generate",
-    "db:seed": "node prisma/seed.mjs",
-    "db:reset": "prisma migrate reset && npm run db:seed"
+    "generate": "prisma generate"
   },
   "author": "",
   "license": "MIT",
