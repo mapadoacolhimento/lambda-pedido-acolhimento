@@ -1,6 +1,6 @@
 # lambda-pedido-acolhimento
 
-AWS Lambda com API Gateways que fazem tudo relacionado ao processamento do pedido de acolhimento da MSR. 
+AWS Lambda com API Gateways que fazem tudo relacionado ao processamento do pedido de acolhimento da MSR.
 
 ## Introdução
 
@@ -14,45 +14,26 @@ Utilizamos [Serverless](https://www.serverless.com) para orquestrar a publicaç�
 
 - Node v18 (LTS atual)
 	- Utilize o [nvm](https://github.com/nvm-sh/nvm) para gerenciar suas versões de node, facilitando migrações ou possíveis downgrades
-- [Docker](https://docs.docker.com/engine/install/)
-- Variáveis de ambiente 
+- Variáveis de ambiente
 	- Todas as vars necessárias para rodar o projeto estão no .env.example
 
 ```bash
 # Instale as dependências
 npm install
 
-# Rode o banco de dados local + pgadmin
-npm run db:start
+# gere os artefatos do Prisma Client
+npm run generate
 
-# Adc voluntárias "base" para conseguir realizar matches
-npm run db:seed
+# Execute o servidor local
+npm run dev
 ```
 
-### Banco de dados
+Não se esqueça de rodar o banco local a partir do repositório [`mapa-migrations`](https://github.com/mapadoacolhimento/mapa-migrations).
 
-Após rodar o `db:start` você pode acessar o pgadmin localmente em `localhost:5050`.
+Caso queira saber mais sobre porque geramos os artefatos do Prisma Client, [clique aqui](https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/generating-prisma-client).
 
-Os dados do banco de dados local criado estão dentro do arquivo `docker-compose.yml` na raíz do projeto.
+**⚠️ AVISO**: Nunca altere o arquivo `schema.prisma` nesse repositório. Todas as migrations que realizamos em nosso banco de dados são feitas no [`mapa-migrations`](https://github.com/mapadoacolhimento/mapa-migrations). Esse arquivo será [automaticamente atualizado](https://github.com/mapadoacolhimento/mapa-migrations/blob/main/.github/workflows/update-schema.yml) aqui quando o `schema.prisma` do repositório `mapa-migrations` for atualizado.
 
-Para referência, esses são os dados que você precisa inserir para acessar o server postgresql gerado:
-
-- Name: `dev-mapa-org` (ou o que você preferir)
-- Host name: 
-Para encontrar o endereço (IP) que o Docker instanciou o banco, rode:
-
-```bash
-docker ps
-
-# copie o CONTAINER_ID da image `postgres`
-docker inspect CONTAINER_ID
-```
-
-No fim do output, procure por `Network` e então `IPAddress`. Copie esse endereço e cole no campo de hostname, ex: `172.18.0.2`.
-
-- Port: `5432`
-- Username: `postgres`
-- Password: `changeme`
 
 ## Endpoints
 
@@ -87,45 +68,3 @@ Cria um token de autenticação.
 ```http
 POST /sign
 ```
-
-## Prisma e Baseline do Banco de Dados
-
-### Prisma
-
-[Prisma](https://www.prisma.io/) é uma ferramenta de banco de dados ORM (Object-Relational Mapping) que simplifica a interação com o banco de dados. No nosso projeto, utilizamos Prisma para acessar o banco de dados e realizar operações CRUD de maneira eficiente.
-
-### Baseline do Banco de Dados
-
-É importante realizar o baseline do banco de dados periodicamente, especialmente se houver alterações no DB feitas por migrações de outro projeto, como no caso do Cadastro. O baseline é um snapshot do estado atual do banco de dados, garantindo que as alterações feitas por outras migrações não causem conflitos ou problemas de compatibilidade.
-
-Para realizar o baseline usando Prisma, o `DATABASE_URL` deve apontar para o ambiente desejado, depois, execute o seguinte comando:
-
-```bash
-npx prisma db pull
-```
-
-Cheque as mudanças no arquivo `schema.prisma`, idealmente nenhuma mudança nas tabelas do schema `match` foram feitas e você poderá salvar como está.
-
-No entanto, caso algum tipo dos nossos modelos tenha mudado, volte para como estava e mantenha assim.
-
-Após as mudanças serem salvas, **mude a sua variável de ambiente `DATABASE_URL` para o ambiente local**.
-
-```bash
-npx prisma migrate reset
-```
-
-_Antes de dar o OK do reset, fique atenta em qual banco de dados o Prisma executará esse comando. Ele sempre deve ser `localhost:5432`, ou onde quer que você rode o seu banco local._
-
-```bash
-npm run migrate:dev -- --name [baseline-with-django-changes-01]
-```
-
-O número final deve ser incremental, então cheque qual foi o último com o prefixo "basline-with-django-changes-" na pasta `prisma/migrations` e some mais 1.
-
-Commite suas mudanças. Após isso, mude sua variável `DATABASE_URL` para o ambiente em que você deu o `db pull`, e execute:
-
-```bash
-npx prisma migrate resolve --applied [nome da migration criada]
-```
-
-_Não esqueça de voltar sua variável de ambiente `DATABASE_URL` para o banco local._
