@@ -368,6 +368,14 @@ model FeatureFlag {
   @@schema("match")
 }
 
+model BusaraHashes {
+  msrEmail String @db.VarChar(254) @id @map("msr_email")
+  hash String @db.VarChar(1000)
+
+  @@map("busara_hashes")
+  @@schema("match")
+}
+
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
 model msrs {
   id                   BigInt   @id(map: "msrs_msrs_pkey") @default(autoincrement())
@@ -428,6 +436,7 @@ enum SupportRequestsStatus {
   matched
   social_worker
   public_service
+  public_service_with_social_worker
   duplicated
   closed
   special_case
