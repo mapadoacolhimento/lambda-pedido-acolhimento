@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import type { Volunteers } from "@prisma/client";
-import { isProduction } from "../utils";
+import { isProduction, saveEncryptedEmail } from "../utils";
 import {
   AGENT_DICIO,
   SOCIAL_WORKER,
@@ -28,6 +28,8 @@ export default function getMsrEmail({
 }: MsrEmailParams) {
   const encryptedEmail = encrypt(msr.email);
   const surveyLink = process.env["SURVEY_LINK"];
+
+  void saveEncryptedEmail(msr.email, encryptedEmail);
 
   const msrSurveyLink = `${surveyLink}?user_id=${encryptedEmail}`;
   const agentName = AGENT_DICIO[agent] || "Equipe";
