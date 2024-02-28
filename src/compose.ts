@@ -112,8 +112,12 @@ const compose = async (
     const shouldCreateMatch = isNewMatchEnabled || isTestMsr;
 
     if (shouldCreateMatch && openSupportRequests.length > 0) {
-      const processSupportRequest = openSupportRequests.map(process);
-      res = await Promise.all(processSupportRequest);
+      const results = [];
+      for (const supportRequest of openSupportRequests) {
+        const result = await process(supportRequest);
+        results.push(result);
+      }
+      res = results;
     } else {
       res = supportRequests.map(stringfyBigInt);
     }
