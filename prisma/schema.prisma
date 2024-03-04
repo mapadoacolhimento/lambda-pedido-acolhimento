@@ -435,7 +435,7 @@ model Mutipliers {
   hasDisability                         Boolean                                   @map("has_disability")
   hasInternetAccess                     Boolean                                   @map("has_internet_access")
   isAvailable                           Boolean                                   @map("is_available")
-  shiftAvailability                     MultiplierShiftAvailability[]             @map("shift_availability")
+  shiftAvailability                     String[]             @map("shift_availability")
   educationLevel                        EducationLevel                            @map("education_level")
   isUniversityStudent                   Boolean                                   @map("is_university_student")
   universityType                        MultiplierUniversityType                  @map("university_type")
@@ -609,16 +609,6 @@ enum EducationLevel {
 
   @@map("education_level")
   @@schema("public")
-}
-
-enum MultiplierShiftAvailability {
-  morning
-  afternoon
-  evening
-  not_found
-
-  @@map("multiplier_shift_availability")
-  @@schema("mobilization")
 }
 
 enum MultiplierUniversityType {
