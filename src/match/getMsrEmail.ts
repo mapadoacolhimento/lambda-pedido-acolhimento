@@ -133,7 +133,7 @@ function matchEmailTemplate({
     Todos os atendimentos do Mapa do Acolhimento devem ser gratuitos pelo tempo que durarem. <span style="font-weight: bold">Caso você seja cobrada, comunique imediatamente à nossa equipe.</span>
     </br>
     </br>
-    Além disso, <span style="font-weight: bold">o nosso time está conduzindo uma pesquisa para entender melhor a efetividade dos atendimentos prestados pelas nossas voluntárias. Para isso, precisamos que as mulheres que buscam nossa ajuda, compartilhem suas experiências e perspectivas conosco. Pode nos ajudar?</span>
+    Além disso, <span style="font-weight: bold">o nosso time está conduzindo uma pesquisa para entender melhor a efetividade dos atendimentos prestados pelas nossas voluntárias. Para isso, precisamos que as mulheres que buscam nossa ajuda, compartilhem suas experiências e perspectivas conosco. Ao final da pesquisa, todas as participantes receberão um presente exclusivo como forma de agradecimento! Pode nos ajudar?</span>
     </br>
     </br>
     <a href="${surveyLink}">Quero preencher o formulário!</a>
@@ -177,7 +177,7 @@ function publicServiceEmailTemplate(
   (!!) Lembrando que por uma questão de segurança, as informações desta cartilha não podem cair em mãos erradas, por isso, pedimos para que você faça o download e guarde-o em um local seguro!
   </br>
   </br>
-  Além disso, <span style="font-weight: bold;">o nosso time está conduzindo uma pesquisa para entender melhor a efetividade do serviço que prestamos.</span> Para isso, <span style="font-weight:bold">precisamos que as mulheres que buscam nossa ajuda, compartilhem suas experiências e perspectivas conosco. Pode nos ajudar?</span>
+  Além disso, <span style="font-weight: bold;">o nosso time está conduzindo uma pesquisa para entender melhor a efetividade do serviço que prestamos.</span> Para isso, <span style="font-weight:bold">precisamos que as mulheres que buscam nossa ajuda, compartilhem suas experiências e perspectivas conosco. Ao final da pesquisa, todas as participantes receberão um presente exclusivo como forma de agradecimento! Pode nos ajudar?</span>
   </br>
   </br>
   <a href="${surveyLink}">Quero preencher o formulário!</a>
@@ -240,7 +240,7 @@ function socialWorkerEmailTemplate(
   (!) Caso tenha alguma dúvida sobre esse processo ou não possa comparecer no atendimento agendado e precise remarcar, <span style="font-weight: bold;">basta entrar em contato conosco no e-mail:   <a href="mailto:atendimento@mapadoacolhimento.org">atendimento@mapadoacolhimento.org</a>.</span> Te retornaremos por lá com as orientações necessárias!
   </br>
   </br>
-  ➡️ Além disso, <span style="font-weight: bold;">o nosso time está conduzindo uma pesquisa para entender melhor a efetividade do serviço que prestamos.</span> Para isso, <span style="font-weight:bold">precisamos que as mulheres que buscam nossa ajuda, compartilhem suas experiências e perspectivas conosco. Pode nos ajudar?</span>
+  ➡️ Além disso, <span style="font-weight: bold;">o nosso time está conduzindo uma pesquisa para entender melhor a efetividade do serviço que prestamos.</span> Para isso, <span style="font-weight:bold">precisamos que as mulheres que buscam nossa ajuda, compartilhem suas experiências e perspectivas conosco. Ao final da pesquisa, todas as participantes receberão um presente exclusivo como forma de agradecimento! Pode nos ajudar?</span>
   </br>
   </br>
   <a href="${surveyLink}">Quero preencher o formulário!</a>
