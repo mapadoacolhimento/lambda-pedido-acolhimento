@@ -45,6 +45,8 @@ export default async function handler(
 
     const { msrZendeskTicketId, volunteerEmail } = validatedBody;
 
+    console.log({ msrZendeskTicketId, volunteerEmail });
+
     // Fetch the supportRequest using ZendeskTicketId
     const supportRequest = await client.supportRequests.findUnique({
       where: { zendeskTicketId: msrZendeskTicketId },
@@ -86,11 +88,15 @@ export default async function handler(
       "manual"
     );
 
+    const bodyRes = JSON.stringify({
+      message: stringfyBigInt(match),
+    });
+
+    console.log({ bodyRes });
+
     return callback(null, {
       statusCode: 200,
-      body: JSON.stringify({
-        message: stringfyBigInt(match),
-      }),
+      body: bodyRes,
     });
   } catch (e) {
     const error = e as Record<string, unknown>;
