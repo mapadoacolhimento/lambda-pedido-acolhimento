@@ -527,6 +527,7 @@ enum MatchStatus {
   interrupted_after_support
   interrupted_before_support
   waiting_contact
+  started_contact
 
   @@map("match_status")
   @@schema("match")
