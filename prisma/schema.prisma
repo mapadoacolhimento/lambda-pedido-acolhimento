@@ -474,10 +474,15 @@ model Mutipliers {
   age                                 Int
   region                              Region
   state                               String                               @db.VarChar(9)
+  city                                String                               @db.VarChar(100) @default("not_found")
+  householdType                       MultiplierHouseholdType              @default(not_found) @map("household_type")
+  hasChildren                         Boolean?                             @map("has_children")
+  howManyChildren                     Int?                                 @map("how_many_children")
   race                                Race
   sexuality                           Sexuality
   religion                            Religion
   hasDisability                       Boolean                              @map("has_disability")
+  disabilityType                      String[]                             @map("disability_type") @default([])
   hasInternetAccess                   Boolean                              @map("has_internet_access")
   isAvailable                         Boolean                              @map("is_available")
   shiftAvailability                   String[]                             @map("shift_availability")
@@ -488,6 +493,7 @@ model Mutipliers {
   updatedAt                           DateTime                             @updatedAt @map("updated_at") @db.Timestamp(6)
   multiplierPii                       MutiplierPii?
   multiplierRegistrationOpenQuestions MultiplierRegistrationOpenQuestions?
+  multiplierJourneyEvents             MultiplierJourneyEvents[]
 
   @@map("multipliers")
   @@schema("mobilization")
@@ -516,10 +522,23 @@ model MultiplierRegistrationOpenQuestions {
   universityCourse                          String     @map("university_course") @db.VarChar(200)
   howSheHeardAboutUs                        String     @map("how_she_heard_about_us") @db.Text
   reasonsForParticipating                   String     @map("reasons_for_participating") @db.Text
-  multupliers                               Mutipliers @relation(fields: [multiplierId], references: [multiplierId])
+  multipliers                               Mutipliers @relation(fields: [multiplierId], references: [multiplierId])
 
   @@map("multiplier_registration_open_questions")
   @@schema("mobilization")
+}
+
+model MultiplierJourneyEvents {
+  multiplierJourneyEventId          Int                     @id @default(autoincrement()) @map("multiplier_journey_event_id")
+  multiplierId                      Int                     @map("multiplier_id")
+  event                             MultiplierJourneyEvent  
+  createdAt                         DateTime                @default(now()) @map("created_at") @db.Timestamp(6)
+
+  multipliers                       Mutipliers             @relation(fields: [multiplierId], references: [multiplierId])
+
+  @@map("multiplier_journey_events")
+  @@schema("mobilization")
+
 }
 
 enum SupportType {
@@ -663,6 +682,23 @@ enum MultiplierUniversityType {
   not_found
 
   @@map("multiplier_university_type")
+  @@schema("mobilization")
+}
+
+enum MultiplierHouseholdType {
+  urban
+  rural
+  not_found
+
+  @@map("multiplier_household_type")
+  @@schema("mobilization")
+}
+
+enum MultiplierJourneyEvent {
+  registration
+  general_onboarding
+
+  @@map("multiplier_journey_event")
   @@schema("mobilization")
 }
 
