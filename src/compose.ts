@@ -114,7 +114,6 @@ const compose = async (
     if (shouldCreateMatch && openSupportRequests.length > 0) {
       res = [];
       for (let i = 0; i < openSupportRequests.length; i++) {
-        console.log({ [i]: openSupportRequests[i] });
         const processSupportRequest = await process(
           openSupportRequests[i] as SupportRequests
         );
