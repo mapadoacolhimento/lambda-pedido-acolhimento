@@ -25,6 +25,7 @@ export async function createMatch(
     },
     data: {
       status: "matched",
+      updatedAt: new Date().toISOString(),
       SupportRequestStatusHistory: {
         create: {
           status: "matched",
@@ -64,6 +65,7 @@ export async function createMatch(
     data: {
       current_matches: volunteerAvailability.current_matches + 1,
       is_available: isVolunteerAvailable,
+      updated_at: new Date().toISOString(),
     },
   });
 
