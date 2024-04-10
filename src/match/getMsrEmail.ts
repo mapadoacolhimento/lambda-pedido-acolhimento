@@ -208,53 +208,26 @@ function socialWorkerEmailTemplate(
   <p>Olá, ${msrName}!
   </br>
   </br>
-  Esperamos que esteja bem, na medida do possível <3
+  Enquanto buscamos uma voluntária para você, precisamos entender mais sobre o seu pedido de ajuda. Para isso, precisamos que você converse com a Assistente Social da nossa equipe para que ela possa coletar mais informações sobre o seu caso.
   </br>
   </br>
-  Estamos entrando em contato porque <span style="font-weight: bold;">infelizmente ainda não encontramos voluntárias disponíveis em seu município para seu atendimento.</span>
+  ➡️ Para agendar seu atendimento com a assistente social, siga os passos abaixo:
   </br>
   </br>
-  Assim, para que possamos compreender melhor as suas necessidades e a situação de violência em que se encontra, a fim de te oferecer o suporte e encaminhamento qualificado que precisa, <span style="font-weight: bold;">te convidamos à conversar com uma assistente social de nossa equipe.</span>
+  <ol>
+    <li>Acesse o link <a href="${socialWorkerCalendarLink}" target="_blank" rel="noopener noreferrer">${socialWorkerCalendarLink}</a></li>
+    <li>Selecione o melhor dia e horário para seu atendimento</li>
+    <li>Verifique seu e-mail - o link do Google Meet para a realização do atendimento será enviado por lá</li>
+  </ol>
   </br>
   </br>
-  Vamos lá?!
+  Feito o agendamento, basta aguardar o dia do encontro chegar e entrar na sala do Google Meet, por meio do link enviado para o seu e-mail. Nossa assistente social estará te esperando lá! Você tem 10 dias a partir do recebimento deste e-mail para marcar seu atendimento, tá bem?
   </br>
   </br>
-  ➡️ <span style="font-weight: bold;">Como funciona?</span>
-  </br>
-  Para que possa passar por um <span style="font-weight: bold;">atendimento social remoto</span> com a assistente social indicada, você precisa acessar este link: <a href="${socialWorkerCalendarLink}">${socialWorkerCalendarLink}</a> <span style="font-weight: bold;">e selecionar o melhor dia e horário para seu atendimento!</span>
+  Por último, mas não menos importante: você pode nos contar como está sendo sua experiência com o Mapa do Acolhimento até aqui? Estamos conduzindo uma pesquisa para que possamos melhorar cada vez mais os serviços que oferecemos. <a href="${surveyLink}" target="_blank" rel="noopener noreferrer">Clique aqui para responder.</a> São só alguns minutos e ajuda demais o nosso trabalho! Podemos contar com você?
   </br>
   </br>
-  Ao selecionar, o agendamento será confirmado e você receberá uma notificação no seu e-mail <span style="font-weight: bold;">com o horário, dia e link do Google Meet para a realização do atendimento.</span>
-  </br>
-  </br>
-  Com isso, basta aguardar o dia do encontro chegar e entrar na sala do Google Meet! Nossa assistente social estará te esperando lá!
-  </br>
-  </br>
-  A profissional te fará algumas perguntas relacionadas à renda, escolaridade, situação de violência vivenciada, entre outras questões, para que <span style="font-weight: bold;">depois desse atendimento</span>, possamos te oferecer a orientação mais adequada ao seu caso.
-  </br>
-  </br>
-  ➡️ <span style="font-weight: bold;">O que acontece depois do atendimento social?</span>
-  </br>
-  Após análise técnica realizada pela assistente social, você será encaminhada para o serviço público de proteção às mulheres da sua região que possa atender, apropriadamente, a sua demanda. A assistente social te oferecerá todas as informações necessárias para que tenha a ajuda que precisa! Não se preocupe <3
-  </br>
-  </br>
-  (!) Caso tenha alguma dúvida sobre esse processo ou não possa comparecer no atendimento agendado e precise remarcar, <span style="font-weight: bold;">basta entrar em contato conosco no e-mail:   <a href="mailto:atendimento@mapadoacolhimento.org">atendimento@mapadoacolhimento.org</a>.</span> Te retornaremos por lá com as orientações necessárias!
-  </br>
-  </br>
-  ➡️ Além disso, <span style="font-weight: bold;">o nosso time está conduzindo uma pesquisa para entender melhor a efetividade do serviço que prestamos.</span> Para isso, <span style="font-weight:bold">precisamos que as mulheres que buscam nossa ajuda, compartilhem suas experiências e perspectivas conosco. Ao final da pesquisa, todas as participantes receberão um presente exclusivo como forma de agradecimento! Pode nos ajudar?</span>
-  </br>
-  </br>
-  <a href="${surveyLink}" target="_blank" rel="noopener noreferrer">Quero preencher o formulário!</a>
-  </br>
-  </br>
-  Lembrando que o preenchimento desse formulário é totalmente opcional. Caso ele te cause qualquer desconforto, estamos aqui para te acolher.
-  </br>
-  </br>
-  Estamos juntas!
-  </br>
-  </br>
-  Um abraço forte,
+  Um forte abraço,
   </br>
   Equipe do Mapa do Acolhimento 💜</p>
   `;
