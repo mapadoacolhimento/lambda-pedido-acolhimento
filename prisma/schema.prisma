@@ -155,9 +155,9 @@ model integrations_logs {
   error       String
   data        Json
   integration String   @db.VarChar(15)
-  external_id Int?
+  external_id BigInt?
   form_type   String   @db.VarChar(15)
-  internal_id Int?
+  internal_id BigInt?
 
   @@schema("public")
 }
