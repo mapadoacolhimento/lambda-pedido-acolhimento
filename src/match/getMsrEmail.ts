@@ -217,11 +217,11 @@ function socialWorkerEmailTemplate(
   <ol>
     <li>Acesse o link <a href="${socialWorkerCalendarLink}" target="_blank" rel="noopener noreferrer">${socialWorkerCalendarLink}</a></li>
     <li>Selecione o melhor dia e horário para seu atendimento</li>
-    <li>Verifique seu e-mail - o link do Google Meet para a realização do atendimento será enviado por lá</li>
+    <li>Verifique seu e-mail - um link com nosso Whatsapp para a realização do atendimento será enviado por lá</li>
   </ol>
   </br>
   </br>
-  Feito o agendamento, basta aguardar o dia do encontro chegar e entrar na sala do Google Meet, por meio do link enviado para o seu e-mail. Nossa assistente social estará te esperando lá! Você tem 10 dias a partir do recebimento deste e-mail para marcar seu atendimento, tá bem?
+  Feito o agendamento, basta aguardar o dia do encontro chegar e nos chamar no Whatsapp, por meio do link enviado para o seu e-mail. Nossa assistente social estará te esperando lá! Você tem 10 dias a partir do recebimento deste e-mail para marcar seu atendimento, tá bem?
   </br>
   </br>
   Por último, mas não menos importante: você pode nos contar como está sendo sua experiência com o Mapa do Acolhimento até aqui? Estamos conduzindo uma pesquisa para que possamos melhorar cada vez mais os serviços que oferecemos. <a href="${surveyLink}" target="_blank" rel="noopener noreferrer">Clique aqui para responder.</a> São só alguns minutos e ajuda demais o nosso trabalho! Podemos contar com você?
