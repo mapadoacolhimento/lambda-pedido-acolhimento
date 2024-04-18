@@ -109,4 +109,13 @@ describe("directToPublicService", () => {
       })
     );
   });
+
+  it("should call sendEmailPublicService with correct params", async () => {
+    await directToPublicService(2);
+    expect(sendEmailPublicServiceMock).toHaveBeenNthCalledWith(
+      1,
+      "test@email.com",
+      "Teste MSR"
+    );
+  });
 });
