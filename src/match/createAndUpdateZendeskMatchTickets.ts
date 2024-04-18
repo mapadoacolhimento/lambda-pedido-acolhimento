@@ -1,7 +1,7 @@
 import type { VolunteerAvailability, Volunteers } from "@prisma/client";
 import client from "../prismaClient";
-import getMsrEmail from "./getMsrEmail";
 import { createTicket, getUser, updateTicket } from "../zendeskClient";
+import { sendEmailToMsr, sendEmailToVolunteer } from "../emailClient";
 import { getAgent, getCurrentDate, getErrorMessage } from "../utils";
 import {
   ZENDESK_CUSTOM_FIELDS_DICIO,
@@ -39,7 +39,6 @@ async function createVolunteerZendeskTicket({
     organization_id: volunteerSupportTypeInfo.organizationId,
     comment: {
       body: `Voluntária recebeu um pedido de acolhimento de ${msr.name}`,
-      author_id: agent,
       public: false,
     },
     custom_fields: [
@@ -69,20 +68,20 @@ async function createVolunteerZendeskTicket({
 
 type UpdateTicketParams = {
   agent: number;
-  volunteer: Volunteer & {
+  volunteer: {
+    firstName: Volunteer["firstName"];
     zendeskTicketId: ZendeskTicket["id"];
   };
-  msr: Pick<SupportRequest, "zendeskTicketId" | "supportType"> &
-    Pick<ZendeskUser, "email" | "name">;
+  msrZendeskTicketId: SupportRequest["zendeskTicketId"];
 };
 
 async function updateMsrZendeskTicketWithMatch({
   agent,
   volunteer,
-  msr,
+  msrZendeskTicketId,
 }: UpdateTicketParams) {
   const ticket = {
-    id: msr.zendeskTicketId,
+    id: msrZendeskTicketId,
     status: "pending",
     assignee_id: agent,
     custom_fields: [
@@ -103,11 +102,10 @@ async function updateMsrZendeskTicketWithMatch({
         value: getCurrentDate(),
       },
     ],
-    comment: getMsrEmail({
-      msr,
-      volunteer,
-      agent,
-    }),
+    comment: {
+      body: `MSR foi encaminhada para ${volunteer.firstName}`,
+      public: false,
+    },
   };
 
   const zendeskTicket = await updateTicket(ticket);
@@ -117,7 +115,12 @@ async function updateMsrZendeskTicketWithMatch({
 
 type Volunteer = Pick<
   Volunteers,
-  "firstName" | "zendeskUserId" | "phone" | "registrationNumber"
+  | "firstName"
+  | "zendeskUserId"
+  | "phone"
+  | "registrationNumber"
+  | "email"
+  | "last_name"
 >;
 
 async function fetchVolunteerFromDB(
@@ -133,6 +136,8 @@ async function fetchVolunteerFromDB(
         zendeskUserId: true,
         phone: true,
         registrationNumber: true,
+        email: true,
+        last_name: true,
       },
     });
 
@@ -187,13 +192,11 @@ export default async function createAndUpdateZendeskMatchTickets(
       ...volunteer,
       zendeskTicketId: volunteerZendeskTicketId,
     },
-    msr: {
-      zendeskTicketId: supportRequest.zendeskTicketId,
-      email: msr.email,
-      supportType: supportRequest.supportType,
-      name: msr.name,
-    },
+    msrZendeskTicketId: supportRequest.zendeskTicketId,
   });
+
+  await sendEmailToMsr(msr, volunteer, supportRequest.supportType);
+  await sendEmailToVolunteer(volunteer, msr.name, supportRequest.supportType);
 
   return volunteerZendeskTicketId;
 }
