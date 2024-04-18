@@ -554,6 +554,7 @@ enum SupportRequestsStatus {
   matched
   social_worker
   scheduled_social_worker
+  expired_social_worker
   public_service
   public_service_with_social_worker
   duplicated
