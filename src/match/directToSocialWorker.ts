@@ -1,13 +1,12 @@
 import client from "../prismaClient";
-import getMsrEmail from "./getMsrEmail";
-import { getAgent, getCurrentDate } from "../utils";
+import { getCurrentDate } from "../utils";
 import { getUser, updateTicket } from "../zendeskClient";
 import {
-  SOCIAL_WORKER,
   SOCIAL_WORKER_ZENDESK_USER_ID,
   ZENDESK_CUSTOM_FIELDS_DICIO,
 } from "../constants";
-import type { SupportRequest, ZendeskUser } from "../types";
+import type { SupportRequest } from "../types";
+import { sendEmailServiceWorker } from "../emailClient";
 
 async function fetchMsrFromZendesk(msrId: bigint) {
   const msr = await getUser(msrId);
@@ -15,15 +14,9 @@ async function fetchMsrFromZendesk(msrId: bigint) {
   return msr;
 }
 
-type UpdateTicketMsr = Pick<
-  SupportRequest,
-  "zendeskTicketId" | "state" | "supportType"
-> &
-  Pick<ZendeskUser, "email" | "name">;
+type UpdateTicketMsr = Pick<SupportRequest, "zendeskTicketId" | "state">;
 
 async function updateMsrZendeskTicketWithSocialworker(msr: UpdateTicketMsr) {
-  const agent = getAgent();
-
   const ticket = {
     id: msr.zendeskTicketId,
     status: "pending",
@@ -42,11 +35,10 @@ async function updateMsrZendeskTicketWithSocialworker(msr: UpdateTicketMsr) {
         value: getCurrentDate(),
       },
     ],
-    comment: getMsrEmail({
-      agent,
-      msr,
-      referralType: SOCIAL_WORKER,
-    }),
+    comment: {
+      body: "Não encontramos uma voluntária próxima disponível e MSR foi encaminhada para assistente social.",
+      public: false,
+    },
   };
 
   const zendeskTicket = await updateTicket(ticket);
@@ -56,7 +48,7 @@ async function updateMsrZendeskTicketWithSocialworker(msr: UpdateTicketMsr) {
 
 export type SocialWorker = Pick<
   SupportRequest,
-  "state" | "zendeskTicketId" | "supportType" | "msrId"
+  "state" | "zendeskTicketId" | "msrId"
 >;
 
 export default async function directToSocialWorker(
@@ -77,7 +69,6 @@ export default async function directToSocialWorker(
     select: {
       state: true,
       zendeskTicketId: true,
-      supportType: true,
       msrId: true,
     },
   });
@@ -88,11 +79,9 @@ export default async function directToSocialWorker(
     throw new Error("Couldn't fetch msr from zendesk");
   }
 
-  await updateMsrZendeskTicketWithSocialworker({
-    ...updateSupportRequest,
-    email: zendeskUser.email,
-    name: zendeskUser.name,
-  });
+  await updateMsrZendeskTicketWithSocialworker(updateSupportRequest);
+
+  await sendEmailServiceWorker(zendeskUser.email, zendeskUser.name);
 
   return updateSupportRequest;
 }
