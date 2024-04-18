@@ -50,6 +50,7 @@ provider:
     CAL_LINK: ${env:CAL_LINK}
     SECRET_IV: ${env:SECRET_IV}
     ENCRYPTION_METHOD: ${env:ENCRYPTION_METHOD}
+    LOOPS_API_KEY: ${env:LOOPS_API_KEY}
 
 functions:
   auth:

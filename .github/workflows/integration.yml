@@ -83,6 +83,7 @@ jobs:
           SECRET_IV=${{ secrets.SECRET_IV }}
           ENCRYPTION_METHOD=${{ secrets.ENCRYPTION_METHOD }}
           CAL_LINK=${{ secrets.CAL_LINK }}
+          LOOPS_API_KEY=${{ secrets.LOOPS_API_KEY }}
           EOF
 
       - name: Install serverless globally
