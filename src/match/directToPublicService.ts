@@ -1,8 +1,8 @@
 import client from "../prismaClient";
-import getMsrEmail from "./getMsrEmail";
 import { getAgent, getCurrentDate } from "../utils";
 import { getUser, updateTicket } from "../zendeskClient";
-import { PUBLIC_SERVICE, ZENDESK_CUSTOM_FIELDS_DICIO } from "../constants";
+import { sendEmailPublicService } from "../emailClient";
+import { ZENDESK_CUSTOM_FIELDS_DICIO } from "../constants";
 import type { SupportRequest, ZendeskUser } from "../types";
 
 async function fetchMsrFromZendesk(msrId: bigint) {
@@ -38,11 +38,10 @@ async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
         value: getCurrentDate(),
       },
     ],
-    comment: getMsrEmail({
-      agent,
-      msr,
-      referralType: PUBLIC_SERVICE
-    }),
+    comment: {
+      body: "Não encontramos uma voluntária próxima disponível e MSR foi encaminhada para serviço público.",
+      public: false,
+    },
   };
 
   const zendeskTicket = await updateTicket(ticket);
@@ -89,6 +88,8 @@ export default async function directToPublicService(
     email: zendeskUser.email,
     name: zendeskUser.name,
   });
+
+  await sendEmailPublicService(zendeskUser.email, zendeskUser.name);
 
   return updateSupportRequest;
 }
