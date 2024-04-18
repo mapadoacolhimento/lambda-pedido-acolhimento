@@ -3,7 +3,7 @@ import { getAgent, getCurrentDate } from "../utils";
 import { getUser, updateTicket } from "../zendeskClient";
 import { sendEmailPublicService } from "../emailClient";
 import { ZENDESK_CUSTOM_FIELDS_DICIO } from "../constants";
-import type { SupportRequest, ZendeskUser } from "../types";
+import type { SupportRequest } from "../types";
 
 async function fetchMsrFromZendesk(msrId: bigint) {
   const msr = await getUser(msrId);
@@ -11,11 +11,7 @@ async function fetchMsrFromZendesk(msrId: bigint) {
   return msr;
 }
 
-type UpdateTicketMsr = Pick<
-  SupportRequest,
-  "zendeskTicketId" | "state" | "supportType"
-> &
-  Pick<ZendeskUser, "email" | "name">;
+type UpdateTicketMsr = Pick<SupportRequest, "zendeskTicketId" | "state">;
 
 async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
   const agent = getAgent();
@@ -51,7 +47,7 @@ async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
 
 export type PublicService = Pick<
   SupportRequest,
-  "state" | "zendeskTicketId" | "supportType" | "msrId"
+  "state" | "zendeskTicketId" | "msrId"
 >;
 
 export default async function directToPublicService(
@@ -72,7 +68,6 @@ export default async function directToPublicService(
     select: {
       state: true,
       zendeskTicketId: true,
-      supportType: true,
       msrId: true,
     },
   });
@@ -83,11 +78,7 @@ export default async function directToPublicService(
     throw new Error("Couldn't fetch msr from zendesk");
   }
 
-  await updateMsrZendeskTicketWithPublicService({
-    ...updateSupportRequest,
-    email: zendeskUser.email,
-    name: zendeskUser.name,
-  });
+  await updateMsrZendeskTicketWithPublicService(updateSupportRequest);
 
   await sendEmailPublicService(zendeskUser.email, zendeskUser.name);
 

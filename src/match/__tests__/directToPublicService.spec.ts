@@ -69,7 +69,6 @@ describe("directToPublicService", () => {
       select: {
         state: true,
         zendeskTicketId: true,
-        supportType: true,
         msrId: true,
       },
     });
