@@ -47,6 +47,14 @@ export const SOCIAL_WORKER = 3;
 export const SOCIAL_WORKER_ZENDESK_USER_ID = 415747628191;
 
 export const TRANSACTIONAL_EMAIL_IDS = {
-  PUBLIC_SERVICE: "clv43j25d00b0y19vj7x8qdxy",
-  SERVICE_WORKER: "clv4a8qf1004meoqo89fcfjy7",
+  publicService: "clv43j25d00b0y19vj7x8qdxy",
+  serviceWorker: "clv4a8qf1004meoqo89fcfjy7",
+  psychological: {
+    msr: "clv4977jg01a7hlj1twd22zq1",
+    volunteer: "clv5c4mim008rjwf7bqgvk2ga",
+  },
+  legal: {
+    msr: "clv43f8gd02evj3woijkqcgng",
+    volunteer: "clv43jw1t00yj79ezuug2kh6z",
+  },
 };
