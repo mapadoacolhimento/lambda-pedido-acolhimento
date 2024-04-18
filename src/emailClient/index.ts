@@ -1,5 +1,10 @@
 import { TRANSACTIONAL_EMAIL_IDS } from "../constants";
-import { getErrorMessage, encrypt, saveEncryptedEmail } from "../utils";
+import {
+  getErrorMessage,
+  encrypt,
+  saveEncryptedEmail,
+  getFirstName,
+} from "../utils";
 
 export async function sendEmailPublicService(
   msrEmail: string,
@@ -8,7 +13,22 @@ export async function sendEmailPublicService(
   const id = TRANSACTIONAL_EMAIL_IDS["PUBLIC_SERVICE"];
 
   const emailVars = {
-    msr_first_name: msrFirstName,
+    msr_first_name: getFirstName(msrFirstName),
+  };
+
+  const emailRes = await sendEmail(msrEmail, id, emailVars);
+
+  return emailRes;
+}
+
+export async function sendEmailServiceWorker(
+  msrEmail: string,
+  msrFirstName: string
+): Promise<boolean> {
+  const id = TRANSACTIONAL_EMAIL_IDS["SERVICE_WORKER"];
+
+  const emailVars = {
+    msr_first_name: getFirstName(msrFirstName),
   };
 
   const emailRes = await sendEmail(msrEmail, id, emailVars);

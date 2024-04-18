@@ -48,4 +48,5 @@ export const SOCIAL_WORKER_ZENDESK_USER_ID = 415747628191;
 
 export const TRANSACTIONAL_EMAIL_IDS = {
   PUBLIC_SERVICE: "clv43j25d00b0y19vj7x8qdxy",
+  SERVICE_WORKER: "clv4a8qf1004meoqo89fcfjy7",
 };
