@@ -174,42 +174,42 @@ model msrs_formdata {
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
 model Volunteers {
-  id                       Int                      @id(map: "volunteers_volunteer_pkey") @default(autoincrement())
-  created_at               DateTime                 @db.Timestamptz(6)
-  updated_at               DateTime                 @db.Timestamptz(6)
-  condition                String                   @db.VarChar(30)
-  firstName                String                   @map("first_name") @db.VarChar(200)
-  last_name                String                   @db.VarChar(200)
-  email                    String                   @unique @db.VarChar(254)
-  phone                    String                   @db.VarChar(100)
-  zipcode                  String                   @db.VarChar(9)
-  state                    String                   @db.VarChar(9)
-  city                     String                   @db.VarChar(100)
-  neighborhood             String                   @db.VarChar(100)
-  latitude                 Decimal?                 @db.Decimal(10, 4)
-  longitude                Decimal?                 @db.Decimal(10, 4)
-  registrationNumber       String                   @map("register_number") @db.VarChar(400)
-  birth_date               DateTime                 @db.Timestamptz(6)
-  color                    String                   @db.VarChar(100)
-  gender                   String                   @db.VarChar(100)
-  modality                 String                   @db.VarChar(100)
-  fields_of_work           String                   @db.VarChar(200)
-  years_of_experience      String                   @db.VarChar(100)
-  approach                 String?                  @db.VarChar(100)
-  form_data_id             BigInt?
-  occupation               String                   @db.VarChar(12)
-  moodle_id                Int?
-  form_entries_id          BigInt?
-  zendeskUserId            BigInt?                  @map("zendesk_user_id")
-  availability             Int
-  offers_libras_support    Boolean
-  street                   String?                  @db.VarChar(200)
-  Matches                  Matches[]
-  volunteer_availability   VolunteerAvailability?
-  volunteer_status_history VolunteerStatusHistory[]
-  volunteers_formdata      volunteers_formdata?     @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_volunteer_form_data_id_ec6c5a18_fk_volunteer")
-  volunteer_segments       VolunteerSegments[]
-  volunteer_unsubscriptions       VolunteerUnsubscriptions[]
+  id                         Int                        @id(map: "volunteers_volunteer_pkey") @default(autoincrement())
+  created_at                 DateTime                   @db.Timestamptz(6)
+  updated_at                 DateTime                   @db.Timestamptz(6)
+  condition                  String                     @db.VarChar(30)
+  firstName                  String                     @map("first_name") @db.VarChar(200)
+  lastName                   String                     @map("last_name") @db.VarChar(200)
+  email                      String                     @unique @db.VarChar(254)
+  phone                      String                     @db.VarChar(100)
+  zipcode                    String                     @db.VarChar(9)
+  state                      String                     @db.VarChar(9)
+  city                       String                     @db.VarChar(100)
+  neighborhood               String                     @db.VarChar(100)
+  latitude                   Decimal?                   @db.Decimal(10, 4)
+  longitude                  Decimal?                   @db.Decimal(10, 4)
+  registrationNumber         String                     @map("register_number") @db.VarChar(400)
+  birth_date                 DateTime                   @db.Timestamptz(6)
+  color                      String                     @db.VarChar(100)
+  gender                     String                     @db.VarChar(100)
+  modality                   String                     @db.VarChar(100)
+  fields_of_work             String                     @db.VarChar(200)
+  years_of_experience        String                     @db.VarChar(100)
+  approach                   String?                    @db.VarChar(100)
+  form_data_id               BigInt?
+  occupation                 String                     @db.VarChar(12)
+  moodle_id                  Int?
+  form_entries_id            BigInt?
+  zendeskUserId              BigInt?                    @map("zendesk_user_id")
+  availability               Int
+  offers_libras_support      Boolean
+  street                     String?                    @db.VarChar(200)
+  Matches                    Matches[]
+  volunteer_availability     VolunteerAvailability?
+  volunteer_status_history   VolunteerStatusHistory[]
+  volunteers_formdata        volunteers_formdata?       @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_volunteer_form_data_id_ec6c5a18_fk_volunteer")
+  volunteer_segments         VolunteerSegments[]
+  volunteer_unsubscriptions  VolunteerUnsubscriptions[]
   volunteer_training_history VolunteerTrainingHistory[]
 
   @@index([form_data_id], map: "volunteers_volunteer_form_data_id_ec6c5a18")
@@ -363,42 +363,41 @@ model VolunteerStatusHistory {
 }
 
 model VolunteerSegments {
-  volunteer_segment_id BigInt     @id @default(autoincrement())
-  segment_name String @db.VarChar(100)
-  volunteer_id Int
-  volunteer_segment_group String @db.VarChar(100)
-  created_at   DateTime   @default(now()) @db.Timestamp(6)
-    updatedAt       DateTime   @updatedAt @map("updated_at") @db.Timestamp(6)
+  volunteer_segment_id    BigInt   @id @default(autoincrement())
+  segment_name            String   @db.VarChar(100)
+  volunteer_id            Int
+  volunteer_segment_group String   @db.VarChar(100)
+  created_at              DateTime @default(now()) @db.Timestamp(6)
+  updatedAt               DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
 
-  volunteers   Volunteers @relation(fields: [volunteer_id], references: [id])
+  volunteers Volunteers @relation(fields: [volunteer_id], references: [id])
 
   @@map("volunteer_segments")
   @@schema("public")
-
 }
 
 model VolunteerUnsubscriptions {
-  volunteer_unsubscription_id BigInt @id @default(autoincrement())
-  volunteer_id Int
-  unsubscription_reason String @db.VarChar()
-  unsubscription_description String @db.Text()
-  created_at DateTime @default(now()) @db.Timestamp(6)
-  updated_at DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+  volunteer_unsubscription_id BigInt   @id @default(autoincrement())
+  volunteer_id                Int
+  unsubscription_reason       String   @db.VarChar()
+  unsubscription_description  String   @db.Text()
+  created_at                  DateTime @default(now()) @db.Timestamp(6)
+  updated_at                  DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
 
-  volunteers   Volunteers @relation(fields: [volunteer_id], references: [id])
+  volunteers Volunteers @relation(fields: [volunteer_id], references: [id])
 
   @@map("volunteer_unsubscriptions")
   @@schema("public")
 }
 
 model VolunteerTrainingHistory {
-  volunteer_training_history_id BigInt @id @default(autoincrement())
-  volunteer_id Int
-  moodle_user_id Int
-  event VolunteerTrainingEvent
-  created_at DateTime @default(now()) @db.Timestamp(6)
+  volunteer_training_history_id BigInt                 @id @default(autoincrement())
+  volunteer_id                  Int
+  moodle_user_id                Int
+  event                         VolunteerTrainingEvent
+  created_at                    DateTime               @default(now()) @db.Timestamp(6)
 
-  volunteers  Volunteers @relation(fields: [volunteer_id], references: [id])
+  volunteers Volunteers @relation(fields: [volunteer_id], references: [id])
 
   @@map("volunteer_training_history")
   @@schema("public")
@@ -474,7 +473,7 @@ model Mutipliers {
   age                                 Int
   region                              Region
   state                               String                               @db.VarChar(9)
-  city                                String                               @db.VarChar(100) @default("not_found")
+  city                                String                               @default("not_found") @db.VarChar(100)
   householdType                       MultiplierHouseholdType              @default(not_found) @map("household_type")
   hasChildren                         Boolean?                             @map("has_children")
   howManyChildren                     Int?                                 @map("how_many_children")
@@ -482,7 +481,7 @@ model Mutipliers {
   sexuality                           Sexuality
   religion                            Religion
   hasDisability                       Boolean                              @map("has_disability")
-  disabilityType                      String[]                             @map("disability_type") @default([])
+  disabilityType                      String[]                             @default([]) @map("disability_type")
   hasInternetAccess                   Boolean                              @map("has_internet_access")
   isAvailable                         Boolean                              @map("is_available")
   shiftAvailability                   String[]                             @map("shift_availability")
@@ -529,16 +528,15 @@ model MultiplierRegistrationOpenQuestions {
 }
 
 model MultiplierJourneyEvents {
-  multiplierJourneyEventId          Int                     @id @default(autoincrement()) @map("multiplier_journey_event_id")
-  multiplierId                      Int                     @map("multiplier_id")
-  event                             MultiplierJourneyEvent  
-  createdAt                         DateTime                @default(now()) @map("created_at") @db.Timestamp(6)
+  multiplierJourneyEventId Int                    @id @default(autoincrement()) @map("multiplier_journey_event_id")
+  multiplierId             Int                    @map("multiplier_id")
+  event                    MultiplierJourneyEvent
+  createdAt                DateTime               @default(now()) @map("created_at") @db.Timestamp(6)
 
-  multipliers                       Mutipliers             @relation(fields: [multiplierId], references: [multiplierId])
+  multipliers Mutipliers @relation(fields: [multiplierId], references: [multiplierId])
 
   @@map("multiplier_journey_events")
   @@schema("mobilization")
-
 }
 
 enum SupportType {
