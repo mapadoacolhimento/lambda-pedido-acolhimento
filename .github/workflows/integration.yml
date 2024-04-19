@@ -79,10 +79,8 @@ jobs:
           NEW_RELIC_ACCOUNT_ID=${{ secrets.NEW_RELIC_ACCOUNT_ID }}
           NEW_RELIC_API_KEY=${{ secrets.NEW_RELIC_API_KEY }}
           SECRET_KEY=${{ secrets.SECRET_KEY }}
-          SURVEY_LINK=${{ secrets.SURVEY_LINK }}
           SECRET_IV=${{ secrets.SECRET_IV }}
           ENCRYPTION_METHOD=${{ secrets.ENCRYPTION_METHOD }}
-          CAL_LINK=${{ secrets.CAL_LINK }}
           LOOPS_API_KEY=${{ secrets.LOOPS_API_KEY }}
           EOF
 
