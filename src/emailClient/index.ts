@@ -1,11 +1,7 @@
 import type { Volunteers } from "@prisma/client";
+import sendEmail from "./sendEmail";
+import { getFirstName } from "../utils";
 import { TRANSACTIONAL_EMAIL_IDS } from "../constants";
-import {
-  getErrorMessage,
-  encrypt,
-  saveEncryptedEmail,
-  getFirstName,
-} from "../utils";
 import type { SupportRequest, ZendeskUser } from "../types";
 
 type Volunteer = Pick<
@@ -80,46 +76,4 @@ export async function sendEmailServiceWorker(
   const emailRes = await sendEmail(msrEmail, id, emailVars);
 
   return emailRes;
-}
-
-export async function sendEmail(
-  email: string,
-  id: string,
-  emailVars: Record<string, string>
-): Promise<boolean> {
-  try {
-    const endpoint = "https://app.loops.so/api/v1/transactional";
-    const apiKey = process.env["LOOPS_API_KEY"];
-    const encryptedEmail = encrypt(email);
-    void saveEncryptedEmail(email, encryptedEmail);
-
-    const response = await fetch(endpoint, {
-      body: JSON.stringify({
-        email,
-        transactionalId: id,
-        dataVariables: {
-          ...emailVars,
-          msr_email_hash: encryptedEmail,
-        },
-      }),
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-    });
-
-    if (response.status !== 201 || !response.ok) {
-      throw new Error(response.statusText);
-    }
-
-    return response.ok;
-  } catch (e) {
-    console.error(
-      `[sendEmail] - Something went wrong when sending an email to this email '${email}', with this transactionalId: '${id}': ${getErrorMessage(
-        e
-      )}`
-    );
-    return false;
-  }
 }
