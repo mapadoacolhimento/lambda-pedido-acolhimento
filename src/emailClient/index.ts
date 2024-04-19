@@ -6,7 +6,7 @@ import type { SupportRequest, ZendeskUser } from "../types";
 
 type Volunteer = Pick<
   Volunteers,
-  "firstName" | "phone" | "registrationNumber" | "last_name" | "email"
+  "firstName" | "phone" | "registrationNumber" | "lastName" | "email"
 >;
 
 type Msr = Pick<ZendeskUser, "name" | "email">;
@@ -20,7 +20,7 @@ export async function sendEmailToMsr(
 
   const emailVars = {
     msr_first_name: getFirstName(msr.name),
-    volunteer_name: `${volunteer.firstName} ${volunteer.last_name}`,
+    volunteer_name: `${volunteer.firstName} ${volunteer.lastName}`,
     volunteer_phone: volunteer.phone,
     volunteer_registration_number: volunteer.registrationNumber,
   };

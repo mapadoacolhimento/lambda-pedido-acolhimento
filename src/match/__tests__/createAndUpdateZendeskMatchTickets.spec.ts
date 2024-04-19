@@ -37,7 +37,7 @@ const mockVolunteerFromDB = {
   firstName: "Teste Voluntária",
   phone: "11911091113",
   registrationNumber: "123123",
-  last_name: "Sobrenome",
+  lastName: "Sobrenome",
   email: "teste@voluntaria.com",
 } as Volunteers;
 const mockMsrFromZendesk = {

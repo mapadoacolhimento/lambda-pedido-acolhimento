@@ -120,7 +120,7 @@ type Volunteer = Pick<
   | "phone"
   | "registrationNumber"
   | "email"
-  | "last_name"
+  | "lastName"
 >;
 
 async function fetchVolunteerFromDB(
@@ -137,7 +137,7 @@ async function fetchVolunteerFromDB(
         phone: true,
         registrationNumber: true,
         email: true,
-        last_name: true,
+        lastName: true,
       },
     });
 
