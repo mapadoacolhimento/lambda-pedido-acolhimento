@@ -22,6 +22,8 @@ export async function sendEmailToMsr(
     msr_first_name: getFirstName(msr.name),
     volunteer_name: `${volunteer.firstName} ${volunteer.lastName}`,
     volunteer_phone: volunteer.phone,
+    // Não consegui remover esse parâmetro do Loops, então preciamos enviar
+    lawyer_phone: volunteer.phone,
     volunteer_registration_number: volunteer.registrationNumber,
   };
 

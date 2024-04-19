@@ -71,6 +71,7 @@ describe("sendEmailToMsr", () => {
           msr_first_name: "Teste",
           volunteer_name: "Voluntaria Teste",
           volunteer_phone: "11911091199",
+          lawyer_phone: "11911091199",
           volunteer_registration_number: "123123",
         }
       );
@@ -88,6 +89,7 @@ describe("sendEmailToMsr", () => {
           msr_first_name: "Teste",
           volunteer_name: "Voluntaria Teste",
           volunteer_phone: "11911091199",
+          lawyer_phone: "11911091199",
           volunteer_registration_number: "123123",
         }
       );
