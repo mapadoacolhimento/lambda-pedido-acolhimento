@@ -7,4 +7,6 @@ export { default as getAgent } from "./getAgent";
 export { default as getCurrentDate } from "./getCurrentDate";
 export { default as isProduction } from "./isProduction";
 export { default as saveEncryptedEmail } from "./saveEncryptedEmail";
+export { default as encrypt } from "./encrypt";
+export { default as getFirstName } from "./getFirstName";
 export * from "./stringfyBigInt";

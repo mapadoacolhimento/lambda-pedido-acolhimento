@@ -2,6 +2,7 @@ import type { SupportRequests } from "@prisma/client";
 import directToSocialWorker from "../directToSocialWorker";
 
 import * as zendeskClient from "../../zendeskClient";
+import * as emailClient from "../../emailClient";
 import * as getAgent from "../../utils/getAgent";
 import * as getCurrentDate from "../../utils/getCurrentDate";
 import type { ZendeskTicket, ZendeskUser } from "../../types";
@@ -13,6 +14,10 @@ const updateTicketMock = jest.spyOn(zendeskClient, "updateTicket");
 const getUserMock = jest.spyOn(zendeskClient, "getUser");
 const getAgentMock = jest.spyOn(getAgent, "default");
 const getCurrentDateMock = jest.spyOn(getCurrentDate, "default");
+const sendEmailSocialWorkerMock = jest.spyOn(
+  emailClient,
+  "sendEmailSocialWorker"
+);
 
 const mockAgentNumber = 1;
 const mockCurrentDate = "2023-12-28";
@@ -36,6 +41,7 @@ describe("directToSocialWorker", () => {
     updateTicketMock.mockResolvedValueOnce(mockMsrZendeskTicket);
     getCurrentDateMock.mockImplementation(() => mockCurrentDate);
     getUserMock.mockResolvedValue(mockMsrZendeskUser);
+    sendEmailSocialWorkerMock.mockResolvedValueOnce(true);
   });
 
   it("should throw an error if no msr is found in Zendesk", async () => {
@@ -64,7 +70,6 @@ describe("directToSocialWorker", () => {
       select: {
         state: true,
         zendeskTicketId: true,
-        supportType: true,
         msrId: true,
       },
     });
@@ -99,10 +104,19 @@ describe("directToSocialWorker", () => {
       1,
       expect.objectContaining({
         comment: expect.objectContaining({
-          author_id: 1,
+          body: "Não encontramos uma voluntária próxima disponível e MSR foi encaminhada para assistente social.",
           public: false,
         }),
       })
+    );
+  });
+
+  it("should call sendEmailSocialWorker with correct params", async () => {
+    await directToSocialWorker(2);
+    expect(sendEmailSocialWorkerMock).toHaveBeenNthCalledWith(
+      1,
+      "test-social-worker@email.com",
+      "Teste MSR Social Worker"
     );
   });
 });

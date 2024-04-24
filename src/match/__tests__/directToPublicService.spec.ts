@@ -2,6 +2,7 @@ import type { SupportRequests } from "@prisma/client";
 import directToPublicService from "../directToPublicService";
 
 import * as zendeskClient from "../../zendeskClient";
+import * as emailClient from "../../emailClient";
 import * as getAgent from "../../utils/getAgent";
 import * as getCurrentDate from "../../utils/getCurrentDate";
 import type { ZendeskTicket, ZendeskUser } from "../../types";
@@ -12,6 +13,10 @@ const updateTicketMock = jest.spyOn(zendeskClient, "updateTicket");
 const getUserMock = jest.spyOn(zendeskClient, "getUser");
 const getAgentMock = jest.spyOn(getAgent, "default");
 const getCurrentDateMock = jest.spyOn(getCurrentDate, "default");
+const sendEmailPublicServiceMock = jest.spyOn(
+  emailClient,
+  "sendEmailPublicService"
+);
 
 const mockAgentNumber = 1;
 const mockCurrentDate = "2023-12-28";
@@ -35,6 +40,7 @@ describe("directToPublicService", () => {
     updateTicketMock.mockResolvedValueOnce(mockMsrZendeskTicket);
     getCurrentDateMock.mockImplementation(() => mockCurrentDate);
     getUserMock.mockResolvedValue(mockMsrZendeskUser);
+    sendEmailPublicServiceMock.mockResolvedValueOnce(true);
   });
 
   it("should throw an error if no msr is found in Zendesk", async () => {
@@ -63,7 +69,6 @@ describe("directToPublicService", () => {
       select: {
         state: true,
         zendeskTicketId: true,
-        supportType: true,
         msrId: true,
       },
     });
@@ -98,10 +103,19 @@ describe("directToPublicService", () => {
       1,
       expect.objectContaining({
         comment: expect.objectContaining({
-          author_id: 1,
           public: false,
+          body: "Não encontramos uma voluntária próxima disponível e MSR foi encaminhada para serviço público.",
         }),
       })
+    );
+  });
+
+  it("should call sendEmailPublicService with correct params", async () => {
+    await directToPublicService(2);
+    expect(sendEmailPublicServiceMock).toHaveBeenNthCalledWith(
+      1,
+      "test@email.com",
+      "Teste MSR"
     );
   });
 });

@@ -1,9 +1,9 @@
 import client from "../prismaClient";
-import getMsrEmail from "./getMsrEmail";
 import { getAgent, getCurrentDate } from "../utils";
 import { getUser, updateTicket } from "../zendeskClient";
-import { PUBLIC_SERVICE, ZENDESK_CUSTOM_FIELDS_DICIO } from "../constants";
-import type { SupportRequest, ZendeskUser } from "../types";
+import { sendEmailPublicService } from "../emailClient";
+import { ZENDESK_CUSTOM_FIELDS_DICIO } from "../constants";
+import type { SupportRequest } from "../types";
 
 async function fetchMsrFromZendesk(msrId: bigint) {
   const msr = await getUser(msrId);
@@ -11,11 +11,7 @@ async function fetchMsrFromZendesk(msrId: bigint) {
   return msr;
 }
 
-type UpdateTicketMsr = Pick<
-  SupportRequest,
-  "zendeskTicketId" | "state" | "supportType"
-> &
-  Pick<ZendeskUser, "email" | "name">;
+type UpdateTicketMsr = Pick<SupportRequest, "zendeskTicketId" | "state">;
 
 async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
   const agent = getAgent();
@@ -38,11 +34,10 @@ async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
         value: getCurrentDate(),
       },
     ],
-    comment: getMsrEmail({
-      agent,
-      msr,
-      referralType: PUBLIC_SERVICE
-    }),
+    comment: {
+      body: "Não encontramos uma voluntária próxima disponível e MSR foi encaminhada para serviço público.",
+      public: false,
+    },
   };
 
   const zendeskTicket = await updateTicket(ticket);
@@ -52,7 +47,7 @@ async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
 
 export type PublicService = Pick<
   SupportRequest,
-  "state" | "zendeskTicketId" | "supportType" | "msrId"
+  "state" | "zendeskTicketId" | "msrId"
 >;
 
 export default async function directToPublicService(
@@ -73,7 +68,6 @@ export default async function directToPublicService(
     select: {
       state: true,
       zendeskTicketId: true,
-      supportType: true,
       msrId: true,
     },
   });
@@ -84,11 +78,9 @@ export default async function directToPublicService(
     throw new Error("Couldn't fetch msr from zendesk");
   }
 
-  await updateMsrZendeskTicketWithPublicService({
-    ...updateSupportRequest,
-    email: zendeskUser.email,
-    name: zendeskUser.name,
-  });
+  await updateMsrZendeskTicketWithPublicService(updateSupportRequest);
+
+  await sendEmailPublicService(zendeskUser.email, zendeskUser.name);
 
   return updateSupportRequest;
 }
