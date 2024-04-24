@@ -6,7 +6,7 @@ import {
   ZENDESK_CUSTOM_FIELDS_DICIO,
 } from "../constants";
 import type { SupportRequest } from "../types";
-import { sendEmailServiceWorker } from "../emailClient";
+import { sendEmailSocialWorker } from "../emailClient";
 
 async function fetchMsrFromZendesk(msrId: bigint) {
   const msr = await getUser(msrId);
@@ -81,7 +81,7 @@ export default async function directToSocialWorker(
 
   await updateMsrZendeskTicketWithSocialworker(updateSupportRequest);
 
-  await sendEmailServiceWorker(zendeskUser.email, zendeskUser.name);
+  await sendEmailSocialWorker(zendeskUser.email, zendeskUser.name);
 
   return updateSupportRequest;
 }

@@ -65,7 +65,7 @@ export async function sendEmailPublicService(
   return emailRes;
 }
 
-export async function sendEmailServiceWorker(
+export async function sendEmailSocialWorker(
   msrEmail: string,
   msrFirstName: string
 ): Promise<boolean> {

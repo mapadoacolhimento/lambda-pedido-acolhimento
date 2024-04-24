@@ -14,9 +14,9 @@ const updateTicketMock = jest.spyOn(zendeskClient, "updateTicket");
 const getUserMock = jest.spyOn(zendeskClient, "getUser");
 const getAgentMock = jest.spyOn(getAgent, "default");
 const getCurrentDateMock = jest.spyOn(getCurrentDate, "default");
-const sendEmailServiceWorkerMock = jest.spyOn(
+const sendEmailSocialWorkerMock = jest.spyOn(
   emailClient,
-  "sendEmailServiceWorker"
+  "sendEmailSocialWorker"
 );
 
 const mockAgentNumber = 1;
@@ -41,7 +41,7 @@ describe("directToSocialWorker", () => {
     updateTicketMock.mockResolvedValueOnce(mockMsrZendeskTicket);
     getCurrentDateMock.mockImplementation(() => mockCurrentDate);
     getUserMock.mockResolvedValue(mockMsrZendeskUser);
-    sendEmailServiceWorkerMock.mockResolvedValueOnce(true);
+    sendEmailSocialWorkerMock.mockResolvedValueOnce(true);
   });
 
   it("should throw an error if no msr is found in Zendesk", async () => {
@@ -111,9 +111,9 @@ describe("directToSocialWorker", () => {
     );
   });
 
-  it("should call sendEmailServiceWorker with correct params", async () => {
+  it("should call sendEmailSocialWorker with correct params", async () => {
     await directToSocialWorker(2);
-    expect(sendEmailServiceWorkerMock).toHaveBeenNthCalledWith(
+    expect(sendEmailSocialWorkerMock).toHaveBeenNthCalledWith(
       1,
       "test-social-worker@email.com",
       "Teste MSR Social Worker"

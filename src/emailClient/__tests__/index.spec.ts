@@ -1,6 +1,6 @@
 import {
   sendEmailPublicService,
-  sendEmailServiceWorker,
+  sendEmailSocialWorker,
   sendEmailToMsr,
   sendEmailToVolunteer,
 } from "..";
@@ -37,12 +37,12 @@ describe("sendEmailPublicService", () => {
   });
 });
 
-describe("sendEmailServiceWorker", () => {
+describe("sendEmailSocialWorker", () => {
   beforeEach(() => {
     sendEmailMock.mockResolvedValueOnce(true);
   });
   it("should call sendEmail with correct params", async () => {
-    const res = await sendEmailServiceWorker("test@msr.com", "teste MSR");
+    const res = await sendEmailSocialWorker("test@msr.com", "teste MSR");
     expect(res).toStrictEqual(true);
     expect(sendEmailMock).toHaveBeenNthCalledWith(
       1,
