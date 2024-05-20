@@ -49,7 +49,8 @@ async function getRandomReferral(
 }
 
 const process = async (
-  supportRequest: SupportRequests
+  supportRequest: SupportRequests,
+  shouldRandomize: boolean = true
 ): Promise<Matches | PublicService | SocialWorker | null> => {
   try {
     const allVolunteers: VolunteerAvailability[] = await fetchVolunteers(
@@ -66,6 +67,15 @@ const process = async (
     );
 
     if (expandedMatch) return stringfyBigInt(expandedMatch) as Matches;
+
+    if (!shouldRandomize) {
+      const onlineMatch = await createOnlineMatch(
+        supportRequest,
+        allVolunteers
+      );
+      if (onlineMatch) return stringfyBigInt(onlineMatch) as Matches;
+      return null;
+    }
 
     const randomReferralMatch = await getRandomReferral(
       supportRequest,
