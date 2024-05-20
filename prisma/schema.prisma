@@ -555,6 +555,8 @@ enum SupportRequestsStatus {
   expired_social_worker
   public_service
   public_service_with_social_worker
+  waiting_for_match
+  waiting_for_match_with_priority
   duplicated
   closed
   special_case
