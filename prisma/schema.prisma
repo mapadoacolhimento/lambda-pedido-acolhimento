@@ -7,7 +7,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["match", "public", "mobilization"]
+  schemas  = ["match", "public", "mobilization", "public_services"]
 }
 
 model auth_group {
@@ -537,6 +537,26 @@ model MultiplierJourneyEvents {
 
   @@map("multiplier_journey_events")
   @@schema("mobilization")
+}
+
+model PublicServices {
+  publicServiceId Int               @id @default(autoincrement()) @map("public_service_id")
+  serviceType     String            @db.VarChar(400) @map("service_type")
+  serviceName     String            @map("service_name") @db.VarChar(400)
+  zipcode         String            @db.VarChar(9)
+  address         String            @db.VarChar(400)
+  phone           String            @db.VarChar(200)
+  email           String            @db.VarChar(400)
+  region          String            @db.VarChar(15)
+  state           String            @db.VarChar(9)
+  city            String            @db.VarChar(100)
+  lat             Decimal?          @db.Decimal(10, 4)
+  lng             Decimal?          @db.Decimal(10, 4)
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt       DateTime          @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("public_services")
+  @@schema("public_services")
 }
 
 enum SupportType {
