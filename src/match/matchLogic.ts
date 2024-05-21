@@ -133,27 +133,24 @@ export function findClosestVolunteer(
   const volunteersWithLatLng = filterVolunteersWithLatLng(volunteers);
   if (volunteersWithLatLng.length === 0) return null;
 
-  const volunteersWithDistance = volunteersWithLatLng.map((volunteer) => {
-    const pointA = [Number(msrLng), Number(msrLat)];
-    const pointB = [Number(volunteer.lng), Number(volunteer.lat)];
-    const distance = calcDistance(pointA, pointB);
-    return {
-      ...volunteer,
-      distance,
-    };
-  });
+  const closestVolunteers = volunteersWithLatLng
+    .map((volunteer) => {
+      const pointA = [Number(msrLng), Number(msrLat)];
+      const pointB = [Number(volunteer.lng), Number(volunteer.lat)];
+      const distance = calcDistance(pointA, pointB);
+      return {
+        ...volunteer,
+        distance,
+      };
+    })
+    .sort((a, b) => Number(a.distance) - Number(b.distance));
 
-  if (!maxDistance) {
-    const closestVolunteers = volunteersWithDistance.sort(
-      (a, b) => Number(a.distance) - Number(b.distance)
-    );
-    return closestVolunteers[0] || null;
-  }
+  if (!maxDistance) return closestVolunteers[0] || null;
 
-  const chosenVolunteer = volunteersWithDistance.filter(
+  const closestVolunteer = closestVolunteers.find(
     (volunteer) => volunteer.distance && volunteer.distance <= maxDistance
   );
-  return chosenVolunteer[0] || null;
+  return closestVolunteer || null;
 }
 
 export function calcDistance(
