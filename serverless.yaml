@@ -80,6 +80,14 @@ functions:
           path: /manual-match
           method: POST
 
+  handleMatch:
+    handler: handler.handleMatch
+    timeout: 30
+    events:
+      - httpApi:
+          path: /handle-match
+          method: POST
+
   feature-flag:
     handler: handler.featureFlag
     events:

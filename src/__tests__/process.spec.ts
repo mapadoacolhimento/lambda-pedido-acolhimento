@@ -226,4 +226,139 @@ describe("process", () => {
 
     expect(res).toStrictEqual(stringfyBigInt(match));
   });
+
+  it("should not randomize when shouldRandomize flag is false", async () => {
+    const body = {
+      supportRequestId: 1,
+      msrId: 1,
+      zendeskTicketId: 100,
+      supportType: "psychological",
+      supportExpertise: null,
+      status: "open",
+      priority: null,
+      hasDisability: null,
+      requiresLibras: null,
+      acceptsOnlineSupport: true,
+      lat: -11.23,
+      lng: 23.32,
+      city: "SAO PAULO",
+      state: "SP",
+    } as unknown as SupportRequests;
+    const supportRequest = {
+      ...body,
+      msrId: BigInt(1),
+      zendeskTicketId: BigInt(100),
+      status: "public_service" as const,
+      supportType: "psychological" as const,
+      lat: -23.558012418890804 as unknown as Decimal,
+      lng: -46.67788121534589 as unknown as Decimal,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+    };
+    const volunteerAvailability = {
+      volunteer_id: 1,
+      current_matches: 0,
+      max_matches: 2,
+      is_available: true,
+      support_type: "psychological" as const,
+      support_expertise: "",
+      offers_online_support: true,
+      offers_libras_support: false,
+      lat: -8.054181 as unknown as Decimal,
+      lng: -34.926324 as unknown as Decimal,
+      city: "RECIFE",
+      state: "PE",
+      updated_at: new Date(),
+      created_at: new Date(),
+    };
+    const match = {
+      matchId: 1,
+      supportRequestId: 1,
+      msrId: BigInt(1),
+      volunteerId: 1,
+      msrZendeskTicketId: BigInt(1),
+      volunteerZendeskTicketId: BigInt(2),
+      supportType: "psychological" as const,
+      matchType: "msr" as const,
+      matchStage: "online" as const,
+      status: "waiting_contact" as const,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+    };
+    prismaMock.supportRequests.update.mockResolvedValueOnce(supportRequest);
+    prismaMock.volunteerAvailability.findMany.mockResolvedValueOnce([
+      volunteerAvailability,
+    ]);
+    prismaMock.matches.create.mockResolvedValueOnce(match);
+
+    const res = await process(body, undefined, false);
+
+    expect(res).toStrictEqual(stringfyBigInt(match));
+  });
+
+  it("should randomize when shouldRandomize flag is not passed", async () => {
+    const body = {
+      supportRequestId: 1,
+      msrId: 1,
+      zendeskTicketId: 100,
+      supportType: "psychological",
+      supportExpertise: null,
+      status: "open",
+      priority: null,
+      hasDisability: null,
+      requiresLibras: null,
+      acceptsOnlineSupport: true,
+      lat: -11.23,
+      lng: 23.32,
+      city: "SAO PAULO",
+      state: "SP",
+    } as unknown as SupportRequests;
+    const supportRequest = {
+      ...body,
+      msrId: BigInt(1),
+      zendeskTicketId: BigInt(100),
+      status: "public_service" as const,
+      supportType: "psychological" as const,
+      lat: -23.558012418890804 as unknown as Decimal,
+      lng: -46.67788121534589 as unknown as Decimal,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+    };
+
+    getUserMock.mockResolvedValueOnce({
+      name: "Teste MSR",
+      email: "test@email.com",
+    } as ZendeskUser);
+
+    jest.spyOn(global.Math, "random").mockReturnValue(0.4);
+    prismaMock.supportRequests.update.mockResolvedValueOnce(supportRequest);
+    prismaMock.volunteerAvailability.findMany.mockResolvedValueOnce([]);
+    const res = await process(body);
+
+    expect(res).toStrictEqual(stringfyBigInt(supportRequest));
+  });
+
+  it("should return null when shouldRandomize=false and there are no volunteers available", async () => {
+    const body = {
+      supportRequestId: 1,
+      msrId: 1,
+      zendeskTicketId: 100,
+      supportType: "psychological",
+      supportExpertise: null,
+      status: "open",
+      priority: null,
+      hasDisability: null,
+      requiresLibras: null,
+      acceptsOnlineSupport: true,
+      lat: -11.23,
+      lng: 23.32,
+      city: "SAO PAULO",
+      state: "SP",
+    } as unknown as SupportRequests;
+
+    prismaMock.volunteerAvailability.findMany.mockResolvedValueOnce([]);
+    const res = await process(body, undefined, false);
+
+    expect(res).toStrictEqual(null);
+  });
 });

@@ -1,8 +1,9 @@
-import type {
+import {
   SupportType,
   VolunteerAvailability,
   SupportRequests,
   Matches,
+  MatchType,
 } from "@prisma/client";
 
 import {
@@ -29,7 +30,8 @@ import {
 
 async function getRandomReferral(
   supportRequest: SupportRequests,
-  allVolunteers: VolunteerAvailability[]
+  allVolunteers: VolunteerAvailability[],
+  matchType: MatchType
 ) {
   const isSocialWorkerFlagEnabled = await isFeatureFlagEnabled(
     SOCIAL_WORKER_FEATURE_FLAG
@@ -38,7 +40,7 @@ async function getRandomReferral(
 
   switch (shouldForwardTo) {
     case ONLINE_MATCH:
-      return await createOnlineMatch(supportRequest, allVolunteers);
+      return await createOnlineMatch(supportRequest, allVolunteers, matchType);
 
     case SOCIAL_WORKER:
       return await directToSocialWorker(supportRequest.supportRequestId);
@@ -50,6 +52,7 @@ async function getRandomReferral(
 
 const process = async (
   supportRequest: SupportRequests,
+  matchType: MatchType = MatchType.msr,
   shouldRandomize: boolean = true
 ): Promise<Matches | PublicService | SocialWorker | null> => {
   try {
@@ -57,13 +60,18 @@ const process = async (
       supportRequest.supportType
     );
 
-    const idealMatch = await createIdealMatch(supportRequest, allVolunteers);
+    const idealMatch = await createIdealMatch(
+      supportRequest,
+      allVolunteers,
+      matchType
+    );
 
     if (idealMatch) return stringfyBigInt(idealMatch) as Matches;
 
     const expandedMatch = await createExpandedMatch(
       supportRequest,
-      allVolunteers
+      allVolunteers,
+      matchType
     );
 
     if (expandedMatch) return stringfyBigInt(expandedMatch) as Matches;
@@ -71,7 +79,8 @@ const process = async (
     if (!shouldRandomize) {
       const onlineMatch = await createOnlineMatch(
         supportRequest,
-        allVolunteers
+        allVolunteers,
+        matchType
       );
       if (onlineMatch) return stringfyBigInt(onlineMatch) as Matches;
       return null;
@@ -79,7 +88,8 @@ const process = async (
 
     const randomReferralMatch = await getRandomReferral(
       supportRequest,
-      allVolunteers
+      allVolunteers,
+      matchType
     );
 
     if (randomReferralMatch)

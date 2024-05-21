@@ -11,7 +11,8 @@ import { ONLINE_MATCH, PUBLIC_SERVICE, SOCIAL_WORKER } from "../constants";
 
 export async function createIdealMatch(
   supportRequest: SupportRequest,
-  allVolunteers: VolunteerAvailability[]
+  allVolunteers: VolunteerAvailability[],
+  matchType: MatchType
 ) {
   const closestVolunteer = findClosestVolunteer(
     supportRequest.lat,
@@ -25,7 +26,7 @@ export async function createIdealMatch(
   const match = await createMatch(
     supportRequest,
     closestVolunteer,
-    MatchType.msr,
+    matchType,
     MatchStage.ideal
   );
 
@@ -34,7 +35,8 @@ export async function createIdealMatch(
 
 export async function createExpandedMatch(
   supportRequest: SupportRequest,
-  allVolunteers: VolunteerAvailability[]
+  allVolunteers: VolunteerAvailability[],
+  matchType: MatchType
 ) {
   const volunteerInTheSameCity = findVolunteerInTheSameCity(
     supportRequest.city,
@@ -47,7 +49,7 @@ export async function createExpandedMatch(
   const match = await createMatch(
     supportRequest,
     volunteerInTheSameCity,
-    MatchType.msr,
+    matchType,
     MatchStage.expanded
   );
 
@@ -56,7 +58,8 @@ export async function createExpandedMatch(
 
 export async function createOnlineMatch(
   supportRequest: SupportRequest,
-  allVolunteers: VolunteerAvailability[]
+  allVolunteers: VolunteerAvailability[],
+  matchType: MatchType
 ) {
   if (allVolunteers.length === 0) return null;
 
@@ -77,7 +80,7 @@ export async function createOnlineMatch(
       const match = await createMatch(
         supportRequest,
         closestVolunteerInTheSameState,
-        MatchType.msr,
+        matchType,
         MatchStage.online
       );
 
@@ -96,7 +99,7 @@ export async function createOnlineMatch(
     const match = await createMatch(
       supportRequest,
       closestVolunteer,
-      MatchType.msr,
+      matchType,
       MatchStage.online
     );
 
@@ -106,7 +109,7 @@ export async function createOnlineMatch(
   const match = await createMatch(
     supportRequest,
     allVolunteers[0] as VolunteerAvailability,
-    MatchType.msr,
+    matchType,
     MatchStage.online
   );
 
