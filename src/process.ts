@@ -97,6 +97,14 @@ const fetchVolunteers = async (supportType: SupportType) => {
   const availableVolunteers: VolunteerAvailability[] =
     await client.volunteerAvailability.findMany({
       where: { is_available: true, support_type: supportType },
+      orderBy: [
+        {
+          current_matches: "asc",
+        },
+        {
+          updated_at: "desc",
+        },
+      ],
     });
 
   return availableVolunteers || [];
