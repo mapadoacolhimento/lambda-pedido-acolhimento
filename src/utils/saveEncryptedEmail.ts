@@ -6,14 +6,8 @@ export default async function saveEncryptedEmail(
   emailHash: string
 ) {
   try {
-    const busaraHash = await client.busaraHashes.upsert({
-      where: {
-        msrEmail: email,
-      },
-      update: {
-        hash: emailHash,
-      },
-      create: {
+    const busaraHash = await client.busaraHashes.create({
+      data: {
         msrEmail: email,
         hash: emailHash,
       },
