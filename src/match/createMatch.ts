@@ -14,33 +14,13 @@ export async function createMatch(
   matchType: MatchType,
   matchStage: MatchStage
 ) {
-  const volunteerZendeskTicketId = await createAndUpdateZendeskMatchTickets(
-    supportRequest,
-    volunteerAvailability["volunteer_id"]
-  );
-
-  await client.supportRequests.update({
-    where: {
-      supportRequestId: supportRequest.supportRequestId,
-    },
-    data: {
-      status: "matched",
-      updatedAt: new Date().toISOString(),
-      SupportRequestStatusHistory: {
-        create: {
-          status: "matched",
-        },
-      },
-    },
-  });
-
   const match = await client.matches.create({
     data: {
       supportRequestId: supportRequest.supportRequestId,
       msrId: supportRequest.msrId,
       volunteerId: volunteerAvailability.volunteer_id,
       msrZendeskTicketId: supportRequest.zendeskTicketId,
-      volunteerZendeskTicketId,
+      volunteerZendeskTicketId: null,
       supportType: supportRequest.supportType,
       matchType,
       matchStage,
@@ -71,6 +51,35 @@ export async function createMatch(
 
   if (!isVolunteerAvailable)
     await updateUnavailableVolunteer(volunteerAvailability.volunteer_id);
+
+  const volunteerZendeskTicketId = await createAndUpdateZendeskMatchTickets(
+    supportRequest,
+    volunteerAvailability["volunteer_id"]
+  );
+
+  await client.matches.update({
+    where: {
+      matchId: match.matchId,
+    },
+    data: {
+      volunteerZendeskTicketId,
+    },
+  });
+
+  await client.supportRequests.update({
+    where: {
+      supportRequestId: supportRequest.supportRequestId,
+    },
+    data: {
+      status: "matched",
+      updatedAt: new Date().toISOString(),
+      SupportRequestStatusHistory: {
+        create: {
+          status: "matched",
+        },
+      },
+    },
+  });
 
   return match;
 }
