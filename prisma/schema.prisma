@@ -587,7 +587,7 @@ enum SupportRequestsStatus {
 
 enum MatchType {
   msr
-  volunteer
+  daily
   manual
   old
 
