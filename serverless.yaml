@@ -87,6 +87,9 @@ functions:
       - httpApi:
           path: /handle-match
           method: POST
+          authorizer:
+            name: auth
+            type: request
 
   feature-flag:
     handler: handler.featureFlag

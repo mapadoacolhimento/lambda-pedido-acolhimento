@@ -227,7 +227,7 @@ describe("process", () => {
     expect(res).toStrictEqual(stringfyBigInt(match));
   });
 
-  it("should not randomize when shouldRandomize flag is false", async () => {
+  it("should not randomize the assignment when shouldRandomize flag is false, returning an online match", async () => {
     const body = {
       supportRequestId: 1,
       msrId: 1,
@@ -296,7 +296,7 @@ describe("process", () => {
     expect(res).toStrictEqual(stringfyBigInt(match));
   });
 
-  it("should randomize when shouldRandomize flag is not passed", async () => {
+  it("should randomize the assignment when shouldRandomize flag is not passed, returning a public service assignment", async () => {
     const body = {
       supportRequestId: 1,
       msrId: 1,

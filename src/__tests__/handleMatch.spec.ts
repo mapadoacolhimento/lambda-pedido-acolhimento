@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 import type { APIGatewayProxyEvent, Context } from "aws-lambda";
 import type { Matches } from "@prisma/client";
 import type { Decimal } from "@prisma/client/runtime/library";
 
 import * as process from "../process";
 import * as prisma from "../prismaClient";
-import { prismaMock } from "../setupTests";
 import { stringfyBigInt } from "../utils";
 import { handleMatch } from "../../handler";
 
@@ -89,92 +87,49 @@ describe("/handle-match endpoint", () => {
       supportType: "psychological" as const,
     };
 
-    const mockPsySupportRequest = {
-      ...psySupportRequest,
-      msrId: BigInt(psySupportRequest.msrId),
-      zendeskTicketId: BigInt(psySupportRequest.zendeskTicketId),
-      status: "open" as const,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    it("should return a res with match payload when there are volunteers available", async () => {
+      mockIsFeatureFlagEnabled.mockResolvedValueOnce(true);
+      mockProcess.mockResolvedValueOnce(mockMatch);
 
-    describe("When NOVO_MATCH feature flag is", () => {
-      beforeEach(() => {
-        prismaMock.supportRequests.create.mockResolvedValueOnce(
-          mockPsySupportRequest
-        );
+      await handleMatch(
+        {
+          body: JSON.stringify({
+            supportRequest: psySupportRequest,
+            matchType: "msr",
+            shouldRandomize: false,
+          }),
+        } as APIGatewayProxyEvent,
+        {} as Context,
+        callback
+      );
+      expect(callback).toHaveBeenCalledWith(null, {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: mockMatch,
+        }),
       });
+    });
 
-      describe("enabled", () => {
-        it("should return a res with match payload when there are volunteers available", async () => {
-          mockIsFeatureFlagEnabled.mockResolvedValueOnce(true);
-          mockProcess.mockResolvedValueOnce(mockMatch);
+    it("should return a message when there aren't volunteers available", async () => {
+      mockIsFeatureFlagEnabled.mockResolvedValueOnce(true);
+      mockProcess.mockResolvedValueOnce(null);
 
-          await handleMatch(
-            {
-              body: JSON.stringify({
-                supportRequest: psySupportRequest,
-                matchType: "msr",
-                shouldRandomize: false,
-              }),
-            } as APIGatewayProxyEvent,
-            {} as Context,
-            callback
-          );
-          expect(callback).toHaveBeenCalledWith(null, {
-            statusCode: 200,
-            body: JSON.stringify({
-              message: mockMatch,
-            }),
-          });
-        });
-
-        it("should return a message when there aren't volunteers available", async () => {
-          mockIsFeatureFlagEnabled.mockResolvedValueOnce(true);
-          mockProcess.mockResolvedValueOnce(null);
-
-          await handleMatch(
-            {
-              body: JSON.stringify({
-                supportRequest: psySupportRequest,
-                matchType: "msr",
-                shouldRandomize: false,
-              }),
-            } as APIGatewayProxyEvent,
-            {} as Context,
-            callback
-          );
-          expect(callback).toHaveBeenCalledWith(null, {
-            statusCode: 200,
-            body: JSON.stringify({
-              message: `No volunteers available`,
-            }),
-          });
-        });
-      });
-
-      describe("disabled", () => {
-        it("should return a message saying that the match wasn't handled", async () => {
-          mockIsFeatureFlagEnabled.mockResolvedValueOnce(false);
-          await handleMatch(
-            {
-              body: JSON.stringify({
-                supportRequest: psySupportRequest,
-                matchType: "msr",
-                shouldRandomize: false,
-              }),
-            } as APIGatewayProxyEvent,
-            {} as Context,
-            callback
-          );
-          expect(callback).toHaveBeenCalledWith(null, {
-            statusCode: 200,
-            body: JSON.stringify({
-              message:
-                "Couldn't handle match. The new match feature flag is not enabled.",
-            }),
-          });
-        });
+      await handleMatch(
+        {
+          body: JSON.stringify({
+            supportRequest: psySupportRequest,
+            matchType: "msr",
+            shouldRandomize: false,
+          }),
+        } as APIGatewayProxyEvent,
+        {} as Context,
+        callback
+      );
+      expect(callback).toHaveBeenCalledWith(null, {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: `No volunteers available`,
+        }),
       });
     });
   });

@@ -13,8 +13,6 @@ import {
 } from "@prisma/client";
 
 import { getErrorMessage, isJsonString } from "./utils";
-import { isFeatureFlagEnabled } from "./prismaClient";
-import { MSR_TEST_ZENDESK_USER_ID, NEW_MATCH_FEATURE_FLAG } from "./constants";
 import process from "./process";
 
 const bodySchema = object({
@@ -70,21 +68,6 @@ const handler = async (
     const validatedBody = await bodySchema.validate(parsedBody);
 
     const { supportRequest, matchType, shouldRandomize } = validatedBody;
-
-    const isNewMatchEnabled = await isFeatureFlagEnabled(
-      NEW_MATCH_FEATURE_FLAG
-    );
-    const isTestMsr =
-      supportRequest.msrId.toString() === MSR_TEST_ZENDESK_USER_ID;
-    const shouldCreateMatch = isNewMatchEnabled || isTestMsr;
-
-    if (!shouldCreateMatch)
-      return callback(null, {
-        statusCode: 200,
-        body: JSON.stringify({
-          message: `Couldn't handle match. The new match feature flag is not enabled.`,
-        }),
-      });
 
     const res = await process(
       supportRequest as unknown as SupportRequests,
