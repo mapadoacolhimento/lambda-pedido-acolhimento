@@ -561,7 +561,8 @@ describe("createIdealMatch()", () => {
 
     const idealMatch = await createIdealMatch(
       supportRequest,
-      volunteerAvailability
+      volunteerAvailability,
+      "msr"
     );
 
     expect(idealMatch).toStrictEqual(null);
@@ -617,7 +618,8 @@ describe("createIdealMatch()", () => {
 
     const idealMatch = await createIdealMatch(
       supportRequest,
-      volunteerAvailability
+      volunteerAvailability,
+      "msr"
     );
 
     expect(idealMatch).toStrictEqual(match);
@@ -658,7 +660,8 @@ describe("createExpandedMatch()", () => {
 
     const expandedMatch = await createExpandedMatch(
       supportRequest,
-      volunteerAvailability
+      volunteerAvailability,
+      "msr"
     );
 
     expect(expandedMatch).toStrictEqual(null);
@@ -714,7 +717,8 @@ describe("createExpandedMatch()", () => {
 
     const expandedMatch = await createExpandedMatch(
       supportRequest,
-      volunteerAvailability
+      volunteerAvailability,
+      "msr"
     );
 
     expect(expandedMatch).toStrictEqual(match);
@@ -738,7 +742,8 @@ describe("createOnlineMatch()", () => {
 
     const onlineMatch = await createOnlineMatch(
       supportRequest,
-      volunteerAvailability
+      volunteerAvailability,
+      "msr"
     );
 
     expect(onlineMatch).toStrictEqual(null);
@@ -794,7 +799,8 @@ describe("createOnlineMatch()", () => {
 
     const onlineMatch = await createOnlineMatch(
       supportRequest,
-      volunteerAvailability
+      volunteerAvailability,
+      "msr"
     );
 
     expect(onlineMatch).toStrictEqual(match);
