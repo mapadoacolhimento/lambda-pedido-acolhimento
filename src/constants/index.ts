@@ -58,3 +58,22 @@ export const TRANSACTIONAL_EMAIL_IDS = {
     volunteer: "clv43jw1t00yj79ezuug2kh6z",
   },
 };
+
+export const BUSARA_MSR_TRANSACTIONAL_EMAIL_IDS = {
+  publicService: {
+    a: "clv43j25d00b0y19vj7x8qdxy",
+    b: "clwzfiwlj002q9d7e5fzihxco",
+  },
+  serviceWorker: {
+    a: "clv4a8qf1004meoqo89fcfjy7",
+    b: "clwzfjuer00rjokdljzg4i68d",
+  },
+  psychological: {
+    a: "clv4977jg01a7hlj1twd22zq1",
+    b: "clwzfi9kh004wgsdbs5jb530d",
+  },
+  legal: {
+    a: "clv43f8gd02evj3woijkqcgng",
+    b: "clwzfhnp50015494n4nnhc7qa",
+  },
+};

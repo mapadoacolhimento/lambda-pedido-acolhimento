@@ -3,6 +3,7 @@ import sendEmail from "./sendEmail";
 import { getFirstName } from "../utils";
 import { TRANSACTIONAL_EMAIL_IDS } from "../constants";
 import type { SupportRequest, ZendeskUser } from "../types";
+import { getEmailTransactionalId } from "./getEmailTransactionalId";
 
 type Volunteer = Pick<
   Volunteers,
@@ -16,7 +17,7 @@ export async function sendEmailToMsr(
   volunteer: Volunteer,
   supportType: SupportRequest["supportType"]
 ) {
-  const id = TRANSACTIONAL_EMAIL_IDS[supportType]["msr"];
+  const id = getEmailTransactionalId(supportType);
 
   const emailVars = {
     msr_first_name: getFirstName(msr.name),
@@ -54,7 +55,9 @@ export async function sendEmailPublicService(
   msrEmail: string,
   msrFirstName: string
 ): Promise<boolean> {
-  const id = TRANSACTIONAL_EMAIL_IDS["publicService"];
+  const id = getEmailTransactionalId(
+    "publicService" as SupportRequest["supportType"]
+  );
 
   const emailVars = {
     msr_first_name: getFirstName(msrFirstName),
@@ -69,7 +72,9 @@ export async function sendEmailSocialWorker(
   msrEmail: string,
   msrFirstName: string
 ): Promise<boolean> {
-  const id = TRANSACTIONAL_EMAIL_IDS["serviceWorker"];
+  const id = getEmailTransactionalId(
+    "serviceWorker" as SupportRequest["supportType"]
+  );
 
   const emailVars = {
     msr_first_name: getFirstName(msrFirstName),

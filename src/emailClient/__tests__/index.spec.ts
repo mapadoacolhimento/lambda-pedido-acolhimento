@@ -7,6 +7,8 @@ import {
 import * as sendEmail from "../../emailClient/sendEmail";
 
 const sendEmailMock = jest.spyOn(sendEmail, "default");
+//chose transanctionl id
+jest.spyOn(global.Math, "random").mockReturnValue(0.3);
 const msr = {
   name: "teste msr",
   email: "teste@msr.com",
