@@ -70,6 +70,7 @@ export default async function directToSocialWorker(
       state: true,
       zendeskTicketId: true,
       msrId: true,
+      supportRequestId: true,
     },
   });
 
@@ -81,7 +82,12 @@ export default async function directToSocialWorker(
 
   await updateMsrZendeskTicketWithSocialworker(updateSupportRequest);
 
-  await sendEmailSocialWorker(zendeskUser.email, zendeskUser.name);
+  await sendEmailSocialWorker(
+    zendeskUser.email,
+    zendeskUser.name,
+    updateSupportRequest.msrId,
+    updateSupportRequest.supportRequestId
+  );
 
   return updateSupportRequest;
 }

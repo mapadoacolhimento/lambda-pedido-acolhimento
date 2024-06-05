@@ -195,7 +195,13 @@ export default async function createAndUpdateZendeskMatchTickets(
     msrZendeskTicketId: supportRequest.zendeskTicketId,
   });
 
-  await sendEmailToMsr(msr, volunteer, supportRequest.supportType);
+  await sendEmailToMsr(
+    msr,
+    volunteer,
+    supportRequest.supportType,
+    supportRequest.msrId,
+    supportRequest.supportRequestId
+  );
   await sendEmailToVolunteer(volunteer, msr.name, supportRequest.supportType);
 
   return volunteerZendeskTicketId;

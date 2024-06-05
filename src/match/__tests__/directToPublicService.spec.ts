@@ -26,9 +26,11 @@ describe("directToPublicService", () => {
 
   beforeEach(() => {
     const mockSupportRequest = {
+      supportRequestId: 2,
       state: "SP",
+      msrId: 123,
       zendeskTicketId: 123123123 as unknown as bigint,
-    } as SupportRequests;
+    } as unknown as SupportRequests;
     const mockMsrZendeskTicket = {
       id: 123412341234 as unknown as bigint,
     } as ZendeskTicket;
@@ -67,6 +69,7 @@ describe("directToPublicService", () => {
         },
       },
       select: {
+        supportRequestId: true,
         state: true,
         zendeskTicketId: true,
         msrId: true,
@@ -115,7 +118,9 @@ describe("directToPublicService", () => {
     expect(sendEmailPublicServiceMock).toHaveBeenNthCalledWith(
       1,
       "test@email.com",
-      "Teste MSR"
+      "Teste MSR",
+      123,
+      2
     );
   });
 });

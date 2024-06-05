@@ -69,6 +69,7 @@ export default async function directToPublicService(
       state: true,
       zendeskTicketId: true,
       msrId: true,
+      supportRequestId: true,
     },
   });
 
@@ -80,7 +81,12 @@ export default async function directToPublicService(
 
   await updateMsrZendeskTicketWithPublicService(updateSupportRequest);
 
-  await sendEmailPublicService(zendeskUser.email, zendeskUser.name);
+  await sendEmailPublicService(
+    zendeskUser.email,
+    zendeskUser.name,
+    updateSupportRequest.msrId,
+    updateSupportRequest.supportRequestId
+  );
 
   return updateSupportRequest;
 }

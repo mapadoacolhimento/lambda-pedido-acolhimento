@@ -27,6 +27,7 @@ const mockMsrZendeskTicket = {
   id: 123412341234 as unknown as bigint,
 } as ZendeskTicket;
 const baseSupportRequestPayload = {
+  supportRequestId: 1,
   msrId: 123 as unknown as bigint,
   zendeskTicketId: 1234 as unknown as bigint,
   supportType: "psychological",
@@ -197,7 +198,9 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       expect(sendEmailToMsrMock).toHaveBeenCalledWith(
         mockMsrFromZendesk,
         mockVolunteerFromDB,
-        "legal"
+        "legal",
+        baseSupportRequestPayload.msrId,
+        baseSupportRequestPayload.supportRequestId
       );
     });
 
@@ -292,7 +295,9 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       expect(sendEmailToMsrMock).toHaveBeenCalledWith(
         mockMsrFromZendesk,
         mockVolunteerFromDB,
-        "psychological"
+        "psychological",
+        baseSupportRequestPayload.msrId,
+        baseSupportRequestPayload.supportRequestId
       );
     });
 

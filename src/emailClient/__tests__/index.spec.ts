@@ -26,7 +26,12 @@ describe("sendEmailPublicService", () => {
     sendEmailMock.mockResolvedValueOnce(true);
   });
   it("should call sendEmail with correct params", async () => {
-    const res = await sendEmailPublicService("test@msr.com", "teste MSR");
+    const res = await sendEmailPublicService(
+      "test@msr.com",
+      "teste MSR",
+      123 as unknown as bigint,
+      2
+    );
     expect(res).toStrictEqual(true);
     expect(sendEmailMock).toHaveBeenNthCalledWith(
       1,
@@ -44,7 +49,12 @@ describe("sendEmailSocialWorker", () => {
     sendEmailMock.mockResolvedValueOnce(true);
   });
   it("should call sendEmail with correct params", async () => {
-    const res = await sendEmailSocialWorker("test@msr.com", "teste MSR");
+    const res = await sendEmailSocialWorker(
+      "test@msr.com",
+      "teste MSR",
+      123 as unknown as bigint,
+      2
+    );
     expect(res).toStrictEqual(true);
     expect(sendEmailMock).toHaveBeenNthCalledWith(
       1,
@@ -63,7 +73,13 @@ describe("sendEmailToMsr", () => {
   });
   describe("Psychological", () => {
     it("should call sendEmail with correct params", async () => {
-      const res = await sendEmailToMsr(msr, volunteer, "psychological");
+      const res = await sendEmailToMsr(
+        msr,
+        volunteer,
+        "psychological",
+        123 as unknown as bigint,
+        2
+      );
       expect(res).toStrictEqual(true);
       expect(sendEmailMock).toHaveBeenNthCalledWith(
         1,
@@ -81,7 +97,13 @@ describe("sendEmailToMsr", () => {
   });
   describe("Legal", () => {
     it("should call sendEmail with correct params", async () => {
-      const res = await sendEmailToMsr(msr, volunteer, "legal");
+      const res = await sendEmailToMsr(
+        msr,
+        volunteer,
+        "legal",
+        123 as unknown as bigint,
+        2
+      );
       expect(res).toStrictEqual(true);
       expect(sendEmailMock).toHaveBeenNthCalledWith(
         1,

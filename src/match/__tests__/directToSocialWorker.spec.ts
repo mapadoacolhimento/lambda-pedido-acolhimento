@@ -27,9 +27,11 @@ describe("directToSocialWorker", () => {
 
   beforeEach(() => {
     const mockSupportRequest = {
+      supportRequestId: 2,
       state: "SP",
+      msrId: 123,
       zendeskTicketId: 123123123 as unknown as bigint,
-    } as SupportRequests;
+    } as unknown as SupportRequests;
     const mockMsrZendeskTicket = {
       id: 123412341234 as unknown as bigint,
     } as ZendeskTicket;
@@ -68,6 +70,7 @@ describe("directToSocialWorker", () => {
         },
       },
       select: {
+        supportRequestId: true,
         state: true,
         zendeskTicketId: true,
         msrId: true,
@@ -116,7 +119,9 @@ describe("directToSocialWorker", () => {
     expect(sendEmailSocialWorkerMock).toHaveBeenNthCalledWith(
       1,
       "test-social-worker@email.com",
-      "Teste MSR Social Worker"
+      "Teste MSR Social Worker",
+      123,
+      2
     );
   });
 });
