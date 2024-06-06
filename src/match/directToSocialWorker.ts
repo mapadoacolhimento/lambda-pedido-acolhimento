@@ -83,9 +83,7 @@ export default async function directToSocialWorker(
   await updateMsrZendeskTicketWithSocialworker(updateSupportRequest);
 
   await sendEmailSocialWorker(
-    zendeskUser.email,
-    zendeskUser.name,
-    updateSupportRequest.msrId,
+    zendeskUser,
     updateSupportRequest.supportRequestId
   );
 

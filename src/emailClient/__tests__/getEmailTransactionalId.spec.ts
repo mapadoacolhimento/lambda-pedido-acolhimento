@@ -31,10 +31,10 @@ describe("gelTransactionalEmailId group A", () => {
   });
   it("should return transacitonalId fromserviceWorker email A", () => {
     const trasactionalId = getEmailTransactionalId(
-      "serviceWorker" as SupportRequest["supportType"]
+      "socialWorker" as SupportRequest["supportType"]
     );
     expect(trasactionalId).toStrictEqual(
-      TRANSACTIONAL_EMAIL_IDS["serviceWorker"]
+      TRANSACTIONAL_EMAIL_IDS["socialWorker"]
     );
   });
 });
@@ -63,12 +63,12 @@ describe("gelTransactionalEmailId group B", () => {
       BUSARA_MSR_TRANSACTIONAL_EMAIL_IDS["publicService"]["b"]
     );
   });
-  it("should return transacitonalId from serviceWorker email B", () => {
+  it("should return transacitonalId from socialWorker email B", () => {
     const trasactionalId = getEmailTransactionalId(
-      "serviceWorker" as SupportRequest["supportType"]
+      "socialWorker" as SupportRequest["supportType"]
     );
     expect(trasactionalId).toStrictEqual(
-      BUSARA_MSR_TRANSACTIONAL_EMAIL_IDS["serviceWorker"]["b"]
+      BUSARA_MSR_TRANSACTIONAL_EMAIL_IDS["socialWorker"]["b"]
     );
   });
 });

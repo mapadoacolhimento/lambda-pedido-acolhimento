@@ -1,23 +1,23 @@
 import type { Volunteers } from "@prisma/client";
 import sendEmail from "./sendEmail";
-import { getFirstName } from "../utils";
+import { getFirstName, saveBusaraABExperiment } from "../utils";
 import { TRANSACTIONAL_EMAIL_IDS } from "../constants";
 import type { SupportRequest, ZendeskUser } from "../types";
 import { getEmailTransactionalId } from "./getEmailTransactionalId";
-import saveBusaraABExperiment from "../utils/saveBusaraABExperiment";
+
 type Volunteer = Pick<
   Volunteers,
   "firstName" | "phone" | "registrationNumber" | "lastName" | "email"
 >;
 
-type Msr = Pick<ZendeskUser, "name" | "email">;
+type Msr = Pick<ZendeskUser, "id" | "name" | "email">;
 
 export async function sendEmailToMsr(
   msr: Msr,
   volunteer: Volunteer,
   supportType: SupportRequest["supportType"],
-  msrId: bigint,
-  supportRequestId: number
+  supportRequestId: number,
+  matchId: number
 ) {
   const id = getEmailTransactionalId(supportType);
 
@@ -31,8 +31,8 @@ export async function sendEmailToMsr(
   };
 
   const emailRes = await sendEmail(msr.email, id, emailVars);
-  const hasMatch = true;
-  await saveBusaraABExperiment(msrId, supportRequestId, id, hasMatch);
+
+  await saveBusaraABExperiment(msr.id, supportRequestId, id, matchId);
 
   return emailRes;
 }
@@ -56,9 +56,7 @@ export async function sendEmailToVolunteer(
 }
 
 export async function sendEmailPublicService(
-  msrEmail: string,
-  msrFirstName: string,
-  msrId: bigint,
+  msr: Msr,
   supportRequestId: number
 ): Promise<boolean> {
   const id = getEmailTransactionalId(
@@ -66,30 +64,28 @@ export async function sendEmailPublicService(
   );
 
   const emailVars = {
-    msr_first_name: getFirstName(msrFirstName),
+    msr_first_name: getFirstName(msr.name),
   };
 
-  const emailRes = await sendEmail(msrEmail, id, emailVars);
-  await saveBusaraABExperiment(msrId, supportRequestId, id);
+  const emailRes = await sendEmail(msr.email, id, emailVars);
+  await saveBusaraABExperiment(msr.id, supportRequestId, id);
   return emailRes;
 }
 
 export async function sendEmailSocialWorker(
-  msrEmail: string,
-  msrFirstName: string,
-  msrId: bigint,
+  msr: Msr,
   supportRequestId: number
 ): Promise<boolean> {
   const id = getEmailTransactionalId(
-    "serviceWorker" as SupportRequest["supportType"]
+    "socialWorker" as SupportRequest["supportType"]
   );
 
   const emailVars = {
-    msr_first_name: getFirstName(msrFirstName),
+    msr_first_name: getFirstName(msr.name),
   };
 
-  const emailRes = await sendEmail(msrEmail, id, emailVars);
-  await saveBusaraABExperiment(msrId, supportRequestId, id);
+  const emailRes = await sendEmail(msr.email, id, emailVars);
+  await saveBusaraABExperiment(msr.id, supportRequestId, id);
 
   return emailRes;
 }

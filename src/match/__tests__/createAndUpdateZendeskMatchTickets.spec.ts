@@ -61,7 +61,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
     await expect(
       createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        1
       )
     ).rejects.toThrow("Couldn't fetch volunteer from db or msr from zendesk");
   });
@@ -73,7 +74,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
     await expect(
       createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        2
       )
     ).rejects.toThrow("Couldn't fetch volunteer from db or msr from zendesk");
   });
@@ -86,7 +88,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
     await expect(
       createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        2
       )
     ).rejects.toThrow("Couldn't create volunteer match ticket");
   });
@@ -111,7 +114,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
     it("should return correct volunteer zendesk ticket id", async () => {
       const volunteerZendeskTicketId = await createAndUpdateZendeskMatchTickets(
         legalSupportRequest,
-        mockVolunteerId
+        mockVolunteerId,
+        3
       );
       expect(volunteerZendeskTicketId).toStrictEqual(123123123);
     });
@@ -150,7 +154,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       };
       await createAndUpdateZendeskMatchTickets(
         legalSupportRequest,
-        mockVolunteerId
+        mockVolunteerId,
+        3
       );
       expect(createTicketMock).toHaveBeenNthCalledWith(1, volunteerTicket);
     });
@@ -185,7 +190,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       };
       await createAndUpdateZendeskMatchTickets(
         legalSupportRequest,
-        mockVolunteerId
+        mockVolunteerId,
+        3
       );
       expect(updateTicketMock).toHaveBeenNthCalledWith(1, msrTicket);
     });
@@ -193,21 +199,23 @@ describe("createAndUpdateZendeskMatchTickets", () => {
     it("should call send email to MSR with correct params", async () => {
       await createAndUpdateZendeskMatchTickets(
         legalSupportRequest,
-        mockVolunteerId
+        mockVolunteerId,
+        3
       );
       expect(sendEmailToMsrMock).toHaveBeenCalledWith(
         mockMsrFromZendesk,
         mockVolunteerFromDB,
         "legal",
-        baseSupportRequestPayload.msrId,
-        baseSupportRequestPayload.supportRequestId
+        baseSupportRequestPayload.supportRequestId,
+        3
       );
     });
 
     it("should call send email to volunteer with correct params", async () => {
       await createAndUpdateZendeskMatchTickets(
         legalSupportRequest,
-        mockVolunteerId
+        mockVolunteerId,
+        1
       );
       expect(sendEmailToVolunteerMock).toHaveBeenCalledWith(
         mockVolunteerFromDB,
@@ -232,7 +240,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
     it("should return correct volunteer zendesk ticket id", async () => {
       const volunteerZendeskTicketId = await createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        2
       );
       expect(volunteerZendeskTicketId).toStrictEqual(123123123);
     });
@@ -244,7 +253,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       };
       await createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        3
       );
       expect(createTicketMock).toHaveBeenNthCalledWith(
         1,
@@ -282,7 +292,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       };
       await createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        3
       );
       expect(updateTicketMock).toHaveBeenNthCalledWith(1, msrTicket);
     });
@@ -290,21 +301,23 @@ describe("createAndUpdateZendeskMatchTickets", () => {
     it("should call send email to MSR with correct params", async () => {
       await createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        3
       );
       expect(sendEmailToMsrMock).toHaveBeenCalledWith(
         mockMsrFromZendesk,
         mockVolunteerFromDB,
         "psychological",
-        baseSupportRequestPayload.msrId,
-        baseSupportRequestPayload.supportRequestId
+        baseSupportRequestPayload.supportRequestId,
+        3
       );
     });
 
     it("should call send email to volunteer with correct params", async () => {
       await createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        3
       );
       expect(sendEmailToVolunteerMock).toHaveBeenCalledWith(
         mockVolunteerFromDB,

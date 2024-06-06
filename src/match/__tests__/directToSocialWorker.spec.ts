@@ -36,9 +36,10 @@ describe("directToSocialWorker", () => {
       id: 123412341234 as unknown as bigint,
     } as ZendeskTicket;
     const mockMsrZendeskUser = {
+      id: 123,
       name: "Teste MSR Social Worker",
       email: "test-social-worker@email.com",
-    } as ZendeskUser;
+    } as unknown as ZendeskUser;
     prismaMock.supportRequests.update.mockResolvedValue(mockSupportRequest);
     updateTicketMock.mockResolvedValueOnce(mockMsrZendeskTicket);
     getCurrentDateMock.mockImplementation(() => mockCurrentDate);
@@ -118,9 +119,11 @@ describe("directToSocialWorker", () => {
     await directToSocialWorker(2);
     expect(sendEmailSocialWorkerMock).toHaveBeenNthCalledWith(
       1,
-      "test-social-worker@email.com",
-      "Teste MSR Social Worker",
-      123,
+      {
+        id: 123,
+        name: "Teste MSR Social Worker",
+        email: "test-social-worker@email.com",
+      },
       2
     );
   });

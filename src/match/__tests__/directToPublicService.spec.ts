@@ -35,9 +35,10 @@ describe("directToPublicService", () => {
       id: 123412341234 as unknown as bigint,
     } as ZendeskTicket;
     const mockMsrZendeskUser = {
+      id: 123,
       name: "Teste MSR",
       email: "test@email.com",
-    } as ZendeskUser;
+    } as unknown as ZendeskUser;
     prismaMock.supportRequests.update.mockResolvedValue(mockSupportRequest);
     updateTicketMock.mockResolvedValueOnce(mockMsrZendeskTicket);
     getCurrentDateMock.mockImplementation(() => mockCurrentDate);
@@ -117,9 +118,11 @@ describe("directToPublicService", () => {
     await directToPublicService(2);
     expect(sendEmailPublicServiceMock).toHaveBeenNthCalledWith(
       1,
-      "test@email.com",
-      "Teste MSR",
-      123,
+      {
+        id: 123,
+        name: "Teste MSR",
+        email: "test@email.com",
+      },
       2
     );
   });

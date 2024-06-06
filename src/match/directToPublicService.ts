@@ -82,9 +82,7 @@ export default async function directToPublicService(
   await updateMsrZendeskTicketWithPublicService(updateSupportRequest);
 
   await sendEmailPublicService(
-    zendeskUser.email,
-    zendeskUser.name,
-    updateSupportRequest.msrId,
+    zendeskUser,
     updateSupportRequest.supportRequestId
   );
 

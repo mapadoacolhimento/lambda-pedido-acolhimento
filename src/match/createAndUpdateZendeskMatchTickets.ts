@@ -160,7 +160,8 @@ async function fetchMsrFromZendesk(msrId: bigint) {
 
 export default async function createAndUpdateZendeskMatchTickets(
   supportRequest: SupportRequest,
-  volunteerId: VolunteerAvailability["volunteer_id"]
+  volunteerId: VolunteerAvailability["volunteer_id"],
+  matchId: number
 ) {
   const volunteer = await fetchVolunteerFromDB(volunteerId);
   const msr = await fetchMsrFromZendesk(supportRequest.msrId);
@@ -199,8 +200,8 @@ export default async function createAndUpdateZendeskMatchTickets(
     msr,
     volunteer,
     supportRequest.supportType,
-    supportRequest.msrId,
-    supportRequest.supportRequestId
+    supportRequest.supportRequestId,
+    matchId
   );
   await sendEmailToVolunteer(volunteer, msr.name, supportRequest.supportType);
 

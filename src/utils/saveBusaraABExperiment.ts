@@ -5,32 +5,13 @@ export default async function saveBusaraABExperiment(
   msrId: bigint,
   supportRequestId: number,
   transactionalId: string,
-  hasMatch: boolean = false
+  matchId?: number
 ) {
   try {
-    let matchId = null;
-
-    if (hasMatch) {
-      const match = await client.matches.findFirst({
-        where: {
-          supportRequestId: supportRequestId,
-          msrId: msrId,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        select: {
-          matchId: true,
-        },
-      });
-
-      matchId = match?.matchId ? match?.matchId : null;
-    }
-
     const busaraABExperiment = await client.busaraABExperiment.create({
       data: {
         msrId: msrId,
-        matchId: matchId,
+        matchId: matchId ? matchId : null,
         supportRequestId: supportRequestId,
         transactionalId: transactionalId,
       },

@@ -10,6 +10,7 @@ const sendEmailMock = jest.spyOn(sendEmail, "default");
 //chose transanctionl id
 jest.spyOn(global.Math, "random").mockReturnValue(0.3);
 const msr = {
+  id: 123 as unknown as bigint,
   name: "teste msr",
   email: "teste@msr.com",
 };
@@ -26,16 +27,11 @@ describe("sendEmailPublicService", () => {
     sendEmailMock.mockResolvedValueOnce(true);
   });
   it("should call sendEmail with correct params", async () => {
-    const res = await sendEmailPublicService(
-      "test@msr.com",
-      "teste MSR",
-      123 as unknown as bigint,
-      2
-    );
+    const res = await sendEmailPublicService(msr, 2);
     expect(res).toStrictEqual(true);
     expect(sendEmailMock).toHaveBeenNthCalledWith(
       1,
-      "test@msr.com",
+      "teste@msr.com",
       "clv43j25d00b0y19vj7x8qdxy",
       {
         msr_first_name: "Teste",
@@ -49,16 +45,11 @@ describe("sendEmailSocialWorker", () => {
     sendEmailMock.mockResolvedValueOnce(true);
   });
   it("should call sendEmail with correct params", async () => {
-    const res = await sendEmailSocialWorker(
-      "test@msr.com",
-      "teste MSR",
-      123 as unknown as bigint,
-      2
-    );
+    const res = await sendEmailSocialWorker(msr, 2);
     expect(res).toStrictEqual(true);
     expect(sendEmailMock).toHaveBeenNthCalledWith(
       1,
-      "test@msr.com",
+      "teste@msr.com",
       "clv4a8qf1004meoqo89fcfjy7",
       {
         msr_first_name: "Teste",
@@ -73,13 +64,7 @@ describe("sendEmailToMsr", () => {
   });
   describe("Psychological", () => {
     it("should call sendEmail with correct params", async () => {
-      const res = await sendEmailToMsr(
-        msr,
-        volunteer,
-        "psychological",
-        123 as unknown as bigint,
-        2
-      );
+      const res = await sendEmailToMsr(msr, volunteer, "psychological", 2, 10);
       expect(res).toStrictEqual(true);
       expect(sendEmailMock).toHaveBeenNthCalledWith(
         1,
@@ -97,13 +82,7 @@ describe("sendEmailToMsr", () => {
   });
   describe("Legal", () => {
     it("should call sendEmail with correct params", async () => {
-      const res = await sendEmailToMsr(
-        msr,
-        volunteer,
-        "legal",
-        123 as unknown as bigint,
-        2
-      );
+      const res = await sendEmailToMsr(msr, volunteer, "legal", 2, 10);
       expect(res).toStrictEqual(true);
       expect(sendEmailMock).toHaveBeenNthCalledWith(
         1,
