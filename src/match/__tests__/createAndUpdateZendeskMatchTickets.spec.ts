@@ -18,6 +18,7 @@ const sendEmailToVolunteerMock = jest.spyOn(
   emailClient,
   "sendEmailToVolunteer"
 );
+jest.spyOn(global.Math, "random").mockReturnValue(0.3);
 
 const mockAgentNumber = 1;
 const mockVolunteerZendeskTicket = {
@@ -205,9 +206,7 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       expect(sendEmailToMsrMock).toHaveBeenCalledWith(
         mockMsrFromZendesk,
         mockVolunteerFromDB,
-        "legal",
-        baseSupportRequestPayload.supportRequestId,
-        3
+        "clv43f8gd02evj3woijkqcgng"
       );
     });
 
@@ -307,9 +306,7 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       expect(sendEmailToMsrMock).toHaveBeenCalledWith(
         mockMsrFromZendesk,
         mockVolunteerFromDB,
-        "psychological",
-        baseSupportRequestPayload.supportRequestId,
-        3
+        "clv4977jg01a7hlj1twd22zq1"
       );
     });
 
