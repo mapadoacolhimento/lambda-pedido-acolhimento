@@ -1,17 +1,18 @@
 import client from "../prismaClient";
+import type { SupportRequest } from "../types";
 import getErrorMessage from "./getErrorMessage";
 
 export default async function saveBusaraABExperiment(
-  msrId: bigint,
-  supportRequestId: number,
+  msrId: SupportRequest["msrId"],
+  supportRequestId: SupportRequest["supportRequestId"],
   transactionalId: string,
-  matchId?: number
+  matchId: number
 ) {
   try {
     const busaraABExperiment = await client.busaraABExperiment.create({
       data: {
         msrId: msrId,
-        matchId: matchId ? matchId : null,
+        matchId: matchId,
         supportRequestId: supportRequestId,
         transactionalId: transactionalId,
       },
