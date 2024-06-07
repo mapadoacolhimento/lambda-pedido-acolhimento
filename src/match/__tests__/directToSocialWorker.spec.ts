@@ -27,19 +27,16 @@ describe("directToSocialWorker", () => {
 
   beforeEach(() => {
     const mockSupportRequest = {
-      supportRequestId: 2,
       state: "SP",
-      msrId: 123,
       zendeskTicketId: 123123123 as unknown as bigint,
-    } as unknown as SupportRequests;
+    } as SupportRequests;
     const mockMsrZendeskTicket = {
       id: 123412341234 as unknown as bigint,
     } as ZendeskTicket;
     const mockMsrZendeskUser = {
-      id: 123,
       name: "Teste MSR Social Worker",
       email: "test-social-worker@email.com",
-    } as unknown as ZendeskUser;
+    } as ZendeskUser;
     prismaMock.supportRequests.update.mockResolvedValue(mockSupportRequest);
     updateTicketMock.mockResolvedValueOnce(mockMsrZendeskTicket);
     getCurrentDateMock.mockImplementation(() => mockCurrentDate);
@@ -71,7 +68,6 @@ describe("directToSocialWorker", () => {
         },
       },
       select: {
-        supportRequestId: true,
         state: true,
         zendeskTicketId: true,
         msrId: true,
@@ -119,11 +115,8 @@ describe("directToSocialWorker", () => {
     await directToSocialWorker(2);
     expect(sendEmailSocialWorkerMock).toHaveBeenNthCalledWith(
       1,
-      {
-        id: 123,
-        name: "Teste MSR Social Worker",
-        email: "test-social-worker@email.com",
-      },
+      "test-social-worker@email.com",
+      "Teste MSR Social Worker",
       2
     );
   });
