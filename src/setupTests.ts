@@ -21,3 +21,9 @@ process.env["SECRET_KEY"] = "secretKey";
 process.env["SURVEY_LINK"] = "https://qualtrics.com/form";
 process.env["CAL_LINK"] = "https://cal.com/xxxx";
 process.env["ENCRYPTION_METHOD"] = "aes-256-cbc";
+
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    json: () => Promise.resolve({}),
+  })
+) as jest.Mock;
