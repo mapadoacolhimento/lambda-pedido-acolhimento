@@ -559,6 +559,17 @@ model PublicServices {
   @@schema("public_services")
 }
 
+model BusaraABExperiment {
+  BusaraABExperimenId Int               @id @default(autoincrement()) @map("busara_ab_experiment_id")
+  matchId             Int?              @map("match_id")
+  supportRequestId    Int               @map("support_request_id")
+  msrId               BigInt            @map("msr_id")
+  transactionalId     String            @map("transactional_id") @db.VarChar(50)
+
+  @@map("busara_ab_experiment")
+  @@schema("match")
+}
+
 enum SupportType {
   psychological
   legal
