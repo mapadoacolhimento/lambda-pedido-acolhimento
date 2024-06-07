@@ -56,36 +56,31 @@ export async function sendEmailToVolunteer(
 }
 
 export async function sendEmailPublicService(
-  msr: Msr,
-  supportRequestId: number
+  msrEmail: string,
+  msrFirstName: string
 ): Promise<boolean> {
-  const id = getEmailTransactionalId(
-    "publicService" as SupportRequest["supportType"]
-  );
+  const id = TRANSACTIONAL_EMAIL_IDS["publicService"];
 
   const emailVars = {
-    msr_first_name: getFirstName(msr.name),
+    msr_first_name: getFirstName(msrFirstName),
   };
 
-  const emailRes = await sendEmail(msr.email, id, emailVars);
-  await saveBusaraABExperiment(msr.id, supportRequestId, id);
+  const emailRes = await sendEmail(msrEmail, id, emailVars);
+
   return emailRes;
 }
 
 export async function sendEmailSocialWorker(
-  msr: Msr,
-  supportRequestId: number
+  msrEmail: string,
+  msrFirstName: string
 ): Promise<boolean> {
-  const id = getEmailTransactionalId(
-    "socialWorker" as SupportRequest["supportType"]
-  );
+  const id = TRANSACTIONAL_EMAIL_IDS["socialWorker"];
 
   const emailVars = {
-    msr_first_name: getFirstName(msr.name),
+    msr_first_name: getFirstName(msrFirstName),
   };
 
-  const emailRes = await sendEmail(msr.email, id, emailVars);
-  await saveBusaraABExperiment(msr.id, supportRequestId, id);
+  const emailRes = await sendEmail(msrEmail, id, emailVars);
 
   return emailRes;
 }
