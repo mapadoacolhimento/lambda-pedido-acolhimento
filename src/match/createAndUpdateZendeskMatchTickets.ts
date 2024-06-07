@@ -210,7 +210,7 @@ export default async function createAndUpdateZendeskMatchTickets(
   await sendEmailToMsr(msr, volunteer, transactionalId);
 
   await saveBusaraABExperiment({
-    msrId: msr.id,
+    msrId: supportRequest.msrId,
     supportRequestId: supportRequest.supportRequestId,
     transactionalId,
     matchId,
