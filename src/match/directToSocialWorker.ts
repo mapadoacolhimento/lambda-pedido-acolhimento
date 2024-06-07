@@ -70,7 +70,6 @@ export default async function directToSocialWorker(
       state: true,
       zendeskTicketId: true,
       msrId: true,
-      supportRequestId: true,
     },
   });
 

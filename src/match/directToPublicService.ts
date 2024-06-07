@@ -69,7 +69,6 @@ export default async function directToPublicService(
       state: true,
       zendeskTicketId: true,
       msrId: true,
-      supportRequestId: true,
     },
   });
 
