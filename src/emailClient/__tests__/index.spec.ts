@@ -3,8 +3,10 @@ import {
   sendEmailSocialWorker,
   sendEmailToMsr,
   sendEmailToVolunteer,
+  getAbTransactionalEmailId,
 } from "..";
 import * as sendEmail from "../../emailClient/sendEmail";
+import { AB_TRANSACTIONAL_EMAIL_IDS } from "../../constants";
 
 const sendEmailMock = jest.spyOn(sendEmail, "default");
 const msr = {
@@ -61,7 +63,11 @@ describe("sendEmailToMsr", () => {
   });
   describe("Psychological", () => {
     it("should call sendEmail with correct params", async () => {
-      const res = await sendEmailToMsr(msr, volunteer, "psychological");
+      const res = await sendEmailToMsr(
+        msr,
+        volunteer,
+        "clv4977jg01a7hlj1twd22zq1"
+      );
       expect(res).toStrictEqual(true);
       expect(sendEmailMock).toHaveBeenNthCalledWith(
         1,
@@ -79,7 +85,11 @@ describe("sendEmailToMsr", () => {
   });
   describe("Legal", () => {
     it("should call sendEmail with correct params", async () => {
-      const res = await sendEmailToMsr(msr, volunteer, "legal");
+      const res = await sendEmailToMsr(
+        msr,
+        volunteer,
+        "clv43f8gd02evj3woijkqcgng"
+      );
       expect(res).toStrictEqual(true);
       expect(sendEmailMock).toHaveBeenNthCalledWith(
         1,
@@ -136,5 +146,41 @@ describe("sendEmailToVolunteer", () => {
         }
       );
     });
+  });
+});
+
+describe("getAbTransactionalEmailId group A", () => {
+  beforeEach(() => {
+    jest.spyOn(global.Math, "random").mockReturnValue(0.5);
+  });
+  it("should return transacitonalId from legal email A", () => {
+    const transactionalId = getAbTransactionalEmailId("legal");
+    expect(transactionalId).toStrictEqual(
+      AB_TRANSACTIONAL_EMAIL_IDS["legal"]["a"]
+    );
+  });
+  it("should return transacitonalId from psychological email A", () => {
+    const transactionalId = getAbTransactionalEmailId("psychological");
+    expect(transactionalId).toStrictEqual(
+      AB_TRANSACTIONAL_EMAIL_IDS["psychological"]["a"]
+    );
+  });
+});
+
+describe("getAbTransactionalEmailId group B", () => {
+  beforeEach(() => {
+    jest.spyOn(global.Math, "random").mockReturnValue(0.6);
+  });
+  it("should return transacitonalId from legal email B", () => {
+    const transactionalId = getAbTransactionalEmailId("legal");
+    expect(transactionalId).toStrictEqual(
+      AB_TRANSACTIONAL_EMAIL_IDS["legal"]["b"]
+    );
+  });
+  it("should return transacitonalId from psychological email B", () => {
+    const transactionalId = getAbTransactionalEmailId("psychological");
+    expect(transactionalId).toStrictEqual(
+      AB_TRANSACTIONAL_EMAIL_IDS["psychological"]["b"]
+    );
   });
 });

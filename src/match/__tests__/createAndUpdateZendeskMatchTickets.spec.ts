@@ -6,7 +6,9 @@ import * as zendeskClient from "../../zendeskClient";
 import * as emailClient from "../../emailClient";
 import * as getAgent from "../../utils/getAgent";
 import * as getCurrentDate from "../../utils/getCurrentDate";
+import * as saveBusaraABExperiment from "../../utils/saveBusaraABExperiment";
 import { prismaMock } from "../../setupTests";
+import { AB_TRANSACTIONAL_EMAIL_IDS } from "../../constants";
 
 const getAgentMock = jest.spyOn(getAgent, "default");
 const getCurrentDateMock = jest.spyOn(getCurrentDate, "default");
@@ -18,6 +20,11 @@ const sendEmailToVolunteerMock = jest.spyOn(
   emailClient,
   "sendEmailToVolunteer"
 );
+const saveBusaraABExperimentMock = jest.spyOn(
+  saveBusaraABExperiment,
+  "default"
+);
+jest.spyOn(global.Math, "random").mockReturnValue(0.7);
 
 const mockAgentNumber = 1;
 const mockVolunteerZendeskTicket = {
@@ -46,6 +53,7 @@ const mockMsrFromZendesk = {
   email: "teste@msr.com",
 } as ZendeskUser;
 const mockCurrentDate = "2023-12-28";
+const mockMatchId = 1;
 
 describe("createAndUpdateZendeskMatchTickets", () => {
   getAgentMock.mockImplementation(() => mockAgentNumber);
@@ -60,7 +68,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
     await expect(
       createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        mockMatchId
       )
     ).rejects.toThrow("Couldn't fetch volunteer from db or msr from zendesk");
   });
@@ -72,7 +81,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
     await expect(
       createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        mockMatchId
       )
     ).rejects.toThrow("Couldn't fetch volunteer from db or msr from zendesk");
   });
@@ -85,7 +95,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
     await expect(
       createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        mockMatchId
       )
     ).rejects.toThrow("Couldn't create volunteer match ticket");
   });
@@ -110,7 +121,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
     it("should return correct volunteer zendesk ticket id", async () => {
       const volunteerZendeskTicketId = await createAndUpdateZendeskMatchTickets(
         legalSupportRequest,
-        mockVolunteerId
+        mockVolunteerId,
+        mockMatchId
       );
       expect(volunteerZendeskTicketId).toStrictEqual(123123123);
     });
@@ -149,7 +161,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       };
       await createAndUpdateZendeskMatchTickets(
         legalSupportRequest,
-        mockVolunteerId
+        mockVolunteerId,
+        mockMatchId
       );
       expect(createTicketMock).toHaveBeenNthCalledWith(1, volunteerTicket);
     });
@@ -184,7 +197,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       };
       await createAndUpdateZendeskMatchTickets(
         legalSupportRequest,
-        mockVolunteerId
+        mockVolunteerId,
+        mockMatchId
       );
       expect(updateTicketMock).toHaveBeenNthCalledWith(1, msrTicket);
     });
@@ -192,19 +206,35 @@ describe("createAndUpdateZendeskMatchTickets", () => {
     it("should call send email to MSR with correct params", async () => {
       await createAndUpdateZendeskMatchTickets(
         legalSupportRequest,
-        mockVolunteerId
+        mockVolunteerId,
+        mockMatchId
       );
       expect(sendEmailToMsrMock).toHaveBeenCalledWith(
         mockMsrFromZendesk,
         mockVolunteerFromDB,
-        "legal"
+        AB_TRANSACTIONAL_EMAIL_IDS["legal"]["b"]
       );
+    });
+
+    it("should call saveBusaraABExperiment with correct params", async () => {
+      await createAndUpdateZendeskMatchTickets(
+        legalSupportRequest,
+        mockVolunteerId,
+        mockMatchId
+      );
+      expect(saveBusaraABExperimentMock).toHaveBeenCalledWith({
+        msrId: legalSupportRequest.msrId,
+        supportRequestId: legalSupportRequest.supportRequestId,
+        transactionalId: AB_TRANSACTIONAL_EMAIL_IDS["legal"]["b"],
+        matchId: mockMatchId,
+      });
     });
 
     it("should call send email to volunteer with correct params", async () => {
       await createAndUpdateZendeskMatchTickets(
         legalSupportRequest,
-        mockVolunteerId
+        mockVolunteerId,
+        mockMatchId
       );
       expect(sendEmailToVolunteerMock).toHaveBeenCalledWith(
         mockVolunteerFromDB,
@@ -229,7 +259,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
     it("should return correct volunteer zendesk ticket id", async () => {
       const volunteerZendeskTicketId = await createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        mockMatchId
       );
       expect(volunteerZendeskTicketId).toStrictEqual(123123123);
     });
@@ -241,7 +272,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       };
       await createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        mockMatchId
       );
       expect(createTicketMock).toHaveBeenNthCalledWith(
         1,
@@ -279,7 +311,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       };
       await createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        mockMatchId
       );
       expect(updateTicketMock).toHaveBeenNthCalledWith(1, msrTicket);
     });
@@ -287,19 +320,35 @@ describe("createAndUpdateZendeskMatchTickets", () => {
     it("should call send email to MSR with correct params", async () => {
       await createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        mockMatchId
       );
       expect(sendEmailToMsrMock).toHaveBeenCalledWith(
         mockMsrFromZendesk,
         mockVolunteerFromDB,
-        "psychological"
+        AB_TRANSACTIONAL_EMAIL_IDS["psychological"]["b"]
       );
+    });
+
+    it("should call saveBusaraABExperiment with correct params", async () => {
+      await createAndUpdateZendeskMatchTickets(
+        baseSupportRequestPayload,
+        mockVolunteerId,
+        mockMatchId
+      );
+      expect(saveBusaraABExperimentMock).toHaveBeenCalledWith({
+        msrId: baseSupportRequestPayload.msrId,
+        supportRequestId: baseSupportRequestPayload.supportRequestId,
+        transactionalId: AB_TRANSACTIONAL_EMAIL_IDS["psychological"]["b"],
+        matchId: mockMatchId,
+      });
     });
 
     it("should call send email to volunteer with correct params", async () => {
       await createAndUpdateZendeskMatchTickets(
         baseSupportRequestPayload,
-        mockVolunteerId
+        mockVolunteerId,
+        mockMatchId
       );
       expect(sendEmailToVolunteerMock).toHaveBeenCalledWith(
         mockVolunteerFromDB,

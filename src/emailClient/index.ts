@@ -1,7 +1,10 @@
 import type { Volunteers } from "@prisma/client";
 import sendEmail from "./sendEmail";
 import { getFirstName } from "../utils";
-import { TRANSACTIONAL_EMAIL_IDS } from "../constants";
+import {
+  AB_TRANSACTIONAL_EMAIL_IDS,
+  TRANSACTIONAL_EMAIL_IDS,
+} from "../constants";
 import type { SupportRequest, ZendeskUser } from "../types";
 
 type Volunteer = Pick<
@@ -11,13 +14,23 @@ type Volunteer = Pick<
 
 type Msr = Pick<ZendeskUser, "name" | "email">;
 
+export function getAbTransactionalEmailId(
+  supportType: SupportRequest["supportType"]
+): string {
+  const randomNum = Math.random();
+
+  if (randomNum <= 0.5) {
+    return AB_TRANSACTIONAL_EMAIL_IDS[supportType]["a"];
+  }
+
+  return AB_TRANSACTIONAL_EMAIL_IDS[supportType]["b"];
+}
+
 export async function sendEmailToMsr(
   msr: Msr,
   volunteer: Volunteer,
-  supportType: SupportRequest["supportType"]
+  transactionalId: string
 ) {
-  const id = TRANSACTIONAL_EMAIL_IDS[supportType]["msr"];
-
   const emailVars = {
     msr_first_name: getFirstName(msr.name),
     volunteer_name: `${volunteer.firstName} ${volunteer.lastName}`,
@@ -27,7 +40,7 @@ export async function sendEmailToMsr(
     volunteer_registration_number: volunteer.registrationNumber,
   };
 
-  const emailRes = await sendEmail(msr.email, id, emailVars);
+  const emailRes = await sendEmail(msr.email, transactionalId, emailVars);
 
   return emailRes;
 }
@@ -69,7 +82,7 @@ export async function sendEmailSocialWorker(
   msrEmail: string,
   msrFirstName: string
 ): Promise<boolean> {
-  const id = TRANSACTIONAL_EMAIL_IDS["serviceWorker"];
+  const id = TRANSACTIONAL_EMAIL_IDS["socialWorker"];
 
   const emailVars = {
     msr_first_name: getFirstName(msrFirstName),
