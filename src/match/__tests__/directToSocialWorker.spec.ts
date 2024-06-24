@@ -3,7 +3,6 @@ import directToSocialWorker from "../directToSocialWorker";
 
 import * as zendeskClient from "../../zendeskClient";
 import * as emailClient from "../../emailClient";
-import * as getAgent from "../../utils/getAgent";
 import * as getCurrentDate from "../../utils/getCurrentDate";
 import type { ZendeskTicket, ZendeskUser } from "../../types";
 
@@ -12,19 +11,15 @@ import { SOCIAL_WORKER_ZENDESK_USER_ID } from "../../constants";
 
 const updateTicketMock = jest.spyOn(zendeskClient, "updateTicket");
 const getUserMock = jest.spyOn(zendeskClient, "getUser");
-const getAgentMock = jest.spyOn(getAgent, "default");
 const getCurrentDateMock = jest.spyOn(getCurrentDate, "default");
 const sendEmailSocialWorkerMock = jest.spyOn(
   emailClient,
   "sendEmailSocialWorker"
 );
 
-const mockAgentNumber = 1;
 const mockCurrentDate = "2023-12-28";
 
 describe("directToSocialWorker", () => {
-  getAgentMock.mockImplementation(() => mockAgentNumber);
-
   beforeEach(() => {
     const mockSupportRequest = {
       state: "SP",
