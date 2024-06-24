@@ -4,13 +4,11 @@ import type { SupportRequest, ZendeskTicket, ZendeskUser } from "../../types";
 
 import * as zendeskClient from "../../zendeskClient";
 import * as emailClient from "../../emailClient";
-import * as getAgent from "../../utils/getAgent";
 import * as getCurrentDate from "../../utils/getCurrentDate";
 import * as saveBusaraABExperiment from "../../utils/saveBusaraABExperiment";
 import { prismaMock } from "../../setupTests";
-import { AB_TRANSACTIONAL_EMAIL_IDS } from "../../constants";
+import { AB_TRANSACTIONAL_EMAIL_IDS, AGENT } from "../../constants";
 
-const getAgentMock = jest.spyOn(getAgent, "default");
 const getCurrentDateMock = jest.spyOn(getCurrentDate, "default");
 const createTicketMock = jest.spyOn(zendeskClient, "createTicket");
 const updateTicketMock = jest.spyOn(zendeskClient, "updateTicket");
@@ -26,7 +24,6 @@ const saveBusaraABExperimentMock = jest.spyOn(
 );
 jest.spyOn(global.Math, "random").mockReturnValue(0.7);
 
-const mockAgentNumber = 1;
 const mockVolunteerZendeskTicket = {
   id: 123123123 as unknown as bigint,
 } as ZendeskTicket;
@@ -56,7 +53,6 @@ const mockCurrentDate = "2023-12-28";
 const mockMatchId = 1;
 
 describe("createAndUpdateZendeskMatchTickets", () => {
-  getAgentMock.mockImplementation(() => mockAgentNumber);
   getCurrentDateMock.mockImplementation(() => mockCurrentDate);
   sendEmailToMsrMock.mockResolvedValueOnce(true);
   sendEmailToVolunteerMock.mockResolvedValueOnce(true);
@@ -131,8 +127,8 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       const volunteerTicket = {
         external_id: 5,
         requester_id: 3,
-        submitter_id: 1,
-        assignee_id: 1,
+        submitter_id: AGENT.id,
+        assignee_id: AGENT.id,
         status: "pending",
         subject: "[Advogada] Teste Voluntária",
         organization_id: 360269610652,
@@ -171,7 +167,7 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       const msrTicket = {
         id: 1234,
         status: "pending",
-        assignee_id: 1,
+        assignee_id: AGENT.id,
         custom_fields: [
           {
             id: 360016631592,
@@ -285,7 +281,7 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       const msrTicket = {
         id: 1234,
         status: "pending",
-        assignee_id: 1,
+        assignee_id: AGENT.id,
         custom_fields: [
           {
             id: 360016631592,
