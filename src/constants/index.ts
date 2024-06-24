@@ -8,6 +8,11 @@ export const AGENT_DICIO: Record<number, string> = {
   377577169651: "Ana",
 };
 
+export const AGENT = {
+  id: 377511446392,
+  name: "Gabriela",
+};
+
 export const IDEAL_MATCH_MAX_DISTANCE = 20;
 
 export const ZENDESK_CUSTOM_FIELDS_DICIO = {
