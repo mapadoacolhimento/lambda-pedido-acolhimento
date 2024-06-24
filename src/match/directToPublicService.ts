@@ -2,9 +2,8 @@ import client from "../prismaClient";
 import { getCurrentDate } from "../utils";
 import { getUser, updateTicket } from "../zendeskClient";
 import { sendEmailPublicService } from "../emailClient";
-import { ZENDESK_CUSTOM_FIELDS_DICIO } from "../constants";
 import type { SupportRequest } from "../types";
-import { AGENT } from "../constants";
+import { ZENDESK_CUSTOM_FIELDS_DICIO, AGENT } from "../constants";
 
 async function fetchMsrFromZendesk(msrId: bigint) {
   const msr = await getUser(msrId);
