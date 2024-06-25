@@ -7,7 +7,6 @@ import {
   sendEmailToVolunteer,
 } from "../emailClient";
 import {
-  getAgent,
   getCurrentDate,
   getErrorMessage,
   saveBusaraABExperiment,
@@ -16,6 +15,7 @@ import {
   ZENDESK_CUSTOM_FIELDS_DICIO,
   VOLUNTEER_SUPPORT_TYPE_DICIO,
   ZENDESK_SUBDOMAIN,
+  AGENT,
 } from "../constants";
 import type { SupportRequest, ZendeskTicket, ZendeskUser } from "../types";
 
@@ -179,7 +179,7 @@ export default async function createAndUpdateZendeskMatchTickets(
     throw new Error("Couldn't fetch volunteer from db or msr from zendesk");
   }
 
-  const agent = getAgent();
+  const agent = AGENT.id;
 
   const volunteerZendeskTicketId = await createVolunteerZendeskTicket({
     agent,

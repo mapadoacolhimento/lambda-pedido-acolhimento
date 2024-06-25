@@ -3,9 +3,9 @@ export const ZENDESK_API_URL = `${ZENDESK_SUBDOMAIN}/api/v2`;
 export const ZENDESK_API_USER = `${process.env["ZENDESK_API_USER"]}/token`;
 export const ZENDESK_API_TOKEN = process.env["ZENDESK_API_TOKEN"];
 
-export const AGENT_DICIO: Record<number, string> = {
-  377511446392: "Gabriela",
-  377577169651: "Ana",
+export const AGENT = {
+  id: 377511446392,
+  name: "Gabriela",
 };
 
 export const IDEAL_MATCH_MAX_DISTANCE = 20;
