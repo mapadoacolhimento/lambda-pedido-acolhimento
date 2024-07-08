@@ -577,6 +577,7 @@ enum SupportRequestsStatus {
   duplicated
   closed
   special_case
+  waived
 
   @@map("support_requests_status")
   @@schema("match")
