@@ -7,7 +7,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["match", "public", "mobilization", "public_services", "msr", "pii_sec", "pii_mask"]
+  schemas  = ["match", "public", "mobilization", "public_services", "msr", "pii_sec"]
 }
 
 model auth_group {
@@ -245,8 +245,7 @@ model MSRs {
 
 model MSRPiiSec {
   msrId       BigInt   @id @default(autoincrement()) @map("msr_id")
-  firstName   String   @map("first_name") @db.VarChar(200)
-  lastName    String   @map("last_name") @db.VarChar(200)
+  firstName   String?   @map("first_name") @db.VarChar(200)
   email       String   @unique @db.VarChar(254)
   phone       String   @db.VarChar(100)
   dateOfBirth DateTime? @map("date_of_birth") @db.Date
@@ -558,7 +557,7 @@ enum SupportType {
 
 enum MSRStatus {
   registered
-  unsubscribed
+  unregistered
 
   @@map("msr_status")
   @@schema("msr")
