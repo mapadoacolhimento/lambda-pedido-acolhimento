@@ -130,7 +130,7 @@ describe("createAndUpdateZendeskMatchTickets", () => {
         submitter_id: AGENT.id,
         assignee_id: AGENT.id,
         status: "pending",
-        subject: "[Advogada] Teste Voluntária",
+        subject: "[Advogada] Teste Voluntária acolhe Teste MSR",
         organization_id: 360269610652,
         comment: {
           body: "Voluntária recebeu um pedido de acolhimento de Teste MSR",
@@ -263,7 +263,7 @@ describe("createAndUpdateZendeskMatchTickets", () => {
 
     it("should create volunteer ticket with correct params", async () => {
       const volunteerTicket = {
-        subject: "[Psicóloga] Teste Voluntária",
+        subject: "[Psicóloga] Teste Voluntária acolhe Teste MSR",
         organization_id: 360282119532,
       };
       await createAndUpdateZendeskMatchTickets(
