@@ -44,7 +44,7 @@ async function createVolunteerZendeskTicket({
     status: "pending",
     subject: `[${
       volunteerSupportTypeInfo.occupation
-    }] ${volunteer.firstName.toString()}`,
+    }] ${volunteer.firstName.toString()} acolhe ${msr.name}`,
     organization_id: volunteerSupportTypeInfo.organizationId,
     comment: {
       body: `Voluntária recebeu um pedido de acolhimento de ${msr.name}`,
