@@ -1,6 +1,10 @@
-export default function isJsonString(str: string) {
+export default function isJsonString(str: string | null) {
   try {
-    JSON.parse(str);
+    if (str) {
+      JSON.parse(str);
+    } else {
+      return false;
+    }
   } catch (e) {
     return false;
   }
