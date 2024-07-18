@@ -111,7 +111,8 @@ describe("directToSocialWorker", () => {
     expect(sendEmailSocialWorkerMock).toHaveBeenNthCalledWith(
       1,
       "test-social-worker@email.com",
-      "Teste MSR Social Worker"
+      "Teste MSR Social Worker",
+      "123123123"
     );
   });
 });
