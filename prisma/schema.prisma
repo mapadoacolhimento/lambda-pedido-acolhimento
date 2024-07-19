@@ -237,20 +237,20 @@ model MSRs {
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
 
-  MSRPii     MSRPiiSec?
+  MSRPii MSRPiiSec?
 
   @@map("msrs")
   @@schema("msr")
 }
 
 model MSRPiiSec {
-  msrId       BigInt   @id @default(autoincrement()) @map("msr_id")
+  msrId       BigInt    @id @default(autoincrement()) @map("msr_id")
   firstName   String?   @map("first_name") @db.VarChar(200)
-  email       String   @unique @db.VarChar(254)
-  phone       String   @db.VarChar(100)
+  email       String    @unique @db.VarChar(254)
+  phone       String    @db.VarChar(100)
   dateOfBirth DateTime? @map("date_of_birth") @db.Date
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
 
   MSRs MSRs @relation(fields: [msrId], references: [msrId])
 
@@ -276,6 +276,7 @@ model SupportRequests {
   createdAt                   DateTime                      @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt                   DateTime                      @updatedAt @map("updated_at") @db.Timestamp(6)
   Matches                     Matches[]
+  MatchConfirmations          MatchConfirmations[]
   SupportRequestStatusHistory SupportRequestStatusHistory[]
 
   @@map("support_requests")
@@ -312,6 +313,34 @@ model Matches {
   volunteer                Volunteers?          @relation(fields: [volunteerId], references: [id])
 
   @@map("matches")
+  @@schema("match")
+}
+
+model MatchConfirmations {
+  matchConfirmationId Int                     @id @default(autoincrement()) @map("match_confirmation_id")
+  supportRequestId    Int                     @map("support_request_id")
+  msrId               BigInt                  @map("msr_id")
+  volunteerId         Int                     @map("volunteer_id")
+  status              MatchConfirmationStatus
+  matchId             Int?                    @map("match_id")
+  createdAt           DateTime                @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt           DateTime                @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  SupportRequest                 SupportRequests                  @relation(fields: [supportRequestId], references: [supportRequestId])
+  MatchConfirmationStatusHistory MatchConfirmationStatusHistory[]
+
+  @@map("match_confirmations")
+  @@schema("match")
+}
+
+model MatchConfirmationStatusHistory {
+  matchConfirmationStatusHistoryId Int                     @id @default(autoincrement()) @map("match_confirmation_status_history_id")
+  matchConfirmationId              Int                     @map("match_confirmation_id")
+  status                           MatchConfirmationStatus
+  createdAt                        DateTime                @default(now()) @map("created_at") @db.Timestamp(6)
+  MatchConfirmation                MatchConfirmations      @relation(fields: [matchConfirmationId], references: [matchConfirmationId])
+
+  @@map("match_confirmation_status_history")
   @@schema("match")
 }
 
@@ -613,6 +642,16 @@ enum MatchStatus {
   started_contact
 
   @@map("match_status")
+  @@schema("match")
+}
+
+enum MatchConfirmationStatus {
+  waiting
+  confirmed
+  denied
+  failed
+
+  @@map("match_confirmation_status")
   @@schema("match")
 }
 
