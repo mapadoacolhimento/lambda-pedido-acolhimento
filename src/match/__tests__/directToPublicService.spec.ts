@@ -110,7 +110,8 @@ describe("directToPublicService", () => {
     expect(sendEmailPublicServiceMock).toHaveBeenNthCalledWith(
       1,
       "test@email.com",
-      "Teste MSR"
+      "Teste MSR",
+      "123123123"
     );
   });
 });

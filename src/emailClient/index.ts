@@ -5,14 +5,15 @@ import {
   AB_TRANSACTIONAL_EMAIL_IDS,
   TRANSACTIONAL_EMAIL_IDS,
 } from "../constants";
-import type { SupportRequest, ZendeskUser } from "../types";
+import type { SupportRequest, ZendeskTicket, ZendeskUser } from "../types";
 
 type Volunteer = Pick<
   Volunteers,
   "firstName" | "phone" | "registrationNumber" | "lastName" | "email"
 >;
 
-type Msr = Pick<ZendeskUser, "name" | "email">;
+type Msr = Pick<ZendeskUser, "name" | "email"> &
+  Pick<SupportRequest, "zendeskTicketId">;
 
 export function getAbTransactionalEmailId(
   supportType: SupportRequest["supportType"]
@@ -38,6 +39,7 @@ export async function sendEmailToMsr(
     // Não consegui remover esse parâmetro do Loops, então preciamos enviar
     lawyer_phone: volunteer.phone,
     volunteer_registration_number: volunteer.registrationNumber,
+    msr_zendesk_ticket_id: msr.zendeskTicketId.toString(),
   };
 
   const emailRes = await sendEmail(msr.email, transactionalId, emailVars);
@@ -46,7 +48,7 @@ export async function sendEmailToMsr(
 }
 
 export async function sendEmailToVolunteer(
-  volunteer: Volunteer,
+  volunteer: Volunteer & { zendeskTicketId: ZendeskTicket["id"] },
   msrFirstName: Msr["name"],
   supportType: SupportRequest["supportType"]
 ) {
@@ -56,6 +58,7 @@ export async function sendEmailToVolunteer(
     volunteer_first_name: getFirstName(volunteer.firstName),
     msr_first_name: getFirstName(msrFirstName),
     volunteer_phone: volunteer.phone,
+    volunteer_zendesk_ticket_id: volunteer.zendeskTicketId.toString(),
   };
 
   const emailRes = await sendEmail(volunteer.email, id, emailVars);
@@ -65,12 +68,14 @@ export async function sendEmailToVolunteer(
 
 export async function sendEmailPublicService(
   msrEmail: string,
-  msrFirstName: string
+  msrFirstName: string,
+  msrZendeskTicketId: string
 ): Promise<boolean> {
   const id = TRANSACTIONAL_EMAIL_IDS["publicService"];
 
   const emailVars = {
     msr_first_name: getFirstName(msrFirstName),
+    msr_zendesk_ticket_id: msrZendeskTicketId,
   };
 
   const emailRes = await sendEmail(msrEmail, id, emailVars);
@@ -80,12 +85,14 @@ export async function sendEmailPublicService(
 
 export async function sendEmailSocialWorker(
   msrEmail: string,
-  msrFirstName: string
+  msrFirstName: string,
+  msrZendeskTicketId: string
 ): Promise<boolean> {
   const id = TRANSACTIONAL_EMAIL_IDS["socialWorker"];
 
   const emailVars = {
     msr_first_name: getFirstName(msrFirstName),
+    msr_zendesk_ticket_id: msrZendeskTicketId,
   };
 
   const emailRes = await sendEmail(msrEmail, id, emailVars);

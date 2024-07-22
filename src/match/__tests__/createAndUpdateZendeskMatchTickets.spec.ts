@@ -206,7 +206,10 @@ describe("createAndUpdateZendeskMatchTickets", () => {
         mockMatchId
       );
       expect(sendEmailToMsrMock).toHaveBeenCalledWith(
-        mockMsrFromZendesk,
+        {
+          ...mockMsrFromZendesk,
+          zendeskTicketId: legalSupportRequest["zendeskTicketId"],
+        },
         mockVolunteerFromDB,
         AB_TRANSACTIONAL_EMAIL_IDS["legal"]["b"]
       );
@@ -233,7 +236,10 @@ describe("createAndUpdateZendeskMatchTickets", () => {
         mockMatchId
       );
       expect(sendEmailToVolunteerMock).toHaveBeenCalledWith(
-        mockVolunteerFromDB,
+        {
+          ...mockVolunteerFromDB,
+          zendeskTicketId: mockVolunteerZendeskTicket["id"],
+        },
         mockMsrFromZendesk.name,
         "legal"
       );
@@ -320,7 +326,10 @@ describe("createAndUpdateZendeskMatchTickets", () => {
         mockMatchId
       );
       expect(sendEmailToMsrMock).toHaveBeenCalledWith(
-        mockMsrFromZendesk,
+        {
+          ...mockMsrFromZendesk,
+          zendeskTicketId: baseSupportRequestPayload["zendeskTicketId"],
+        },
         mockVolunteerFromDB,
         AB_TRANSACTIONAL_EMAIL_IDS["psychological"]["b"]
       );
@@ -347,7 +356,10 @@ describe("createAndUpdateZendeskMatchTickets", () => {
         mockMatchId
       );
       expect(sendEmailToVolunteerMock).toHaveBeenCalledWith(
-        mockVolunteerFromDB,
+        {
+          ...mockVolunteerFromDB,
+          zendeskTicketId: mockVolunteerZendeskTicket["id"],
+        },
         mockMsrFromZendesk.name,
         "psychological"
       );

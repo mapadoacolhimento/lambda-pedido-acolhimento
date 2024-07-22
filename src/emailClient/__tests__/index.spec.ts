@@ -12,6 +12,7 @@ const sendEmailMock = jest.spyOn(sendEmail, "default");
 const msr = {
   name: "teste msr",
   email: "teste@msr.com",
+  zendeskTicketId: 123123 as unknown as bigint,
 };
 const volunteer = {
   firstName: "Voluntaria",
@@ -19,6 +20,7 @@ const volunteer = {
   phone: "11911091199",
   registrationNumber: "123123",
   email: "teste@voluntaria.com",
+  zendeskTicketId: 123123 as unknown as bigint,
 };
 
 describe("sendEmailPublicService", () => {
@@ -26,7 +28,12 @@ describe("sendEmailPublicService", () => {
     sendEmailMock.mockResolvedValueOnce(true);
   });
   it("should call sendEmail with correct params", async () => {
-    const res = await sendEmailPublicService("test@msr.com", "teste MSR");
+    const zendeskTicketId = "123123";
+    const res = await sendEmailPublicService(
+      "test@msr.com",
+      "teste MSR",
+      zendeskTicketId
+    );
     expect(res).toStrictEqual(true);
     expect(sendEmailMock).toHaveBeenNthCalledWith(
       1,
@@ -34,6 +41,7 @@ describe("sendEmailPublicService", () => {
       "clv43j25d00b0y19vj7x8qdxy",
       {
         msr_first_name: "Teste",
+        msr_zendesk_ticket_id: zendeskTicketId,
       }
     );
   });
@@ -44,7 +52,12 @@ describe("sendEmailSocialWorker", () => {
     sendEmailMock.mockResolvedValueOnce(true);
   });
   it("should call sendEmail with correct params", async () => {
-    const res = await sendEmailSocialWorker("test@msr.com", "teste MSR");
+    const zendeskTicketId = "123123";
+    const res = await sendEmailSocialWorker(
+      "test@msr.com",
+      "teste MSR",
+      zendeskTicketId
+    );
     expect(res).toStrictEqual(true);
     expect(sendEmailMock).toHaveBeenNthCalledWith(
       1,
@@ -52,6 +65,7 @@ describe("sendEmailSocialWorker", () => {
       "clv4a8qf1004meoqo89fcfjy7",
       {
         msr_first_name: "Teste",
+        msr_zendesk_ticket_id: zendeskTicketId,
       }
     );
   });
@@ -79,6 +93,7 @@ describe("sendEmailToMsr", () => {
           volunteer_phone: "11911091199",
           lawyer_phone: "11911091199",
           volunteer_registration_number: "123123",
+          msr_zendesk_ticket_id: msr.zendeskTicketId.toString(),
         }
       );
     });
@@ -101,6 +116,7 @@ describe("sendEmailToMsr", () => {
           volunteer_phone: "11911091199",
           lawyer_phone: "11911091199",
           volunteer_registration_number: "123123",
+          msr_zendesk_ticket_id: msr.zendeskTicketId.toString(),
         }
       );
     });
@@ -127,6 +143,7 @@ describe("sendEmailToVolunteer", () => {
           volunteer_first_name: "Voluntaria",
           msr_first_name: "Teste",
           volunteer_phone: "11911091199",
+          volunteer_zendesk_ticket_id: volunteer.zendeskTicketId.toString(),
         }
       );
     });
@@ -143,6 +160,7 @@ describe("sendEmailToVolunteer", () => {
           volunteer_first_name: "Voluntaria",
           msr_first_name: "Teste",
           volunteer_phone: "11911091199",
+          volunteer_zendesk_ticket_id: volunteer.zendeskTicketId.toString(),
         }
       );
     });

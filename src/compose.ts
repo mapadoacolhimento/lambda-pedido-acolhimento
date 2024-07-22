@@ -51,23 +51,9 @@ const compose = async (
   callback: APIGatewayProxyCallback
 ) => {
   try {
-    // console.log(`Event: ${JSON.stringify(event, null, 2)}`);
-    // console.log(`Context: ${JSON.stringify(context, null, 2)}`);
-
     const { body } = event;
-    if (!body) {
-      console.error("[compose] - [400]: Empty request body");
-
-      return callback(null, {
-        statusCode: 400,
-        body: JSON.stringify({
-          error: "Empty request body",
-        }),
-      });
-    }
-
     const parsedBody = isJsonString(body)
-      ? (JSON.parse(body) as unknown)
+      ? (JSON.parse(body as string) as unknown)
       : (Object.create(null) as Record<string, unknown>);
 
     const validatedSupportRequestsBody = (await bodySchema.validate(

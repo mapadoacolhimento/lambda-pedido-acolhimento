@@ -39,7 +39,8 @@ describe("/compose endpoint", () => {
     expect(callback).toHaveBeenCalledWith(null, {
       statusCode: 400,
       body: JSON.stringify({
-        error: "Empty request body",
+        error:
+          "Validation error: this must be a `array` type, but the final value was: `{}`.",
       }),
     });
   });

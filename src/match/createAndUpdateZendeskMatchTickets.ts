@@ -207,7 +207,14 @@ export default async function createAndUpdateZendeskMatchTickets(
 
   const transactionalId = getAbTransactionalEmailId(supportRequest.supportType);
 
-  await sendEmailToMsr(msr, volunteer, transactionalId);
+  await sendEmailToMsr(
+    {
+      ...msr,
+      zendeskTicketId: supportRequest.zendeskTicketId,
+    },
+    volunteer,
+    transactionalId
+  );
 
   await saveBusaraABExperiment({
     msrId: supportRequest.msrId,
@@ -216,7 +223,14 @@ export default async function createAndUpdateZendeskMatchTickets(
     matchId,
   });
 
-  await sendEmailToVolunteer(volunteer, msr.name, supportRequest.supportType);
+  await sendEmailToVolunteer(
+    {
+      ...volunteer,
+      zendeskTicketId: volunteerZendeskTicketId,
+    },
+    msr.name,
+    supportRequest.supportType
+  );
 
   return volunteerZendeskTicketId;
 }
