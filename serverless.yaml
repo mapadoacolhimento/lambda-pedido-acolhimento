@@ -92,7 +92,7 @@ functions:
             type: request
   
   createMatch:
-    handler: handler.createMatch
+    handler: handler.createNewMatch
     timeout: 30
     events:
       - httpApi:
