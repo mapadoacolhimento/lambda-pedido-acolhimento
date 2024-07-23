@@ -90,6 +90,17 @@ functions:
           authorizer:
             name: auth
             type: request
+  
+  createMatch:
+    handler: handler.createMatch
+    timeout: 30
+    events:
+      - httpApi:
+          path: /create-match
+          method: POST
+          authorizer:
+            name: auth
+            type: request
 
   feature-flag:
     handler: handler.featureFlag
