@@ -7,7 +7,12 @@ import { object, number, string } from "yup";
 
 import client from "./prismaClient";
 
-import { getErrorMessage, isJsonString, stringfyBigInt } from "./utils";
+import {
+  getErrorMessage,
+  isJsonString,
+  notFoundErrorPayload,
+  stringfyBigInt,
+} from "./utils";
 import { createMatch } from "./match/createMatch";
 import { MatchStage, MatchType } from "@prisma/client";
 
@@ -56,7 +61,7 @@ export default async function handler(
     if (!supportRequest) {
       const errorMessage = `support_request not found for support_request_id '${supportRequestId}'`;
 
-      return callback(null, notFoundErrorPayload(errorMessage));
+      return callback(null, notFoundErrorPayload("create-match", errorMessage));
     }
 
     const volunteerAvailability = await client.volunteerAvailability.findUnique(
@@ -68,7 +73,7 @@ export default async function handler(
     if (!volunteerAvailability) {
       const errorMessage = `volunteer_availability not found for volunteer_id '${volunteerId}'`;
 
-      return callback(null, notFoundErrorPayload(errorMessage));
+      return callback(null, notFoundErrorPayload("create-match", errorMessage));
     }
 
     const match = await createMatch(
@@ -109,15 +114,4 @@ export default async function handler(
       body: JSON.stringify({ error: errorMsg }),
     });
   }
-}
-
-function notFoundErrorPayload(errorMessage: string) {
-  console.error(`[create-match] - [404]: ${errorMessage}`);
-
-  return {
-    statusCode: 404,
-    body: JSON.stringify({
-      error: errorMessage,
-    }),
-  };
 }
