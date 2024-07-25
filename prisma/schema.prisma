@@ -237,7 +237,8 @@ model MSRs {
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
 
-  MSRPii MSRPiiSec?
+  MSRPii           MSRPiiSec?
+  MSRStatusHistory MSRStatusHistory[]
 
   @@map("msrs")
   @@schema("msr")
@@ -256,6 +257,18 @@ model MSRPiiSec {
 
   @@map("msr_pii")
   @@schema("pii_sec")
+}
+
+model MSRStatusHistory {
+  msrStatusHistoryId Int       @id @default(autoincrement()) @map("msr_status_history_id")
+  msrId              BigInt    @map("msr_id")
+  status             MSRStatus
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  
+  MSRs               MSRs      @relation(fields: [msrId], references: [msrId])
+
+  @@map("msr_status_history")
+  @@schema("msr")
 }
 
 model SupportRequests {
