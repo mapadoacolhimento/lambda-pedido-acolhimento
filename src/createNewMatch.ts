@@ -6,17 +6,21 @@ import type {
 import { object, number, string } from "yup";
 
 import client from "./prismaClient";
-import { createMatch } from "./match/createMatch";
+
 import {
   getErrorMessage,
   isJsonString,
   notFoundErrorPayload,
   stringfyBigInt,
 } from "./utils";
+import { createMatch } from "./match/createMatch";
+import { MatchStage, MatchType } from "@prisma/client";
 
 const bodySchema = object({
-  msrZendeskTicketId: number().required(),
-  volunteerEmail: string().required(),
+  supportRequestId: number().required(),
+  volunteerId: number().required(),
+  matchType: string().oneOf(Object.values(MatchType)).required(),
+  matchStage: string().oneOf(Object.values(MatchStage)).required(),
 })
   .required()
   .strict();
@@ -29,10 +33,9 @@ export default async function handler(
   try {
     const body = event.body;
 
-    // Check if the request body exists
     if (!body) {
       const errorMessage = "Empty request body";
-      console.error(`[manual-match] - [400]: ${errorMessage}`);
+      console.error(`[create-match] - [400]: ${errorMessage}`);
 
       return callback(null, {
         statusCode: 400,
@@ -48,47 +51,36 @@ export default async function handler(
 
     const validatedBody = await bodySchema.validate(parsedBody);
 
-    const { msrZendeskTicketId, volunteerEmail } = validatedBody;
+    const { supportRequestId, volunteerId, matchType, matchStage } =
+      validatedBody;
 
-    // Fetch the supportRequest using ZendeskTicketId
     const supportRequest = await client.supportRequests.findUnique({
-      where: { zendeskTicketId: msrZendeskTicketId },
+      where: { supportRequestId: supportRequestId },
     });
 
     if (!supportRequest) {
-      const errorMessage = `support_request not found for zendesk_ticket_id '${msrZendeskTicketId}'`;
+      const errorMessage = `support_request not found for support_request_id '${supportRequestId}'`;
 
-      return callback(null, notFoundErrorPayload("manual-match", errorMessage));
-    }
-
-    // Fetch the volunteer using email
-    const volunteer = await client.volunteers.findFirst({
-      where: { email: volunteerEmail },
-    });
-
-    if (!volunteer) {
-      const errorMessage = `volunteer not found for email: '${volunteerEmail}'`;
-
-      return callback(null, notFoundErrorPayload("manual-match", errorMessage));
+      return callback(null, notFoundErrorPayload("create-match", errorMessage));
     }
 
     const volunteerAvailability = await client.volunteerAvailability.findUnique(
       {
-        where: { volunteer_id: volunteer.id },
+        where: { volunteer_id: volunteerId },
       }
     );
 
     if (!volunteerAvailability) {
-      const errorMessage = `volunteer_availability not found for volunteer_id '${volunteer.id}'`;
+      const errorMessage = `volunteer_availability not found for volunteer_id '${volunteerId}'`;
 
-      return callback(null, notFoundErrorPayload("manual-match", errorMessage));
+      return callback(null, notFoundErrorPayload("create-match", errorMessage));
     }
 
     const match = await createMatch(
       supportRequest,
       volunteerAvailability,
-      "manual",
-      "manual"
+      matchType,
+      matchStage
     );
 
     const bodyRes = JSON.stringify({
@@ -104,7 +96,7 @@ export default async function handler(
     if (error["name"] === "ValidationError") {
       const errorMsg = `Validation error: ${getErrorMessage(error)}`;
 
-      console.error(`[manual-match] - [400]: ${errorMsg}`);
+      console.error(`[create-match] - [400]: ${errorMsg}`);
 
       return callback(null, {
         statusCode: 400,
@@ -115,7 +107,7 @@ export default async function handler(
     }
 
     const errorMsg = getErrorMessage(error);
-    console.error(`[manual-match] - [500]: ${errorMsg}`);
+    console.error(`[create-match] - [500]: ${errorMsg}`);
 
     return callback(null, {
       statusCode: 500,

@@ -9,4 +9,5 @@ export { default as saveEncryptedEmail } from "./saveEncryptedEmail";
 export { default as encrypt } from "./encrypt";
 export { default as getFirstName } from "./getFirstName";
 export { default as saveBusaraABExperiment } from "./saveBusaraABExperiment";
+export { default as notFoundErrorPayload } from "./notFoundErrorPayload";
 export * from "./stringfyBigInt";
