@@ -101,6 +101,17 @@ functions:
           authorizer:
             name: auth
             type: request
+  
+  findVolunteer:
+    handler: handler.findVolunteer
+    timeout: 30
+    events:
+      - httpApi:
+          path: /find-volunteer
+          method: POST
+          authorizer:
+            name: auth
+            type: request
 
   feature-flag:
     handler: handler.featureFlag
