@@ -10,4 +10,5 @@ export { default as encrypt } from "./encrypt";
 export { default as getFirstName } from "./getFirstName";
 export { default as saveBusaraABExperiment } from "./saveBusaraABExperiment";
 export { default as notFoundErrorPayload } from "./notFoundErrorPayload";
+export { default as fetchVolunteers } from "./fetchVolunteers";
 export * from "./stringfyBigInt";

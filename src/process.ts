@@ -1,5 +1,4 @@
 import {
-  SupportType,
   VolunteerAvailability,
   SupportRequests,
   Matches,
@@ -20,8 +19,8 @@ import directToSocialWorker, {
   SocialWorker,
 } from "./match/directToSocialWorker";
 
-import client, { isFeatureFlagEnabled } from "./prismaClient";
-import { getErrorMessage, stringfyBigInt } from "./utils";
+import { isFeatureFlagEnabled } from "./prismaClient";
+import { fetchVolunteers, getErrorMessage, stringfyBigInt } from "./utils";
 import {
   ONLINE_MATCH,
   SOCIAL_WORKER,
@@ -111,23 +110,6 @@ const process = async (
     );
     return null;
   }
-};
-
-const fetchVolunteers = async (supportType: SupportType) => {
-  const availableVolunteers: VolunteerAvailability[] =
-    await client.volunteerAvailability.findMany({
-      where: { is_available: true, support_type: supportType },
-      orderBy: [
-        {
-          current_matches: "asc",
-        },
-        {
-          updated_at: "desc",
-        },
-      ],
-    });
-
-  return availableVolunteers || [];
 };
 
 export default process;
