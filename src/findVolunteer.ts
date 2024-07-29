@@ -5,7 +5,14 @@ import type {
 } from "aws-lambda";
 import { object, number } from "yup";
 
-import { getErrorMessage, isJsonString, stringfyBigInt } from "./utils";
+import client from "./prismaClient";
+
+import {
+  getErrorMessage,
+  isJsonString,
+  notFoundErrorPayload,
+  stringfyBigInt,
+} from "./utils";
 
 const bodySchema = object({
   supportRequestId: number().required(),
@@ -39,8 +46,23 @@ export default async function handler(
 
     const validatedBody = await bodySchema.validate(parsedBody);
 
+    const { supportRequestId } = validatedBody;
+
+    const supportRequest = await client.supportRequests.findUnique({
+      where: { supportRequestId: supportRequestId },
+    });
+
+    if (!supportRequest) {
+      const errorMessage = `support_request not found for support_request_id '${supportRequestId}'`;
+
+      return callback(
+        null,
+        notFoundErrorPayload("find-volunteer", errorMessage)
+      );
+    }
+
     const bodyRes = JSON.stringify({
-      message: stringfyBigInt(validatedBody),
+      message: stringfyBigInt(supportRequest),
     });
 
     return callback(null, {
