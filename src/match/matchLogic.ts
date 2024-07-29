@@ -12,7 +12,7 @@ import { ONLINE_MATCH, PUBLIC_SERVICE, SOCIAL_WORKER } from "../constants";
 export async function findIdealMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[],
-  matchType: MatchType,
+  matchType: MatchType = "msr",
   shouldCreateMatch: boolean = true
 ) {
   const closestVolunteer = findClosestVolunteer(
@@ -39,7 +39,7 @@ export async function findIdealMatch(
 export async function findExpandedMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[],
-  matchType: MatchType,
+  matchType: MatchType = "msr",
   shouldCreateMatch: boolean = true
 ) {
   const volunteerInTheSameCity = findVolunteerInTheSameCity(
@@ -65,7 +65,7 @@ export async function findExpandedMatch(
 export async function findOnlineMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[],
-  matchType: MatchType,
+  matchType: MatchType = "msr",
   shouldCreateMatch: boolean = true
 ) {
   if (allVolunteers.length === 0) return null;

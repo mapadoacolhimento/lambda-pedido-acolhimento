@@ -8,11 +8,18 @@ import { object, number } from "yup";
 import client from "./prismaClient";
 
 import {
+  fetchVolunteers,
   getErrorMessage,
   isJsonString,
   notFoundErrorPayload,
   stringfyBigInt,
 } from "./utils";
+import type { VolunteerAvailability } from "@prisma/client";
+import {
+  findExpandedMatch,
+  findIdealMatch,
+  findOnlineMatch,
+} from "./match/matchLogic";
 
 const bodySchema = object({
   supportRequestId: number().required(),
@@ -61,13 +68,60 @@ export default async function handler(
       );
     }
 
-    const bodyRes = JSON.stringify({
-      message: stringfyBigInt(supportRequest),
-    });
+    const allVolunteers: VolunteerAvailability[] = await fetchVolunteers(
+      supportRequest.supportType
+    );
+
+    const idealMatch = await findIdealMatch(
+      supportRequest,
+      allVolunteers,
+      undefined,
+      false
+    );
+
+    if (idealMatch)
+      return callback(null, {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: stringfyBigInt({ ...idealMatch, matchStage: "ideal" }),
+        }),
+      });
+
+    const expandedMatch = await findExpandedMatch(
+      supportRequest,
+      allVolunteers,
+      undefined,
+      false
+    );
+
+    if (expandedMatch)
+      return callback(null, {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: stringfyBigInt({ ...expandedMatch, matchStage: "expanded" }),
+        }),
+      });
+
+    const onlineMatch = await findOnlineMatch(
+      supportRequest,
+      allVolunteers,
+      undefined,
+      false
+    );
+
+    if (onlineMatch)
+      return callback(null, {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: stringfyBigInt({ ...onlineMatch, matchStage: "online" }),
+        }),
+      });
 
     return callback(null, {
       statusCode: 200,
-      body: bodyRes,
+      body: JSON.stringify({
+        message: `No volunteers available`,
+      }),
     });
   } catch (e) {
     const error = e as Record<string, unknown>;
