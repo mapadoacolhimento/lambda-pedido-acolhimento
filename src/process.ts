@@ -7,10 +7,10 @@ import {
 } from "@prisma/client";
 
 import {
-  createExpandedMatch,
-  createIdealMatch,
-  createOnlineMatch,
   decideOnRandomization,
+  findExpandedMatch,
+  findIdealMatch,
+  findOnlineMatch,
 } from "./match/matchLogic";
 import directToPublicService, {
   PublicService,
@@ -40,7 +40,7 @@ async function getRandomReferral(
 
   switch (shouldForwardTo) {
     case ONLINE_MATCH:
-      return await createOnlineMatch(supportRequest, allVolunteers, matchType);
+      return await findOnlineMatch(supportRequest, allVolunteers, matchType);
 
     case SOCIAL_WORKER:
       return await directToSocialWorker(supportRequest.supportRequestId);
@@ -60,7 +60,7 @@ const process = async (
       supportRequest.supportType
     );
 
-    const idealMatch = await createIdealMatch(
+    const idealMatch = await findIdealMatch(
       supportRequest,
       allVolunteers,
       matchType
@@ -68,7 +68,7 @@ const process = async (
 
     if (idealMatch) return stringfyBigInt(idealMatch) as Matches;
 
-    const expandedMatch = await createExpandedMatch(
+    const expandedMatch = await findExpandedMatch(
       supportRequest,
       allVolunteers,
       matchType
@@ -77,7 +77,7 @@ const process = async (
     if (expandedMatch) return stringfyBigInt(expandedMatch) as Matches;
 
     if (!shouldRandomize) {
-      const onlineMatch = await createOnlineMatch(
+      const onlineMatch = await findOnlineMatch(
         supportRequest,
         allVolunteers,
         matchType

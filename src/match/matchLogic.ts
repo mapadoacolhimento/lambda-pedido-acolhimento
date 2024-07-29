@@ -9,10 +9,11 @@ import { IDEAL_MATCH_MAX_DISTANCE } from "../constants";
 import type { SupportRequest } from "../types";
 import { ONLINE_MATCH, PUBLIC_SERVICE, SOCIAL_WORKER } from "../constants";
 
-export async function createIdealMatch(
+export async function findIdealMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[],
-  matchType: MatchType
+  matchType: MatchType,
+  shouldCreateMatch: boolean = true
 ) {
   const closestVolunteer = findClosestVolunteer(
     supportRequest.lat,
@@ -22,6 +23,8 @@ export async function createIdealMatch(
   );
 
   if (!closestVolunteer) return null;
+
+  if (!shouldCreateMatch) return closestVolunteer;
 
   const match = await createMatch(
     supportRequest,
@@ -33,10 +36,11 @@ export async function createIdealMatch(
   return match;
 }
 
-export async function createExpandedMatch(
+export async function findExpandedMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[],
-  matchType: MatchType
+  matchType: MatchType,
+  shouldCreateMatch: boolean = true
 ) {
   const volunteerInTheSameCity = findVolunteerInTheSameCity(
     supportRequest.city,
@@ -45,6 +49,8 @@ export async function createExpandedMatch(
   );
 
   if (!volunteerInTheSameCity) return null;
+
+  if (!shouldCreateMatch) return volunteerInTheSameCity;
 
   const match = await createMatch(
     supportRequest,
@@ -56,10 +62,11 @@ export async function createExpandedMatch(
   return match;
 }
 
-export async function createOnlineMatch(
+export async function findOnlineMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[],
-  matchType: MatchType
+  matchType: MatchType,
+  shouldCreateMatch: boolean = true
 ) {
   if (allVolunteers.length === 0) return null;
 
@@ -77,6 +84,8 @@ export async function createOnlineMatch(
     );
 
     if (closestVolunteerInTheSameState) {
+      if (!shouldCreateMatch) return closestVolunteerInTheSameState;
+
       const match = await createMatch(
         supportRequest,
         closestVolunteerInTheSameState,
@@ -96,6 +105,8 @@ export async function createOnlineMatch(
   );
 
   if (closestVolunteer) {
+    if (!shouldCreateMatch) return closestVolunteer;
+
     const match = await createMatch(
       supportRequest,
       closestVolunteer,
@@ -105,6 +116,8 @@ export async function createOnlineMatch(
 
     return match;
   }
+
+  if (!shouldCreateMatch) return allVolunteers[0];
 
   const match = await createMatch(
     supportRequest,
