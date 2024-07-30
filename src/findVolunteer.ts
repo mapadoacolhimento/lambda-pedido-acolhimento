@@ -83,7 +83,10 @@ export default async function handler(
       return callback(null, {
         statusCode: 200,
         body: JSON.stringify({
-          message: stringfyBigInt({ ...idealMatch, matchStage: "ideal" }),
+          message: stringfyBigInt({
+            volunteer: idealMatch,
+            matchStage: "ideal",
+          }),
         }),
       });
 
@@ -98,7 +101,10 @@ export default async function handler(
       return callback(null, {
         statusCode: 200,
         body: JSON.stringify({
-          message: stringfyBigInt({ ...expandedMatch, matchStage: "expanded" }),
+          message: stringfyBigInt({
+            volunteer: expandedMatch,
+            matchStage: "expanded",
+          }),
         }),
       });
 
@@ -113,7 +119,10 @@ export default async function handler(
       return callback(null, {
         statusCode: 200,
         body: JSON.stringify({
-          message: stringfyBigInt({ ...onlineMatch, matchStage: "online" }),
+          message: stringfyBigInt({
+            volunteer: onlineMatch,
+            matchStage: "online",
+          }),
         }),
       });
 
