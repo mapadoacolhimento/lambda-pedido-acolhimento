@@ -55,9 +55,8 @@ const process = async (
   shouldRandomize: boolean = true
 ): Promise<Matches | PublicService | SocialWorker | null> => {
   try {
-    const allVolunteers: VolunteerAvailability[] = await fetchVolunteers(
-      supportRequest.supportType
-    );
+    const allVolunteers: VolunteerAvailability[] =
+      await fetchVolunteers(supportRequest);
 
     const idealMatch = await findIdealMatch(
       supportRequest,
