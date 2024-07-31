@@ -14,6 +14,7 @@ import {
 } from "../matchLogic";
 import { prismaMock } from "../../setupTests";
 import * as createAndUpdateZendeskMatchTickets from "../createAndUpdateZendeskMatchTickets";
+import * as createMatch from "../createMatch";
 
 const createAndUpdateZendeskMatchTicketsMock = jest.spyOn(
   createAndUpdateZendeskMatchTickets,
@@ -22,6 +23,24 @@ const createAndUpdateZendeskMatchTicketsMock = jest.spyOn(
 createAndUpdateZendeskMatchTicketsMock.mockImplementation(() =>
   Promise.resolve(123123123 as unknown as bigint)
 );
+const mockCreateMatch = jest.spyOn(createMatch, "createMatch");
+
+const mockPsyVolunteerAvailability = {
+  volunteer_id: 1,
+  current_matches: 0,
+  max_matches: 2,
+  is_available: true,
+  support_type: "psychological" as const,
+  support_expertise: "",
+  offers_online_support: true,
+  offers_libras_support: false,
+  lat: -23.0159503 as unknown as Decimal,
+  lng: -45.5405232 as unknown as Decimal,
+  city: "TAUBATE",
+  state: "SP",
+  updated_at: new Date("2023-01-01"),
+  created_at: new Date("2023-01-01"),
+};
 
 describe("filterVolunteersWithLatLng()", () => {
   it("should filter only the volunteers with not null lat lng", () => {
@@ -933,6 +952,197 @@ describe("createOnlineMatch()", () => {
       ...volunteerAvailability[0],
       distance: 28.958662241093418,
     });
+  });
+
+  it("should return a match with the closest volunteer in the state if there are volunteers available in the same state", async () => {
+    const supportRequest = {
+      supportRequestId: 1,
+      msrId: 1 as unknown as bigint,
+      zendeskTicketId: 1 as unknown as bigint,
+      supportType: "psychological" as const,
+      lat: -23.556148891818268 as unknown as Decimal,
+      lng: -46.67917050352835 as unknown as Decimal,
+      city: "SAO PAULO",
+      state: "SP",
+    };
+    const volunteerAvailability = [
+      {
+        ...mockPsyVolunteerAvailability,
+        volunteer_id: 1,
+        lat: -23.0159503 as unknown as Decimal,
+        lng: -45.5405232 as unknown as Decimal,
+        city: "TAUBATE",
+        state: "SP",
+      },
+      {
+        ...mockPsyVolunteerAvailability,
+        volunteer_id: 2,
+        lat: -23.4568386 as unknown as Decimal,
+        lng: -45.0682371 as unknown as Decimal,
+        city: "UBATUBA",
+        state: "SP",
+      },
+    ];
+
+    const matchWithClosestVolunteer = {
+      matchId: 1,
+      supportRequestId: 1,
+      msrId: BigInt(1),
+      volunteerId: 1,
+      msrZendeskTicketId: BigInt(1),
+      volunteerZendeskTicketId: BigInt(2),
+      supportType: "legal" as const,
+      matchType: "msr" as const,
+      matchStage: "online" as const,
+      status: "waiting_contact" as const,
+      updatedAt: new Date("2023-01-01"),
+      createdAt: new Date("2023-01-01"),
+    };
+
+    prismaMock.matches.create.mockResolvedValueOnce(matchWithClosestVolunteer);
+
+    const onlineMatch = await createOnlineMatch(
+      supportRequest,
+      volunteerAvailability,
+      "msr"
+    );
+
+    expect(mockCreateMatch).toHaveBeenNthCalledWith(
+      1,
+      supportRequest,
+      {
+        ...volunteerAvailability[0],
+        distance: 130.89389643837765,
+      },
+      "msr",
+      "online"
+    );
+    expect(onlineMatch).toStrictEqual(matchWithClosestVolunteer);
+  });
+
+  it("should return a match with the closest volunteer if there are NO volunteers available in the same state", async () => {
+    const supportRequest = {
+      supportRequestId: 1,
+      msrId: 1 as unknown as bigint,
+      zendeskTicketId: 1 as unknown as bigint,
+      supportType: "legal" as const,
+      lat: -23.556148891818268 as unknown as Decimal,
+      lng: -46.67917050352835 as unknown as Decimal,
+      city: "SAO PAULO",
+      state: "SP",
+    };
+    const volunteerAvailability = [
+      {
+        ...mockPsyVolunteerAvailability,
+        lat: null,
+        lng: null,
+        support_type: "legal",
+        volunteer_id: 2,
+      },
+      {
+        ...mockPsyVolunteerAvailability,
+        lat: null,
+        lng: null,
+        volunteer_id: 1,
+        support_type: "legal",
+      },
+    ];
+
+    const matchWithClosestVolunteer = {
+      matchId: 1,
+      supportRequestId: 1,
+      msrId: BigInt(1),
+      volunteerId: 2,
+      msrZendeskTicketId: BigInt(1),
+      volunteerZendeskTicketId: BigInt(2),
+      supportType: "legal" as const,
+      matchType: "msr" as const,
+      matchStage: "online" as const,
+      status: "waiting_contact" as const,
+      updatedAt: new Date("2023-01-01"),
+      createdAt: new Date("2023-01-01"),
+    };
+
+    prismaMock.matches.create.mockResolvedValueOnce(matchWithClosestVolunteer);
+
+    const onlineMatch = await createOnlineMatch(
+      supportRequest,
+      volunteerAvailability,
+      "msr"
+    );
+
+    expect(mockCreateMatch).toHaveBeenNthCalledWith(
+      1,
+      supportRequest,
+      volunteerAvailability[0],
+      "msr",
+      "online"
+    );
+    expect(onlineMatch).toStrictEqual(matchWithClosestVolunteer);
+  });
+
+  it("should return any volunteer if none have lat/lng info", async () => {
+    const supportRequest = {
+      supportRequestId: 1,
+      msrId: 1 as unknown as bigint,
+      zendeskTicketId: 1 as unknown as bigint,
+      supportType: "legal" as const,
+      lat: -23.556148891818268 as unknown as Decimal,
+      lng: -46.67917050352835 as unknown as Decimal,
+      city: "SAO PAULO",
+      state: "SP",
+    };
+    const volunteerAvailability = [
+      {
+        ...mockPsyVolunteerAvailability,
+        volunteer_id: 1,
+        support_type: "legal",
+        city: "BELO HORIZONTE",
+        state: "MG",
+      } as VolunteerAvailability,
+      {
+        ...mockPsyVolunteerAvailability,
+        support_type: "legal",
+        volunteer_id: 2,
+        city: "MANAUS",
+        state: "AM",
+      } as VolunteerAvailability,
+    ];
+
+    const matchWithClosestVolunteer = {
+      matchId: 1,
+      supportRequestId: 1,
+      msrId: BigInt(1),
+      volunteerId: 2,
+      msrZendeskTicketId: BigInt(1),
+      volunteerZendeskTicketId: BigInt(2),
+      supportType: "psychological" as const,
+      matchType: "msr" as const,
+      matchStage: "online" as const,
+      status: "waiting_contact" as const,
+      updatedAt: new Date("2023-01-01"),
+      createdAt: new Date("2023-01-01"),
+    };
+
+    prismaMock.matches.create.mockResolvedValueOnce(matchWithClosestVolunteer);
+
+    const onlineMatch = await createOnlineMatch(
+      supportRequest,
+      volunteerAvailability,
+      "msr"
+    );
+
+    expect(mockCreateMatch).toHaveBeenNthCalledWith(
+      1,
+      supportRequest,
+      {
+        ...volunteerAvailability[0],
+        distance: 130.89389643837765,
+      },
+      "msr",
+      "online"
+    );
+    expect(onlineMatch).toStrictEqual(matchWithClosestVolunteer);
   });
 });
 
