@@ -1,19 +1,22 @@
 import type { Decimal } from "@prisma/client/runtime/library";
-import {
-  getExpandedVolunteer,
-  getIdealVolunteer,
-  getOnlineVolunteer,
-} from "../volunteer";
-import * as matchLogic from "../matchLogic";
+import * as volunteerLogic from "../volunteerLogic";
 import { IDEAL_MATCH_MAX_DISTANCE } from "../../constants";
+import {
+  getIdealVolunteer,
+  getExpandedVolunteer,
+  getOnlineVolunteer,
+} from "../getVolunteer";
 
-const mockFindClosestVolunteer = jest.spyOn(matchLogic, "findClosestVolunteer");
+const mockFindClosestVolunteer = jest.spyOn(
+  volunteerLogic,
+  "findClosestVolunteer"
+);
 const mockFindVolunteerInTheSameCity = jest.spyOn(
-  matchLogic,
+  volunteerLogic,
   "findVolunteerInTheSameCity"
 );
 const mockFindVolunteerInTheSameState = jest.spyOn(
-  matchLogic,
+  volunteerLogic,
   "filterVolunteersInTheSameState"
 );
 const availableVolunteer = {

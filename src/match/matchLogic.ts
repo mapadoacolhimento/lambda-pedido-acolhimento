@@ -8,7 +8,7 @@ import {
   getExpandedVolunteer,
   getIdealVolunteer,
   getOnlineVolunteer,
-} from "./volunteer";
+} from "./getVolunteer";
 import { createMatch } from "./createMatch";
 import type { SupportRequest } from "../types";
 import { ONLINE_MATCH, PUBLIC_SERVICE, SOCIAL_WORKER } from "../constants";

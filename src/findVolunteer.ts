@@ -18,7 +18,7 @@ import {
   getExpandedVolunteer,
   getIdealVolunteer,
   getOnlineVolunteer,
-} from "./match/volunteer";
+} from "./match/getVolunteer";
 
 const bodySchema = object({
   supportRequestId: number().required(),

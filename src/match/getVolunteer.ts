@@ -1,9 +1,9 @@
 import type { VolunteerAvailability } from "@prisma/client";
 import {
-  filterVolunteersInTheSameState,
   findClosestVolunteer,
   findVolunteerInTheSameCity,
-} from "./matchLogic";
+  filterVolunteersInTheSameState,
+} from "./volunteerLogic";
 import { IDEAL_MATCH_MAX_DISTANCE } from "../constants";
 import type { SupportRequestGeoreference } from "../types";
 
