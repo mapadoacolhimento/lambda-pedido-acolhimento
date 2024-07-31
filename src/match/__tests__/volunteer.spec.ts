@@ -1,7 +1,8 @@
 import type { Decimal } from "@prisma/client/runtime/library";
-import getOnlineVolunteer, {
+import {
   getExpandedVolunteer,
   getIdealVolunteer,
+  getOnlineVolunteer,
 } from "../volunteer";
 import * as matchLogic from "../matchLogic";
 import { IDEAL_MATCH_MAX_DISTANCE } from "../../constants";
@@ -10,6 +11,10 @@ const mockFindClosestVolunteer = jest.spyOn(matchLogic, "findClosestVolunteer");
 const mockFindVolunteerInTheSameCity = jest.spyOn(
   matchLogic,
   "findVolunteerInTheSameCity"
+);
+const mockFindVolunteerInTheSameState = jest.spyOn(
+  matchLogic,
+  "filterVolunteersInTheSameState"
 );
 const availableVolunteer = {
   volunteer_id: 1,
@@ -28,8 +33,8 @@ const availableVolunteer = {
   created_at: new Date("2023-01-01"),
 };
 const mockSupportRequestGeoreference = {
-  lat: 123 as unknown as Decimal,
-  lng: 234 as unknown as Decimal,
+  lat: -23.5562866 as unknown as Decimal,
+  lng: -46.6817454 as unknown as Decimal,
   state: "SP",
   city: "SAO PAULO",
 };
@@ -67,5 +72,139 @@ describe("getOnlineVolunteer()", () => {
     );
 
     expect(onlineVolunteer).toStrictEqual(null);
+  });
+
+  it("should return the closest volunteer in the state if there are volunteers available in the same state", () => {
+    const volunteersAvailableInTheSameState = [
+      {
+        ...availableVolunteer,
+        volunteer_id: 1,
+        lat: -23.0159503 as unknown as Decimal,
+        lng: -45.5405232 as unknown as Decimal,
+        city: "TAUBATE",
+        state: "SP",
+      },
+      {
+        ...availableVolunteer,
+        volunteer_id: 2,
+        lat: -23.4568386 as unknown as Decimal,
+        lng: -45.0682371 as unknown as Decimal,
+        city: "UBATUBA",
+        state: "SP",
+      },
+    ];
+
+    const volunteersAvailable = [
+      ...volunteersAvailableInTheSameState,
+      {
+        ...availableVolunteer,
+        volunteer_id: 3,
+        lat: -23.4568386 as unknown as Decimal,
+        lng: -45.0682371 as unknown as Decimal,
+        city: "BELO HORIZONTE",
+        state: "MG",
+      },
+    ];
+
+    const onlineVolunteer = getOnlineVolunteer(
+      mockSupportRequestGeoreference,
+      volunteersAvailable
+    );
+
+    expect(mockFindVolunteerInTheSameState).toHaveBeenNthCalledWith(
+      1,
+      mockSupportRequestGeoreference.state,
+      volunteersAvailable
+    );
+    expect(mockFindClosestVolunteer).toHaveBeenNthCalledWith(
+      1,
+      mockSupportRequestGeoreference.lat,
+      mockSupportRequestGeoreference.lng,
+      volunteersAvailableInTheSameState,
+      null
+    );
+    expect(onlineVolunteer).toStrictEqual({
+      ...volunteersAvailableInTheSameState[0],
+      distance: 131.13457617335425,
+    });
+  });
+
+  it("should return the closest volunteer if there are NO volunteers available in the same state", () => {
+    const volunteersAvailable = [
+      {
+        ...availableVolunteer,
+        volunteer_id: 1,
+        lat: -13.1026981 as unknown as Decimal,
+        lng: -63.9884441 as unknown as Decimal,
+        city: "MANAUS",
+        state: "AM",
+      },
+      {
+        ...availableVolunteer,
+        volunteer_id: 3,
+        lat: -20.1241164 as unknown as Decimal,
+        lng: -44.2221744 as unknown as Decimal,
+        city: "BELO HORIZONTE",
+        state: "MG",
+      },
+    ];
+
+    const onlineVolunteer = getOnlineVolunteer(
+      mockSupportRequestGeoreference,
+      volunteersAvailable
+    );
+
+    expect(mockFindVolunteerInTheSameState).toHaveBeenNthCalledWith(
+      1,
+      mockSupportRequestGeoreference.state,
+      volunteersAvailable
+    );
+    expect(mockFindClosestVolunteer).toHaveBeenNthCalledWith(
+      1,
+      mockSupportRequestGeoreference.lat,
+      mockSupportRequestGeoreference.lng,
+      volunteersAvailable,
+      null
+    );
+    expect(onlineVolunteer).toStrictEqual({
+      ...volunteersAvailable[1],
+      distance: 458.3290967184196,
+    });
+  });
+
+  it("should return any volunteer if none have lat/lng info", () => {
+    const volunteersAvailable = [
+      {
+        ...availableVolunteer,
+        volunteer_id: 1,
+        lat: null,
+        lng: null,
+      },
+      {
+        ...availableVolunteer,
+        volunteer_id: 2,
+        lat: null,
+        lng: null,
+      },
+    ];
+
+    const onlineVolunteer = getOnlineVolunteer(
+      mockSupportRequestGeoreference,
+      volunteersAvailable
+    );
+
+    expect(mockFindVolunteerInTheSameState).toHaveBeenNthCalledWith(
+      1,
+      mockSupportRequestGeoreference.state,
+      volunteersAvailable
+    );
+    expect(mockFindClosestVolunteer).toHaveBeenNthCalledWith(
+      1,
+      mockSupportRequestGeoreference.lat,
+      mockSupportRequestGeoreference.lng,
+      volunteersAvailable,
+      null
+    );
+    expect(onlineVolunteer).toStrictEqual(volunteersAvailable[0]);
   });
 });

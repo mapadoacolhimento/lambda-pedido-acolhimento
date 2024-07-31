@@ -1,11 +1,11 @@
 import type { VolunteerAvailability } from "@prisma/client";
-import type { SupportRequestGeoreference } from "../types";
 import {
   filterVolunteersInTheSameState,
   findClosestVolunteer,
   findVolunteerInTheSameCity,
 } from "./matchLogic";
 import { IDEAL_MATCH_MAX_DISTANCE } from "../constants";
+import type { SupportRequestGeoreference } from "../types";
 
 export function getIdealVolunteer(
   supportRequestGeoreference: SupportRequestGeoreference,
@@ -30,7 +30,7 @@ export function getExpandedVolunteer(
   );
 }
 
-export default function getOnlineVolunteer(
+export function getOnlineVolunteer(
   supportRequestGeoreference: SupportRequestGeoreference,
   availableVolunteers: VolunteerAvailability[]
 ): VolunteerAvailability | null {
