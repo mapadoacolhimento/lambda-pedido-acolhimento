@@ -42,8 +42,6 @@ export default async function fetchVolunteers(supportRequest: SupportRequest) {
       ],
     })) || [];
 
-  console.log({ availableVolunteers });
-
   const newAvailableVolunteers = availableVolunteers.filter((volunteer) => {
     return !previousVolunteers.includes(volunteer.volunteer_id);
   });
