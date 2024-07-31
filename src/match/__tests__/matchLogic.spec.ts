@@ -643,50 +643,6 @@ describe("createIdealMatch()", () => {
 
     expect(idealMatch).toStrictEqual(match);
   });
-
-  it("should return a volunteer if shouldCreateMatch flag is false", async () => {
-    const supportRequest = {
-      supportRequestId: 1,
-      msrId: 1 as unknown as bigint,
-      zendeskTicketId: 1 as unknown as bigint,
-      supportType: "psychological" as const,
-      lat: -23.55603087428766 as unknown as Decimal,
-      lng: -46.67928852072954 as unknown as Decimal,
-      city: "SAO PAULO",
-      state: "SP",
-    };
-
-    const volunteerAvailability: VolunteerAvailability[] = [
-      {
-        volunteer_id: 2,
-        current_matches: 0,
-        max_matches: 2,
-        is_available: true,
-        support_type: "psychological" as const,
-        support_expertise: "",
-        offers_online_support: true,
-        offers_libras_support: false,
-        lat: -23.54550321931439 as unknown as Decimal,
-        lng: -46.64974495134868 as unknown as Decimal,
-        city: "SAO PAULO",
-        state: "SP",
-        updated_at: new Date("2023-01-01"),
-        created_at: new Date("2023-01-01"),
-      },
-    ];
-
-    const volunteer = await createIdealMatch(
-      supportRequest,
-      volunteerAvailability,
-      "msr",
-      false
-    );
-
-    expect(volunteer).toStrictEqual({
-      ...volunteerAvailability[0],
-      distance: 3.230993902239426,
-    });
-  });
 });
 
 describe("createExpandedMatch()", () => {
@@ -786,47 +742,6 @@ describe("createExpandedMatch()", () => {
 
     expect(expandedMatch).toStrictEqual(match);
   });
-
-  it("should return a volunteer if shouldCreateMatch flag is false", async () => {
-    const supportRequest = {
-      supportRequestId: 1,
-      msrId: 1 as unknown as bigint,
-      zendeskTicketId: 1 as unknown as bigint,
-      supportType: "psychological" as const,
-      city: "SAO PAULO",
-      state: "SP",
-      lat: null,
-      lng: null,
-    };
-
-    const volunteerAvailability: VolunteerAvailability[] = [
-      {
-        volunteer_id: 2,
-        current_matches: 0,
-        max_matches: 2,
-        is_available: true,
-        support_type: "psychological" as const,
-        support_expertise: "",
-        offers_online_support: true,
-        offers_libras_support: false,
-        lat: -23.603193163278828 as unknown as Decimal,
-        lng: -46.39968812227218 as unknown as Decimal,
-        city: "SAO PAULO",
-        state: "SP",
-        updated_at: new Date("2023-01-01"),
-        created_at: new Date("2023-01-01"),
-      },
-    ];
-
-    const volunteer = await createExpandedMatch(
-      supportRequest,
-      volunteerAvailability,
-      "msr",
-      false
-    );
-
-    expect(volunteer).toStrictEqual(volunteerAvailability[0]);
-  });
 });
 
 describe("createOnlineMatch()", () => {
@@ -908,50 +823,6 @@ describe("createOnlineMatch()", () => {
     );
 
     expect(onlineMatch).toStrictEqual(match);
-  });
-
-  it("should return a volunteer if shouldCreateMatch flag is false", async () => {
-    const supportRequest = {
-      supportRequestId: 1,
-      msrId: 1 as unknown as bigint,
-      zendeskTicketId: 1 as unknown as bigint,
-      supportType: "psychological" as const,
-      lat: -23.556148891818268 as unknown as Decimal,
-      lng: -46.67917050352835 as unknown as Decimal,
-      city: "SAO PAULO",
-      state: "SP",
-    };
-
-    const volunteerAvailability: VolunteerAvailability[] = [
-      {
-        volunteer_id: 2,
-        current_matches: 0,
-        max_matches: 2,
-        is_available: true,
-        support_type: "psychological" as const,
-        support_expertise: "",
-        offers_online_support: true,
-        offers_libras_support: false,
-        lat: -23.603193163278828 as unknown as Decimal,
-        lng: -46.39968812227218 as unknown as Decimal,
-        city: "SAO PAULO",
-        state: "SP",
-        updated_at: new Date("2023-01-01"),
-        created_at: new Date("2023-01-01"),
-      },
-    ];
-
-    const volunteer = await createOnlineMatch(
-      supportRequest,
-      volunteerAvailability,
-      "msr",
-      false
-    );
-
-    expect(volunteer).toStrictEqual({
-      ...volunteerAvailability[0],
-      distance: 28.958662241093418,
-    });
   });
 
   it("should return a match with the closest volunteer in the state if there are volunteers available in the same state", async () => {

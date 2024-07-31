@@ -4,31 +4,27 @@ import {
   type VolunteerAvailability,
 } from "@prisma/client";
 import * as turf from "@turf/turf";
+import {
+  getExpandedVolunteer,
+  getIdealVolunteer,
+  getOnlineVolunteer,
+} from "./volunteer";
 import { createMatch } from "./createMatch";
-import { IDEAL_MATCH_MAX_DISTANCE } from "../constants";
 import type { SupportRequest } from "../types";
 import { ONLINE_MATCH, PUBLIC_SERVICE, SOCIAL_WORKER } from "../constants";
 
 export async function createIdealMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[],
-  matchType: MatchType = "msr",
-  shouldCreateMatch: boolean = true
+  matchType: MatchType = "msr"
 ) {
-  const closestVolunteer = findClosestVolunteer(
-    supportRequest.lat,
-    supportRequest.lng,
-    allVolunteers,
-    IDEAL_MATCH_MAX_DISTANCE
-  );
+  const idealVolunteer = getIdealVolunteer(supportRequest, allVolunteers);
 
-  if (!closestVolunteer) return null;
-
-  if (!shouldCreateMatch) return closestVolunteer;
+  if (!idealVolunteer) return null;
 
   const match = await createMatch(
     supportRequest,
-    closestVolunteer,
+    idealVolunteer,
     matchType,
     MatchStage.ideal
   );
@@ -39,22 +35,15 @@ export async function createIdealMatch(
 export async function createExpandedMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[],
-  matchType: MatchType = "msr",
-  shouldCreateMatch: boolean = true
+  matchType: MatchType = "msr"
 ) {
-  const volunteerInTheSameCity = findVolunteerInTheSameCity(
-    supportRequest.city,
-    supportRequest.state,
-    allVolunteers
-  );
+  const expandedVolunteer = getExpandedVolunteer(supportRequest, allVolunteers);
 
-  if (!volunteerInTheSameCity) return null;
-
-  if (!shouldCreateMatch) return volunteerInTheSameCity;
+  if (!expandedVolunteer) return null;
 
   const match = await createMatch(
     supportRequest,
-    volunteerInTheSameCity,
+    expandedVolunteer,
     matchType,
     MatchStage.expanded
   );
@@ -65,63 +54,15 @@ export async function createExpandedMatch(
 export async function createOnlineMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[],
-  matchType: MatchType = "msr",
-  shouldCreateMatch: boolean = true
+  matchType: MatchType = "msr"
 ) {
-  if (allVolunteers.length === 0) return null;
+  const onlineVolunteer = getOnlineVolunteer(supportRequest, allVolunteers);
 
-  const volunteersInTheSameState = filterVolunteersInTheSameState(
-    supportRequest.state,
-    allVolunteers
-  );
-
-  if (volunteersInTheSameState.length > 0) {
-    const closestVolunteerInTheSameState = findClosestVolunteer(
-      supportRequest.lat,
-      supportRequest.lng,
-      volunteersInTheSameState,
-      null
-    );
-
-    if (closestVolunteerInTheSameState) {
-      if (!shouldCreateMatch) return closestVolunteerInTheSameState;
-
-      const match = await createMatch(
-        supportRequest,
-        closestVolunteerInTheSameState,
-        matchType,
-        MatchStage.online
-      );
-
-      return match;
-    }
-  }
-
-  const closestVolunteer = findClosestVolunteer(
-    supportRequest.lat,
-    supportRequest.lng,
-    allVolunteers,
-    null
-  );
-
-  if (closestVolunteer) {
-    if (!shouldCreateMatch) return closestVolunteer;
-
-    const match = await createMatch(
-      supportRequest,
-      closestVolunteer,
-      matchType,
-      MatchStage.online
-    );
-
-    return match;
-  }
-
-  if (!shouldCreateMatch) return allVolunteers[0];
+  if (!onlineVolunteer) return null;
 
   const match = await createMatch(
     supportRequest,
-    allVolunteers[0] as VolunteerAvailability,
+    onlineVolunteer,
     matchType,
     MatchStage.online
   );
