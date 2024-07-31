@@ -7,9 +7,9 @@ import {
 
 import {
   decideOnRandomization,
-  findExpandedMatch,
-  findIdealMatch,
-  findOnlineMatch,
+  createExpandedMatch,
+  createIdealMatch,
+  createOnlineMatch,
 } from "./match/matchLogic";
 import directToPublicService, {
   PublicService,
@@ -40,7 +40,7 @@ async function getRandomReferral(
 
   switch (shouldForwardTo) {
     case ONLINE_MATCH:
-      return await findOnlineMatch(supportRequest, allVolunteers, matchType);
+      return await createOnlineMatch(supportRequest, allVolunteers, matchType);
 
     case SOCIAL_WORKER:
       return await directToSocialWorker(supportRequest.supportRequestId);
@@ -59,7 +59,7 @@ const process = async (
     const allVolunteers: VolunteerAvailability[] =
       await fetchVolunteers(supportRequest);
 
-    const idealMatch = await findIdealMatch(
+    const idealMatch = await createIdealMatch(
       supportRequest,
       allVolunteers,
       matchType
@@ -67,7 +67,7 @@ const process = async (
 
     if (idealMatch) return stringfyBigInt(idealMatch) as Matches;
 
-    const expandedMatch = await findExpandedMatch(
+    const expandedMatch = await createExpandedMatch(
       supportRequest,
       allVolunteers,
       matchType
@@ -76,7 +76,7 @@ const process = async (
     if (expandedMatch) return stringfyBigInt(expandedMatch) as Matches;
 
     if (!shouldRandomize) {
-      const onlineMatch = await findOnlineMatch(
+      const onlineMatch = await createOnlineMatch(
         supportRequest,
         allVolunteers,
         matchType

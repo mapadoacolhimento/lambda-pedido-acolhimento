@@ -15,9 +15,9 @@ import {
 } from "./utils";
 import type { VolunteerAvailability } from "@prisma/client";
 import {
-  findExpandedMatch,
-  findIdealMatch,
-  findOnlineMatch,
+  createExpandedMatch,
+  createIdealMatch,
+  createOnlineMatch,
 } from "./match/matchLogic";
 import { fetchVolunteers } from "./lib";
 
@@ -71,7 +71,7 @@ export default async function handler(
     const allVolunteers: VolunteerAvailability[] =
       await fetchVolunteers(supportRequest);
 
-    const idealMatch = await findIdealMatch(
+    const idealMatch = await createIdealMatch(
       supportRequest,
       allVolunteers,
       undefined,
@@ -89,7 +89,7 @@ export default async function handler(
         }),
       });
 
-    const expandedMatch = await findExpandedMatch(
+    const expandedMatch = await createExpandedMatch(
       supportRequest,
       allVolunteers,
       undefined,
@@ -107,7 +107,7 @@ export default async function handler(
         }),
       });
 
-    const onlineMatch = await findOnlineMatch(
+    const onlineMatch = await createOnlineMatch(
       supportRequest,
       allVolunteers,
       undefined,

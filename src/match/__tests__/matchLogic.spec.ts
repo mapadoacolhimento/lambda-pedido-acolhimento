@@ -8,9 +8,9 @@ import {
   findVolunteerInTheSameCity,
   filterVolunteersInTheSameState,
   decideOnRandomization,
-  findIdealMatch,
-  findExpandedMatch,
-  findOnlineMatch,
+  createIdealMatch,
+  createExpandedMatch,
+  createOnlineMatch,
 } from "../matchLogic";
 import { prismaMock } from "../../setupTests";
 import * as createAndUpdateZendeskMatchTickets from "../createAndUpdateZendeskMatchTickets";
@@ -527,7 +527,7 @@ describe("filterVolunteersInTheSameState()", () => {
   });
 });
 
-describe("findIdealMatch()", () => {
+describe("createIdealMatch()", () => {
   it("should return null if there are no volunteers within 20km", async () => {
     const supportRequest = {
       supportRequestId: 1,
@@ -559,7 +559,7 @@ describe("findIdealMatch()", () => {
       },
     ];
 
-    const idealMatch = await findIdealMatch(
+    const idealMatch = await createIdealMatch(
       supportRequest,
       volunteerAvailability,
       "msr"
@@ -616,7 +616,7 @@ describe("findIdealMatch()", () => {
 
     prismaMock.matches.create.mockResolvedValueOnce(match);
 
-    const idealMatch = await findIdealMatch(
+    const idealMatch = await createIdealMatch(
       supportRequest,
       volunteerAvailability,
       "msr"
@@ -656,7 +656,7 @@ describe("findIdealMatch()", () => {
       },
     ];
 
-    const volunteer = await findIdealMatch(
+    const volunteer = await createIdealMatch(
       supportRequest,
       volunteerAvailability,
       "msr",
@@ -670,7 +670,7 @@ describe("findIdealMatch()", () => {
   });
 });
 
-describe("findExpandedMatch()", () => {
+describe("createExpandedMatch()", () => {
   it("should return null if there are no volunteers in the same city", async () => {
     const supportRequest = {
       supportRequestId: 1,
@@ -702,7 +702,7 @@ describe("findExpandedMatch()", () => {
       },
     ];
 
-    const expandedMatch = await findExpandedMatch(
+    const expandedMatch = await createExpandedMatch(
       supportRequest,
       volunteerAvailability,
       "msr"
@@ -759,7 +759,7 @@ describe("findExpandedMatch()", () => {
 
     prismaMock.matches.create.mockResolvedValueOnce(match);
 
-    const expandedMatch = await findExpandedMatch(
+    const expandedMatch = await createExpandedMatch(
       supportRequest,
       volunteerAvailability,
       "msr"
@@ -799,7 +799,7 @@ describe("findExpandedMatch()", () => {
       },
     ];
 
-    const volunteer = await findExpandedMatch(
+    const volunteer = await createExpandedMatch(
       supportRequest,
       volunteerAvailability,
       "msr",
@@ -810,7 +810,7 @@ describe("findExpandedMatch()", () => {
   });
 });
 
-describe("findOnlineMatch()", () => {
+describe("createOnlineMatch()", () => {
   it("should return null if there are no volunteers available", async () => {
     const supportRequest = {
       supportRequestId: 1,
@@ -825,7 +825,7 @@ describe("findOnlineMatch()", () => {
 
     const volunteerAvailability: VolunteerAvailability[] = [];
 
-    const onlineMatch = await findOnlineMatch(
+    const onlineMatch = await createOnlineMatch(
       supportRequest,
       volunteerAvailability,
       "msr"
@@ -882,7 +882,7 @@ describe("findOnlineMatch()", () => {
 
     prismaMock.matches.create.mockResolvedValueOnce(match);
 
-    const onlineMatch = await findOnlineMatch(
+    const onlineMatch = await createOnlineMatch(
       supportRequest,
       volunteerAvailability,
       "msr"
@@ -922,7 +922,7 @@ describe("findOnlineMatch()", () => {
       },
     ];
 
-    const volunteer = await findOnlineMatch(
+    const volunteer = await createOnlineMatch(
       supportRequest,
       volunteerAvailability,
       "msr",

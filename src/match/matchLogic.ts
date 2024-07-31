@@ -9,7 +9,7 @@ import { IDEAL_MATCH_MAX_DISTANCE } from "../constants";
 import type { SupportRequest } from "../types";
 import { ONLINE_MATCH, PUBLIC_SERVICE, SOCIAL_WORKER } from "../constants";
 
-export async function findIdealMatch(
+export async function createIdealMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[],
   matchType: MatchType = "msr",
@@ -36,7 +36,7 @@ export async function findIdealMatch(
   return match;
 }
 
-export async function findExpandedMatch(
+export async function createExpandedMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[],
   matchType: MatchType = "msr",
@@ -62,7 +62,7 @@ export async function findExpandedMatch(
   return match;
 }
 
-export async function findOnlineMatch(
+export async function createOnlineMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[],
   matchType: MatchType = "msr",
