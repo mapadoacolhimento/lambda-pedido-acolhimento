@@ -13,13 +13,12 @@ import {
   notFoundErrorPayload,
   stringfyBigInt,
 } from "./utils";
-import type { VolunteerAvailability } from "@prisma/client";
-import {
-  createExpandedMatch,
-  createIdealMatch,
-  createOnlineMatch,
-} from "./match/matchLogic";
 import { fetchVolunteers } from "./lib";
+import {
+  getExpandedVolunteer,
+  getIdealVolunteer,
+  getOnlineVolunteer,
+} from "./match/volunteer";
 
 const bodySchema = object({
   supportRequestId: number().required(),
@@ -68,58 +67,45 @@ export default async function handler(
       );
     }
 
-    const allVolunteers: VolunteerAvailability[] =
-      await fetchVolunteers(supportRequest);
+    const allVolunteers = await fetchVolunteers(supportRequest);
 
-    const idealMatch = await createIdealMatch(
-      supportRequest,
-      allVolunteers,
-      undefined,
-      false
-    );
+    const idealVolunteer = getIdealVolunteer(supportRequest, allVolunteers);
 
-    if (idealMatch)
+    if (idealVolunteer)
       return callback(null, {
         statusCode: 200,
         body: JSON.stringify({
           message: stringfyBigInt({
-            volunteer: idealMatch,
+            volunteer: idealVolunteer,
             matchStage: "ideal",
           }),
         }),
       });
 
-    const expandedMatch = await createExpandedMatch(
+    const expandedVolunteer = getExpandedVolunteer(
       supportRequest,
-      allVolunteers,
-      undefined,
-      false
+      allVolunteers
     );
 
-    if (expandedMatch)
+    if (expandedVolunteer)
       return callback(null, {
         statusCode: 200,
         body: JSON.stringify({
           message: stringfyBigInt({
-            volunteer: expandedMatch,
+            volunteer: expandedVolunteer,
             matchStage: "expanded",
           }),
         }),
       });
 
-    const onlineMatch = await createOnlineMatch(
-      supportRequest,
-      allVolunteers,
-      undefined,
-      false
-    );
+    const onlineVolunteer = getOnlineVolunteer(supportRequest, allVolunteers);
 
-    if (onlineMatch)
+    if (onlineVolunteer)
       return callback(null, {
         statusCode: 200,
         body: JSON.stringify({
           message: stringfyBigInt({
-            volunteer: onlineMatch,
+            volunteer: onlineVolunteer,
             matchStage: "online",
           }),
         }),
