@@ -20,7 +20,8 @@ import directToSocialWorker, {
 } from "./match/directToSocialWorker";
 
 import { isFeatureFlagEnabled } from "./prismaClient";
-import { fetchVolunteers, getErrorMessage, stringfyBigInt } from "./utils";
+import { fetchVolunteers } from "./lib";
+import { getErrorMessage, stringfyBigInt } from "./utils";
 import {
   ONLINE_MATCH,
   SOCIAL_WORKER,

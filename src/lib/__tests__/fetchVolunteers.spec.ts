@@ -1,6 +1,6 @@
 import type { Decimal } from "@prisma/client/runtime/library";
-import fetchVolunteers from "../fetchVolunteers";
 import { prismaMock } from "../../setupTests";
+import fetchVolunteers from "../fetchVolunteers";
 
 const supportRequest = {
   supportRequestId: 1,

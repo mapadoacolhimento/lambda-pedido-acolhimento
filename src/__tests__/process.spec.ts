@@ -4,7 +4,7 @@ import type { Decimal } from "@prisma/client/runtime/library";
 import process from "../process";
 import { prismaMock } from "../setupTests";
 import { stringfyBigInt } from "../utils";
-import * as fetchVolunteers from "../utils/fetchVolunteers";
+import * as fetchVolunteers from "../lib/fetchVolunteers";
 import * as createAndUpdateZendeskMatchTickets from "../match/createAndUpdateZendeskMatchTickets";
 import * as updateTicket from "../zendeskClient/updateTicket";
 import * as getUser from "../zendeskClient/getUser";

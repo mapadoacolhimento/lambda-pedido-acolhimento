@@ -2,7 +2,7 @@ import type { APIGatewayProxyEvent, Context } from "aws-lambda";
 import { prismaMock } from "../setupTests";
 import { findVolunteer } from "../../handler";
 import type { Decimal } from "@prisma/client/runtime/library";
-import * as fetchVolunteers from "../utils/fetchVolunteers";
+import * as fetchVolunteers from "../lib/fetchVolunteers";
 import { stringfyBigInt } from "../utils";
 
 const validBody = {

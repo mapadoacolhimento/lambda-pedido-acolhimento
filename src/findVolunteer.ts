@@ -8,7 +8,6 @@ import { object, number } from "yup";
 import client from "./prismaClient";
 
 import {
-  fetchVolunteers,
   getErrorMessage,
   isJsonString,
   notFoundErrorPayload,
@@ -20,6 +19,7 @@ import {
   findIdealMatch,
   findOnlineMatch,
 } from "./match/matchLogic";
+import { fetchVolunteers } from "./lib";
 
 const bodySchema = object({
   supportRequestId: number().required(),
