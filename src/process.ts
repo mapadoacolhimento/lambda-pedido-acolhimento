@@ -1,5 +1,4 @@
 import {
-  SupportType,
   VolunteerAvailability,
   SupportRequests,
   Matches,
@@ -7,10 +6,10 @@ import {
 } from "@prisma/client";
 
 import {
+  decideOnRandomization,
   createExpandedMatch,
   createIdealMatch,
   createOnlineMatch,
-  decideOnRandomization,
 } from "./match/matchLogic";
 import directToPublicService, {
   PublicService,
@@ -20,7 +19,8 @@ import directToSocialWorker, {
   SocialWorker,
 } from "./match/directToSocialWorker";
 
-import client, { isFeatureFlagEnabled } from "./prismaClient";
+import { isFeatureFlagEnabled } from "./prismaClient";
+import { fetchVolunteers } from "./lib";
 import { getErrorMessage, stringfyBigInt } from "./utils";
 import {
   ONLINE_MATCH,
@@ -56,9 +56,8 @@ const process = async (
   shouldRandomize: boolean = true
 ): Promise<Matches | PublicService | SocialWorker | null> => {
   try {
-    const allVolunteers: VolunteerAvailability[] = await fetchVolunteers(
-      supportRequest.supportType
-    );
+    const allVolunteers: VolunteerAvailability[] =
+      await fetchVolunteers(supportRequest);
 
     const idealMatch = await createIdealMatch(
       supportRequest,
@@ -111,23 +110,6 @@ const process = async (
     );
     return null;
   }
-};
-
-const fetchVolunteers = async (supportType: SupportType) => {
-  const availableVolunteers: VolunteerAvailability[] =
-    await client.volunteerAvailability.findMany({
-      where: { is_available: true, support_type: supportType },
-      orderBy: [
-        {
-          current_matches: "asc",
-        },
-        {
-          updated_at: "desc",
-        },
-      ],
-    });
-
-  return availableVolunteers || [];
 };
 
 export default process;

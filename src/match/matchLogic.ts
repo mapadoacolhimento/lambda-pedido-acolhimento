@@ -3,29 +3,27 @@ import {
   MatchType,
   type VolunteerAvailability,
 } from "@prisma/client";
-import * as turf from "@turf/turf";
+import {
+  getExpandedVolunteer,
+  getIdealVolunteer,
+  getOnlineVolunteer,
+} from "./getVolunteer";
 import { createMatch } from "./createMatch";
-import { IDEAL_MATCH_MAX_DISTANCE } from "../constants";
 import type { SupportRequest } from "../types";
 import { ONLINE_MATCH, PUBLIC_SERVICE, SOCIAL_WORKER } from "../constants";
 
 export async function createIdealMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[],
-  matchType: MatchType
+  matchType: MatchType = "msr"
 ) {
-  const closestVolunteer = findClosestVolunteer(
-    supportRequest.lat,
-    supportRequest.lng,
-    allVolunteers,
-    IDEAL_MATCH_MAX_DISTANCE
-  );
+  const idealVolunteer = getIdealVolunteer(supportRequest, allVolunteers);
 
-  if (!closestVolunteer) return null;
+  if (!idealVolunteer) return null;
 
   const match = await createMatch(
     supportRequest,
-    closestVolunteer,
+    idealVolunteer,
     matchType,
     MatchStage.ideal
   );
@@ -36,19 +34,15 @@ export async function createIdealMatch(
 export async function createExpandedMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[],
-  matchType: MatchType
+  matchType: MatchType = "msr"
 ) {
-  const volunteerInTheSameCity = findVolunteerInTheSameCity(
-    supportRequest.city,
-    supportRequest.state,
-    allVolunteers
-  );
+  const expandedVolunteer = getExpandedVolunteer(supportRequest, allVolunteers);
 
-  if (!volunteerInTheSameCity) return null;
+  if (!expandedVolunteer) return null;
 
   const match = await createMatch(
     supportRequest,
-    volunteerInTheSameCity,
+    expandedVolunteer,
     matchType,
     MatchStage.expanded
   );
@@ -59,136 +53,20 @@ export async function createExpandedMatch(
 export async function createOnlineMatch(
   supportRequest: SupportRequest,
   allVolunteers: VolunteerAvailability[],
-  matchType: MatchType
+  matchType: MatchType = "msr"
 ) {
-  if (allVolunteers.length === 0) return null;
+  const onlineVolunteer = getOnlineVolunteer(supportRequest, allVolunteers);
 
-  const volunteersInTheSameState = filterVolunteersInTheSameState(
-    supportRequest.state,
-    allVolunteers
-  );
-
-  if (volunteersInTheSameState.length > 0) {
-    const closestVolunteerInTheSameState = findClosestVolunteer(
-      supportRequest.lat,
-      supportRequest.lng,
-      volunteersInTheSameState,
-      null
-    );
-
-    if (closestVolunteerInTheSameState) {
-      const match = await createMatch(
-        supportRequest,
-        closestVolunteerInTheSameState,
-        matchType,
-        MatchStage.online
-      );
-
-      return match;
-    }
-  }
-
-  const closestVolunteer = findClosestVolunteer(
-    supportRequest.lat,
-    supportRequest.lng,
-    allVolunteers,
-    null
-  );
-
-  if (closestVolunteer) {
-    const match = await createMatch(
-      supportRequest,
-      closestVolunteer,
-      matchType,
-      MatchStage.online
-    );
-
-    return match;
-  }
+  if (!onlineVolunteer) return null;
 
   const match = await createMatch(
     supportRequest,
-    allVolunteers[0] as VolunteerAvailability,
+    onlineVolunteer,
     matchType,
     MatchStage.online
   );
 
   return match;
-}
-
-export function filterVolunteersWithLatLng(
-  volunteers: VolunteerAvailability[]
-): VolunteerAvailability[] {
-  return volunteers.filter((volunteer) => !!volunteer.lat && !!volunteer.lng);
-}
-
-export function findClosestVolunteer(
-  msrLat: SupportRequest["lat"],
-  msrLng: SupportRequest["lng"],
-  volunteers: VolunteerAvailability[],
-  maxDistance: number | null
-): VolunteerAvailability | null {
-  if (!msrLat || !msrLng) return null;
-
-  const volunteersWithLatLng = filterVolunteersWithLatLng(volunteers);
-  if (volunteersWithLatLng.length === 0) return null;
-
-  const volunteersWithDistance = volunteersWithLatLng.map((volunteer) => {
-    const pointA = [Number(msrLng), Number(msrLat)];
-    const pointB = [Number(volunteer.lng), Number(volunteer.lat)];
-    const distance = calcDistance(pointA, pointB);
-    return {
-      ...volunteer,
-      distance,
-    };
-  });
-
-  if (!maxDistance) {
-    const closestVolunteers = volunteersWithDistance.sort(
-      (a, b) => Number(a.distance) - Number(b.distance)
-    );
-    return closestVolunteers[0] || null;
-  }
-
-  const volunteersWithinDistance = volunteersWithDistance.filter(
-    (volunteer) => volunteer.distance && volunteer.distance <= maxDistance
-  );
-  return volunteersWithinDistance[0] || null;
-}
-
-export function calcDistance(
-  pointA: number[],
-  pointB: number[]
-): number | null {
-  const a: turf.Coord = turf.point(pointA);
-
-  const b: turf.Coord = turf.point(pointB);
-
-  const distance = turf.distance(a, b);
-
-  return distance ? Number(distance) : null;
-}
-
-export function findVolunteerInTheSameCity(
-  msrCity: SupportRequest["city"],
-  msrState: SupportRequest["state"],
-  volunteers: VolunteerAvailability[]
-): VolunteerAvailability | null {
-  if (msrCity === "not_found" || msrState === "not_found") return null;
-
-  const volunteerInTheSameCity = volunteers.find(
-    (volunteer) => volunteer.city === msrCity && volunteer.state === msrState
-  );
-  return volunteerInTheSameCity || null;
-}
-
-export function filterVolunteersInTheSameState(
-  msrState: SupportRequest["state"],
-  volunteers: VolunteerAvailability[]
-) {
-  if (msrState === "not_found") return [];
-
-  return volunteers.filter((volunteer) => volunteer.state === msrState);
 }
 
 export function decideOnRandomization(

@@ -4,6 +4,7 @@ import type { Decimal } from "@prisma/client/runtime/library";
 import process from "../process";
 import { prismaMock } from "../setupTests";
 import { stringfyBigInt } from "../utils";
+import * as fetchVolunteers from "../lib/fetchVolunteers";
 import * as createAndUpdateZendeskMatchTickets from "../match/createAndUpdateZendeskMatchTickets";
 import * as updateTicket from "../zendeskClient/updateTicket";
 import * as getUser from "../zendeskClient/getUser";
@@ -25,6 +26,8 @@ updateTicketMock.mockImplementation(() =>
     id: 123123123,
   } as unknown as ZendeskTicket)
 );
+
+const mockFetchVolunteers = jest.spyOn(fetchVolunteers, "default");
 
 describe("process", () => {
   it("should return an error res when prisma req fails", async () => {
@@ -83,7 +86,7 @@ describe("process", () => {
       email: "test@email.com",
     } as ZendeskUser);
     prismaMock.supportRequests.update.mockResolvedValueOnce(supportRequest);
-    prismaMock.volunteerAvailability.findMany.mockResolvedValueOnce([]);
+    mockFetchVolunteers.mockResolvedValueOnce([]);
 
     const res = await process(body);
     expect(res).toStrictEqual(stringfyBigInt(supportRequest));
@@ -148,9 +151,8 @@ describe("process", () => {
       createdAt: new Date(),
     };
     prismaMock.supportRequests.update.mockResolvedValueOnce(supportRequest);
-    prismaMock.volunteerAvailability.findMany.mockResolvedValueOnce([
-      volunteerAvailability,
-    ]);
+    mockFetchVolunteers.mockResolvedValueOnce([volunteerAvailability]);
+
     prismaMock.matches.create.mockResolvedValueOnce(match);
 
     const res = await process(body);
@@ -217,9 +219,8 @@ describe("process", () => {
       createdAt: new Date(),
     };
     prismaMock.supportRequests.update.mockResolvedValueOnce(supportRequest);
-    prismaMock.volunteerAvailability.findMany.mockResolvedValueOnce([
-      volunteerAvailability,
-    ]);
+    mockFetchVolunteers.mockResolvedValueOnce([volunteerAvailability]);
+
     prismaMock.matches.create.mockResolvedValueOnce(match);
 
     const res = await process(body);
@@ -286,9 +287,8 @@ describe("process", () => {
       createdAt: new Date(),
     };
     prismaMock.supportRequests.update.mockResolvedValueOnce(supportRequest);
-    prismaMock.volunteerAvailability.findMany.mockResolvedValueOnce([
-      volunteerAvailability,
-    ]);
+    mockFetchVolunteers.mockResolvedValueOnce([volunteerAvailability]);
+
     prismaMock.matches.create.mockResolvedValueOnce(match);
 
     const res = await process(body, undefined, false);
@@ -332,7 +332,7 @@ describe("process", () => {
 
     jest.spyOn(global.Math, "random").mockReturnValue(0.4);
     prismaMock.supportRequests.update.mockResolvedValueOnce(supportRequest);
-    prismaMock.volunteerAvailability.findMany.mockResolvedValueOnce([]);
+    mockFetchVolunteers.mockResolvedValueOnce([]);
     const res = await process(body);
 
     expect(res).toStrictEqual(stringfyBigInt(supportRequest));
@@ -356,7 +356,7 @@ describe("process", () => {
       state: "SP",
     } as unknown as SupportRequests;
 
-    prismaMock.volunteerAvailability.findMany.mockResolvedValueOnce([]);
+    mockFetchVolunteers.mockResolvedValueOnce([]);
     const res = await process(body, undefined, false);
 
     expect(res).toStrictEqual(null);
