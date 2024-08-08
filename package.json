@@ -2,6 +2,21 @@
   "name": "lambda-pedido-acolhimento",
   "version": "0.0.1",
   "description": "AWS Lambda com API Gateways que fazem tudo relacionado ao processamento do pedido de acolhimento da MSR.",
+  "engines": {
+    "node": ">=20.12.2",
+    "npm": ">=10.7.0"
+  },
+  "author": {
+    "name": "Desenvolvedoras Mapa",
+    "email": "dev@mapa.org.br",
+    "url": "https://mapadoacolhimento.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mapadoacolhimento/lambda-pedido-acolhimento.git"
+  },
+  "homepage": "https://github.com/mapadoacolhimento/lambda-pedido-acolhimento/#readme",
+  "license": "CC-BY-SA-4.0",
   "scripts": {
     "prepare": "husky install",
     "dev": "serverless offline",
@@ -18,8 +33,6 @@
     "clean:build": "rimraf .serverless dist",
     "generate": "prisma generate"
   },
-  "author": "",
-  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.23.3",
     "@babel/preset-env": "^7.23.3",
