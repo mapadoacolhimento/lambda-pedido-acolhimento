@@ -264,8 +264,8 @@ model MSRStatusHistory {
   msrId              BigInt    @map("msr_id")
   status             MSRStatus
   createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
-  
-  MSRs               MSRs      @relation(fields: [msrId], references: [msrId])
+
+  MSRs MSRs @relation(fields: [msrId], references: [msrId])
 
   @@map("msr_status_history")
   @@schema("msr")
@@ -335,6 +335,8 @@ model MatchConfirmations {
   msrId               BigInt                  @map("msr_id")
   volunteerId         Int                     @map("volunteer_id")
   status              MatchConfirmationStatus
+  matchType           MatchType               @map("match_type")
+  matchStage          MatchStage              @map("match_stage")
   matchId             Int?                    @map("match_id")
   createdAt           DateTime                @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt           DateTime                @updatedAt @map("updated_at") @db.Timestamp(6)
@@ -615,6 +617,7 @@ enum SupportRequestsStatus {
   public_service_with_social_worker
   waiting_for_match
   waiting_for_match_with_priority
+  waiting_for_confirmation
   duplicated
   closed
   special_case
