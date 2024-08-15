@@ -5,8 +5,6 @@ export { default as isJsonString } from "./isJsonString";
 export { default as normalizeCity } from "./normalizeCity";
 export { default as getCurrentDate } from "./getCurrentDate";
 export { default as isProduction } from "./isProduction";
-export { default as saveEncryptedEmail } from "./saveEncryptedEmail";
-export { default as encrypt } from "./encrypt";
 export { default as getFirstName } from "./getFirstName";
 export { default as saveBusaraABExperiment } from "./saveBusaraABExperiment";
 export { default as notFoundErrorPayload } from "./notFoundErrorPayload";
