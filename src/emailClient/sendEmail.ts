@@ -1,4 +1,4 @@
-import { getErrorMessage, encrypt, saveEncryptedEmail } from "../utils";
+import { getErrorMessage } from "../utils";
 
 export default async function sendEmail(
   email: string,
@@ -8,8 +8,6 @@ export default async function sendEmail(
   try {
     const endpoint = "https://app.loops.so/api/v1/transactional";
     const apiKey = process.env["LOOPS_API_KEY"];
-    const encryptedEmail = encrypt(email);
-    void saveEncryptedEmail(email, encryptedEmail);
 
     const response = await fetch(endpoint, {
       body: JSON.stringify({
@@ -17,7 +15,6 @@ export default async function sendEmail(
         transactionalId: id,
         dataVariables: {
           ...emailVars,
-          msr_email_hash: encryptedEmail,
         },
       }),
       method: "POST",

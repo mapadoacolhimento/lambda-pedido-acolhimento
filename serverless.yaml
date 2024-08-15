@@ -45,9 +45,6 @@ provider:
     ZENDESK_SUBDOMAIN: ${env:ZENDESK_SUBDOMAIN}
     ZENDESK_API_USER: ${env:ZENDESK_API_USER}
     ZENDESK_API_TOKEN: ${env:ZENDESK_API_TOKEN}
-    SECRET_KEY: ${env:SECRET_KEY}
-    SECRET_IV: ${env:SECRET_IV}
-    ENCRYPTION_METHOD: ${env:ENCRYPTION_METHOD}
     LOOPS_API_KEY: ${env:LOOPS_API_KEY}
 
 functions:
@@ -90,7 +87,7 @@ functions:
           authorizer:
             name: auth
             type: request
-  
+
   createMatch:
     handler: handler.createNewMatch
     timeout: 30
@@ -101,7 +98,7 @@ functions:
           authorizer:
             name: auth
             type: request
-  
+
   findVolunteer:
     handler: handler.findVolunteer
     timeout: 30
