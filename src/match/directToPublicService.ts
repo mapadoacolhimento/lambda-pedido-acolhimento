@@ -1,8 +1,8 @@
+import type { SupportRequests } from "@prisma/client";
 import client from "../prismaClient";
 import { getCurrentDate } from "../utils";
 import { getUser, updateTicket } from "../zendeskClient";
 import { sendEmailPublicService } from "../emailClient";
-import type { SupportRequest } from "../types";
 import { ZENDESK_CUSTOM_FIELDS_DICIO, AGENT } from "../constants";
 
 async function fetchMsrFromZendesk(msrId: bigint) {
@@ -11,7 +11,7 @@ async function fetchMsrFromZendesk(msrId: bigint) {
   return msr;
 }
 
-type UpdateTicketMsr = Pick<SupportRequest, "zendeskTicketId" | "state">;
+type UpdateTicketMsr = Pick<SupportRequests, "zendeskTicketId" | "state">;
 
 async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
   const agent = AGENT.id;
@@ -46,8 +46,8 @@ async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
 }
 
 export type PublicService = Pick<
-  SupportRequest,
-  "state" | "zendeskTicketId" | "msrId"
+  SupportRequests,
+  "state" | "zendeskTicketId" | "msrId" | "status"
 >;
 
 export default async function directToPublicService(
@@ -69,6 +69,7 @@ export default async function directToPublicService(
       state: true,
       zendeskTicketId: true,
       msrId: true,
+      status: true,
     },
   });
 
