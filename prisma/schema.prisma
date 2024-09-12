@@ -665,7 +665,7 @@ enum MatchConfirmationStatus {
   waiting
   confirmed
   denied
-  failed
+  expired
 
   @@map("match_confirmation_status")
   @@schema("match")
