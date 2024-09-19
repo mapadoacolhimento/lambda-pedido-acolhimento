@@ -183,7 +183,7 @@ model Volunteers {
   color                      String                     @db.VarChar(100)
   gender                     String                     @db.VarChar(100)
   modality                   String                     @db.VarChar(100)
-  fields_of_work             String                     @db.VarChar(200)
+  fields_of_work             String                     @db.Text
   years_of_experience        String                     @db.VarChar(100)
   approach                   String?                    @db.VarChar(100)
   form_data_id               BigInt?
