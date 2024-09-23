@@ -152,12 +152,18 @@ describe("process", () => {
     };
     prismaMock.supportRequests.update.mockResolvedValueOnce(supportRequest);
     mockFetchVolunteers.mockResolvedValueOnce([volunteerAvailability]);
-
     prismaMock.matches.create.mockResolvedValueOnce(match);
 
     const res = await process(body);
 
-    expect(res).toStrictEqual(stringfyBigInt(match));
+    expect(res).toStrictEqual(
+      stringfyBigInt({
+        ...match,
+        supportRequest: expect.objectContaining({
+          status: supportRequest.status,
+        }),
+      })
+    );
   });
 
   it("should return successful res when support request receives an Expanded Match", async () => {
@@ -225,7 +231,14 @@ describe("process", () => {
 
     const res = await process(body);
 
-    expect(res).toStrictEqual(stringfyBigInt(match));
+    expect(res).toStrictEqual(
+      stringfyBigInt({
+        ...match,
+        supportRequest: expect.objectContaining({
+          status: supportRequest.status,
+        }),
+      })
+    );
   });
 
   it("should not randomize the assignment when shouldRandomize flag is false, returning an online match", async () => {
@@ -293,7 +306,14 @@ describe("process", () => {
 
     const res = await process(body, undefined, false);
 
-    expect(res).toStrictEqual(stringfyBigInt(match));
+    expect(res).toStrictEqual(
+      stringfyBigInt({
+        ...match,
+        supportRequest: expect.objectContaining({
+          status: supportRequest.status,
+        }),
+      })
+    );
   });
 
   it("should randomize the assignment when shouldRandomize flag is not passed, returning a public service assignment", async () => {

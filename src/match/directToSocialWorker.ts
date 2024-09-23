@@ -1,3 +1,4 @@
+import type { SupportRequests } from "@prisma/client";
 import client from "../prismaClient";
 import { getCurrentDate } from "../utils";
 import { getUser, updateTicket } from "../zendeskClient";
@@ -5,7 +6,6 @@ import {
   SOCIAL_WORKER_ZENDESK_USER_ID,
   ZENDESK_CUSTOM_FIELDS_DICIO,
 } from "../constants";
-import type { SupportRequest } from "../types";
 import { sendEmailSocialWorker } from "../emailClient";
 
 async function fetchMsrFromZendesk(msrId: bigint) {
@@ -14,7 +14,10 @@ async function fetchMsrFromZendesk(msrId: bigint) {
   return msr;
 }
 
-type UpdateTicketMsr = Pick<SupportRequest, "zendeskTicketId" | "state">;
+type UpdateTicketMsr = Pick<
+  SupportRequests,
+  "zendeskTicketId" | "state" | "status"
+>;
 
 async function updateMsrZendeskTicketWithSocialworker(msr: UpdateTicketMsr) {
   const ticket = {
@@ -47,8 +50,8 @@ async function updateMsrZendeskTicketWithSocialworker(msr: UpdateTicketMsr) {
 }
 
 export type SocialWorker = Pick<
-  SupportRequest,
-  "state" | "zendeskTicketId" | "msrId"
+  SupportRequests,
+  "state" | "zendeskTicketId" | "msrId" | "status"
 >;
 
 export default async function directToSocialWorker(
@@ -70,6 +73,7 @@ export default async function directToSocialWorker(
       state: true,
       zendeskTicketId: true,
       msrId: true,
+      status: true,
     },
   });
 

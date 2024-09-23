@@ -1,4 +1,4 @@
-import type { VolunteerAvailability } from "@prisma/client";
+import type { SupportRequests, VolunteerAvailability } from "@prisma/client";
 import type { Decimal } from "@prisma/client/runtime/library";
 
 import {
@@ -125,6 +125,9 @@ describe("createIdealMatch()", () => {
     };
 
     prismaMock.matches.create.mockResolvedValueOnce(match);
+    prismaMock.supportRequests.update.mockResolvedValueOnce({
+      status: "matched" as const,
+    } as SupportRequests);
 
     const idealMatch = await createIdealMatch(
       supportRequest,
@@ -132,7 +135,12 @@ describe("createIdealMatch()", () => {
       "msr"
     );
 
-    expect(idealMatch).toStrictEqual(match);
+    expect(idealMatch).toStrictEqual({
+      ...match,
+      supportRequest: {
+        status: "matched",
+      },
+    });
   });
 });
 
@@ -224,6 +232,9 @@ describe("createExpandedMatch()", () => {
     };
 
     prismaMock.matches.create.mockResolvedValueOnce(match);
+    prismaMock.supportRequests.update.mockResolvedValueOnce({
+      status: "matched" as const,
+    } as SupportRequests);
 
     const expandedMatch = await createExpandedMatch(
       supportRequest,
@@ -231,7 +242,12 @@ describe("createExpandedMatch()", () => {
       "msr"
     );
 
-    expect(expandedMatch).toStrictEqual(match);
+    expect(expandedMatch).toStrictEqual({
+      ...match,
+      supportRequest: {
+        status: "matched",
+      },
+    });
   });
 });
 
@@ -306,6 +322,9 @@ describe("createOnlineMatch()", () => {
     };
 
     prismaMock.matches.create.mockResolvedValueOnce(match);
+    prismaMock.supportRequests.update.mockResolvedValueOnce({
+      status: "matched" as const,
+    } as SupportRequests);
 
     const onlineMatch = await createOnlineMatch(
       supportRequest,
@@ -313,7 +332,12 @@ describe("createOnlineMatch()", () => {
       "msr"
     );
 
-    expect(onlineMatch).toStrictEqual(match);
+    expect(onlineMatch).toStrictEqual({
+      ...match,
+      supportRequest: {
+        status: "matched",
+      },
+    });
   });
 
   it("should return a match with the closest volunteer in the state if there are volunteers available in the same state", async () => {
@@ -362,6 +386,9 @@ describe("createOnlineMatch()", () => {
     };
 
     prismaMock.matches.create.mockResolvedValueOnce(matchWithClosestVolunteer);
+    prismaMock.supportRequests.update.mockResolvedValueOnce({
+      status: "matched" as const,
+    } as SupportRequests);
 
     const onlineMatch = await createOnlineMatch(
       supportRequest,
@@ -379,7 +406,12 @@ describe("createOnlineMatch()", () => {
       "msr",
       "online"
     );
-    expect(onlineMatch).toStrictEqual(matchWithClosestVolunteer);
+    expect(onlineMatch).toStrictEqual({
+      ...matchWithClosestVolunteer,
+      supportRequest: {
+        status: "matched",
+      },
+    });
   });
 
   it("should return a match with the closest volunteer if there are NO volunteers available in the same state", async () => {
@@ -426,6 +458,9 @@ describe("createOnlineMatch()", () => {
     };
 
     prismaMock.matches.create.mockResolvedValueOnce(matchWithClosestVolunteer);
+    prismaMock.supportRequests.update.mockResolvedValueOnce({
+      status: "matched" as const,
+    } as SupportRequests);
 
     const onlineMatch = await createOnlineMatch(
       supportRequest,
@@ -440,7 +475,12 @@ describe("createOnlineMatch()", () => {
       "msr",
       "online"
     );
-    expect(onlineMatch).toStrictEqual(matchWithClosestVolunteer);
+    expect(onlineMatch).toStrictEqual({
+      ...matchWithClosestVolunteer,
+      supportRequest: {
+        status: "matched",
+      },
+    });
   });
 
   it("should return any volunteer if none have lat/lng info", async () => {
@@ -487,6 +527,9 @@ describe("createOnlineMatch()", () => {
     };
 
     prismaMock.matches.create.mockResolvedValueOnce(matchWithClosestVolunteer);
+    prismaMock.supportRequests.update.mockResolvedValueOnce({
+      status: "matched" as const,
+    } as SupportRequests);
 
     const onlineMatch = await createOnlineMatch(
       supportRequest,
@@ -504,7 +547,12 @@ describe("createOnlineMatch()", () => {
       "msr",
       "online"
     );
-    expect(onlineMatch).toStrictEqual(matchWithClosestVolunteer);
+    expect(onlineMatch).toStrictEqual({
+      ...matchWithClosestVolunteer,
+      supportRequest: {
+        status: "matched",
+      },
+    });
   });
 });
 

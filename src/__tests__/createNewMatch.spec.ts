@@ -4,7 +4,7 @@ import { createNewMatch } from "../../handler";
 import type { Decimal } from "@prisma/client/runtime/library";
 import * as createMatch from "../match/createMatch";
 import { stringfyBigInt } from "../utils";
-import type { Matches } from "@prisma/client";
+import type { Matches, SupportRequests } from "@prisma/client";
 
 const validBody = {
   supportRequestId: 1,
@@ -64,7 +64,10 @@ const mockMatch = stringfyBigInt({
   status: "waiting_contact" as const,
   updatedAt: new Date(),
   createdAt: new Date(),
-}) as Matches;
+  supportRequest: {
+    status: "open",
+  },
+}) as Matches & Pick<SupportRequests, "status">;
 
 describe("/create-match endpoint", () => {
   it("should return an error res when no body is provided to the req", async () => {

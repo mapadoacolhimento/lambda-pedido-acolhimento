@@ -67,7 +67,7 @@ export async function createMatch(
     },
   });
 
-  await client.supportRequests.update({
+  const updatedSupportRequest = await client.supportRequests.update({
     where: {
       supportRequestId: supportRequest.supportRequestId,
     },
@@ -80,9 +80,15 @@ export async function createMatch(
         },
       },
     },
+    select: {
+      status: true,
+    },
   });
 
-  return match;
+  return {
+    ...match,
+    supportRequest: updatedSupportRequest,
+  };
 }
 
 export function checkVolunteerAvailability(

@@ -66,6 +66,7 @@ describe("directToSocialWorker", () => {
         state: true,
         zendeskTicketId: true,
         msrId: true,
+        status: true,
       },
     });
   });
