@@ -1,21 +1,14 @@
 import type { VolunteerAvailability, Volunteers } from "@prisma/client";
 import client from "../prismaClient";
 import { createTicket, getUser, updateTicket } from "../zendeskClient";
-import {
-  getAbTransactionalEmailId,
-  sendEmailToMsr,
-  sendEmailToVolunteer,
-} from "../emailClient";
-import {
-  getCurrentDate,
-  getErrorMessage,
-  saveBusaraABExperiment,
-} from "../utils";
+import { sendEmailToMsr, sendEmailToVolunteer } from "../emailClient";
+import { getCurrentDate, getErrorMessage } from "../utils";
 import {
   ZENDESK_CUSTOM_FIELDS_DICIO,
   VOLUNTEER_SUPPORT_TYPE_DICIO,
   ZENDESK_SUBDOMAIN,
   AGENT,
+  TRANSACTIONAL_EMAIL_IDS,
 } from "../constants";
 import type { SupportRequest, ZendeskTicket, ZendeskUser } from "../types";
 
@@ -169,8 +162,7 @@ async function fetchMsrFromZendesk(msrId: bigint) {
 
 export default async function createAndUpdateZendeskMatchTickets(
   supportRequest: SupportRequest,
-  volunteerId: VolunteerAvailability["volunteer_id"],
-  matchId: number
+  volunteerId: VolunteerAvailability["volunteer_id"]
 ) {
   const volunteer = await fetchVolunteerFromDB(volunteerId);
   const msr = await fetchMsrFromZendesk(supportRequest.msrId);
@@ -205,7 +197,8 @@ export default async function createAndUpdateZendeskMatchTickets(
     msrZendeskTicketId: supportRequest.zendeskTicketId,
   });
 
-  const transactionalId = getAbTransactionalEmailId(supportRequest.supportType);
+  const transactionalId =
+    TRANSACTIONAL_EMAIL_IDS[supportRequest.supportType].msr;
 
   await sendEmailToMsr(
     {
@@ -215,13 +208,6 @@ export default async function createAndUpdateZendeskMatchTickets(
     volunteer,
     transactionalId
   );
-
-  await saveBusaraABExperiment({
-    msrId: supportRequest.msrId,
-    supportRequestId: supportRequest.supportRequestId,
-    transactionalId,
-    matchId,
-  });
 
   await sendEmailToVolunteer(
     {

@@ -3,10 +3,8 @@ import {
   sendEmailSocialWorker,
   sendEmailToMsr,
   sendEmailToVolunteer,
-  getAbTransactionalEmailId,
 } from "..";
 import * as sendEmail from "../../emailClient/sendEmail";
-import { AB_TRANSACTIONAL_EMAIL_IDS } from "../../constants";
 
 const sendEmailMock = jest.spyOn(sendEmail, "default");
 const msr = {
@@ -164,41 +162,5 @@ describe("sendEmailToVolunteer", () => {
         }
       );
     });
-  });
-});
-
-describe("getAbTransactionalEmailId group A", () => {
-  beforeEach(() => {
-    jest.spyOn(global.Math, "random").mockReturnValue(0.5);
-  });
-  it("should return transacitonalId from legal email A", () => {
-    const transactionalId = getAbTransactionalEmailId("legal");
-    expect(transactionalId).toStrictEqual(
-      AB_TRANSACTIONAL_EMAIL_IDS["legal"]["a"]
-    );
-  });
-  it("should return transacitonalId from psychological email A", () => {
-    const transactionalId = getAbTransactionalEmailId("psychological");
-    expect(transactionalId).toStrictEqual(
-      AB_TRANSACTIONAL_EMAIL_IDS["psychological"]["a"]
-    );
-  });
-});
-
-describe("getAbTransactionalEmailId group B", () => {
-  beforeEach(() => {
-    jest.spyOn(global.Math, "random").mockReturnValue(0.6);
-  });
-  it("should return transacitonalId from legal email B", () => {
-    const transactionalId = getAbTransactionalEmailId("legal");
-    expect(transactionalId).toStrictEqual(
-      AB_TRANSACTIONAL_EMAIL_IDS["legal"]["b"]
-    );
-  });
-  it("should return transacitonalId from psychological email B", () => {
-    const transactionalId = getAbTransactionalEmailId("psychological");
-    expect(transactionalId).toStrictEqual(
-      AB_TRANSACTIONAL_EMAIL_IDS["psychological"]["b"]
-    );
   });
 });
