@@ -16,7 +16,6 @@ export const ZENDESK_CUSTOM_FIELDS_DICIO = {
   status_acolhimento: 360014379412,
   data_encaminhamento: 360017432652,
   nome_voluntaria: 360016631592,
-  estado: 360021879791,
 };
 
 const LAWYER_ZENDESK_ORGANIZATION_ID = 360269610652;
