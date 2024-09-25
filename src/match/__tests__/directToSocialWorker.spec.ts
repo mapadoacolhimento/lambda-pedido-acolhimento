@@ -22,7 +22,6 @@ const mockCurrentDate = "2023-12-28";
 describe("directToSocialWorker", () => {
   beforeEach(() => {
     const mockSupportRequest = {
-      state: "SP",
       zendeskTicketId: 123123123 as unknown as bigint,
     } as SupportRequests;
     const mockMsrZendeskTicket = {
@@ -63,7 +62,6 @@ describe("directToSocialWorker", () => {
         },
       },
       select: {
-        state: true,
         zendeskTicketId: true,
         msrId: true,
       },
@@ -77,10 +75,6 @@ describe("directToSocialWorker", () => {
       status: "pending",
       assignee_id: SOCIAL_WORKER_ZENDESK_USER_ID,
       custom_fields: [
-        {
-          id: 360021879791,
-          value: "SP",
-        },
         {
           id: 360014379412,
           value: "encaminhamento__assistente_social",

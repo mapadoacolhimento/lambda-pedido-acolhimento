@@ -21,7 +21,6 @@ const mockCurrentDate = "2023-12-28";
 describe("directToPublicService", () => {
   beforeEach(() => {
     const mockSupportRequest = {
-      state: "SP",
       zendeskTicketId: 123123123 as unknown as bigint,
     } as SupportRequests;
     const mockMsrZendeskTicket = {
@@ -62,7 +61,6 @@ describe("directToPublicService", () => {
         },
       },
       select: {
-        state: true,
         zendeskTicketId: true,
         msrId: true,
       },
@@ -76,10 +74,6 @@ describe("directToPublicService", () => {
       status: "pending",
       assignee_id: AGENT.id,
       custom_fields: [
-        {
-          id: 360021879791,
-          value: "SP",
-        },
         {
           id: 360014379412,
           value: "encaminhamento__realizado_para_serviço_público",

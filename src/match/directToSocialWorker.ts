@@ -14,18 +14,14 @@ async function fetchMsrFromZendesk(msrId: bigint) {
   return msr;
 }
 
-type UpdateTicketMsr = Pick<SupportRequest, "zendeskTicketId" | "state">;
-
-async function updateMsrZendeskTicketWithSocialworker(msr: UpdateTicketMsr) {
+async function updateMsrZendeskTicketWithSocialworker(
+  msrZendeskTicketId: SupportRequest["zendeskTicketId"]
+) {
   const ticket = {
-    id: msr.zendeskTicketId,
+    id: msrZendeskTicketId,
     status: "pending",
     assignee_id: SOCIAL_WORKER_ZENDESK_USER_ID,
     custom_fields: [
-      {
-        id: ZENDESK_CUSTOM_FIELDS_DICIO["estado"],
-        value: msr.state,
-      },
       {
         id: ZENDESK_CUSTOM_FIELDS_DICIO["status_acolhimento"],
         value: "encaminhamento__assistente_social",
@@ -46,10 +42,7 @@ async function updateMsrZendeskTicketWithSocialworker(msr: UpdateTicketMsr) {
   return zendeskTicket ? zendeskTicket.id : null;
 }
 
-export type SocialWorker = Pick<
-  SupportRequest,
-  "state" | "zendeskTicketId" | "msrId"
->;
+export type SocialWorker = Pick<SupportRequest, "zendeskTicketId" | "msrId">;
 
 export default async function directToSocialWorker(
   supportRequestId: number
@@ -67,7 +60,6 @@ export default async function directToSocialWorker(
       },
     },
     select: {
-      state: true,
       zendeskTicketId: true,
       msrId: true,
     },
@@ -79,7 +71,9 @@ export default async function directToSocialWorker(
     throw new Error("Couldn't fetch msr from zendesk");
   }
 
-  await updateMsrZendeskTicketWithSocialworker(updateSupportRequest);
+  await updateMsrZendeskTicketWithSocialworker(
+    updateSupportRequest.zendeskTicketId
+  );
 
   await sendEmailSocialWorker(
     zendeskUser.email,

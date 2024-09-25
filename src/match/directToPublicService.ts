@@ -11,20 +11,16 @@ async function fetchMsrFromZendesk(msrId: bigint) {
   return msr;
 }
 
-type UpdateTicketMsr = Pick<SupportRequest, "zendeskTicketId" | "state">;
-
-async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
+async function updateMsrZendeskTicketWithPublicService(
+  msrZendeskTicketId: SupportRequest["zendeskTicketId"]
+) {
   const agent = AGENT.id;
 
   const ticket = {
-    id: msr.zendeskTicketId,
+    id: msrZendeskTicketId,
     status: "pending",
     assignee_id: agent,
     custom_fields: [
-      {
-        id: ZENDESK_CUSTOM_FIELDS_DICIO["estado"],
-        value: msr.state,
-      },
       {
         id: ZENDESK_CUSTOM_FIELDS_DICIO["status_acolhimento"],
         value: "encaminhamento__realizado_para_serviço_público",
@@ -45,10 +41,7 @@ async function updateMsrZendeskTicketWithPublicService(msr: UpdateTicketMsr) {
   return zendeskTicket ? zendeskTicket.id : null;
 }
 
-export type PublicService = Pick<
-  SupportRequest,
-  "state" | "zendeskTicketId" | "msrId"
->;
+export type PublicService = Pick<SupportRequest, "zendeskTicketId" | "msrId">;
 
 export default async function directToPublicService(
   supportRequestId: number
@@ -66,7 +59,6 @@ export default async function directToPublicService(
       },
     },
     select: {
-      state: true,
       zendeskTicketId: true,
       msrId: true,
     },
@@ -78,7 +70,9 @@ export default async function directToPublicService(
     throw new Error("Couldn't fetch msr from zendesk");
   }
 
-  await updateMsrZendeskTicketWithPublicService(updateSupportRequest);
+  await updateMsrZendeskTicketWithPublicService(
+    updateSupportRequest.zendeskTicketId
+  );
 
   await sendEmailPublicService(
     zendeskUser.email,
