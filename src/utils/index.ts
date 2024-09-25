@@ -6,6 +6,5 @@ export { default as normalizeCity } from "./normalizeCity";
 export { default as getCurrentDate } from "./getCurrentDate";
 export { default as isProduction } from "./isProduction";
 export { default as getFirstName } from "./getFirstName";
-export { default as saveBusaraABExperiment } from "./saveBusaraABExperiment";
 export { default as notFoundErrorPayload } from "./notFoundErrorPayload";
 export * from "./stringfyBigInt";

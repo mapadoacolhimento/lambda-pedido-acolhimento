@@ -58,14 +58,3 @@ export const TRANSACTIONAL_EMAIL_IDS = {
     volunteer: "clv43jw1t00yj79ezuug2kh6z",
   },
 };
-
-export const AB_TRANSACTIONAL_EMAIL_IDS = {
-  psychological: {
-    a: "clv4977jg01a7hlj1twd22zq1",
-    b: "clwzfi9kh004wgsdbs5jb530d",
-  },
-  legal: {
-    a: "clv43f8gd02evj3woijkqcgng",
-    b: "clwzfhnp50015494n4nnhc7qa",
-  },
-};

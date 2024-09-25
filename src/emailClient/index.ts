@@ -1,10 +1,7 @@
 import type { Volunteers } from "@prisma/client";
 import sendEmail from "./sendEmail";
 import { getFirstName } from "../utils";
-import {
-  AB_TRANSACTIONAL_EMAIL_IDS,
-  TRANSACTIONAL_EMAIL_IDS,
-} from "../constants";
+import { TRANSACTIONAL_EMAIL_IDS } from "../constants";
 import type { SupportRequest, ZendeskTicket, ZendeskUser } from "../types";
 
 type Volunteer = Pick<
@@ -14,18 +11,6 @@ type Volunteer = Pick<
 
 type Msr = Pick<ZendeskUser, "name" | "email"> &
   Pick<SupportRequest, "zendeskTicketId">;
-
-export function getAbTransactionalEmailId(
-  supportType: SupportRequest["supportType"]
-): string {
-  const randomNum = Math.random();
-
-  if (randomNum <= 0.5) {
-    return AB_TRANSACTIONAL_EMAIL_IDS[supportType]["a"];
-  }
-
-  return AB_TRANSACTIONAL_EMAIL_IDS[supportType]["b"];
-}
 
 export async function sendEmailToMsr(
   msr: Msr,
