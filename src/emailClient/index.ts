@@ -68,6 +68,23 @@ export async function sendEmailPublicService(
   return emailRes;
 }
 
+export async function sendEmailQueue(
+  msrEmail: string,
+  msrFirstName: string,
+  msrZendeskTicketId: string
+): Promise<boolean> {
+  const id = TRANSACTIONAL_EMAIL_IDS["queue"];
+
+  const emailVars = {
+    msr_first_name: getFirstName(msrFirstName),
+    msr_zendesk_ticket_id: msrZendeskTicketId,
+  };
+
+  const emailRes = await sendEmail(msrEmail, id, emailVars);
+
+  return emailRes;
+}
+
 export async function sendEmailSocialWorker(
   msrEmail: string,
   msrFirstName: string,
