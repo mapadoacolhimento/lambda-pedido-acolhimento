@@ -7,6 +7,7 @@ import {
   SupportType,
   SupportRequestsStatus,
   SupportRequests,
+  MatchType,
 } from "@prisma/client";
 import { object, array, string, mixed, number, boolean } from "yup";
 
@@ -101,7 +102,9 @@ const compose = async (
       res = [];
       for (let i = 0; i < openSupportRequests.length; i++) {
         const processSupportRequest = await process(
-          openSupportRequests[i] as SupportRequests
+          openSupportRequests[i] as SupportRequests,
+          MatchType.msr,
+          true
         );
         res.push(processSupportRequest);
       }

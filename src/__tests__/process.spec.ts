@@ -52,7 +52,7 @@ describe("process", () => {
     expect(res).toStrictEqual(null);
   });
 
-  it("should return successful res when support request is directed to public service", async () => {
+  it("should return successful res when support request is directed to queue", async () => {
     const body = {
       supportRequestId: 1,
       msrId: 1,
@@ -73,7 +73,7 @@ describe("process", () => {
       ...body,
       msrId: BigInt(1),
       zendeskTicketId: BigInt(100),
-      status: "public_service" as const,
+      status: "waiting_for_match" as const,
       supportType: "psychological" as const,
       lat: -11.23 as unknown as Decimal,
       lng: 23.32 as unknown as Decimal,
@@ -88,7 +88,7 @@ describe("process", () => {
     prismaMock.supportRequests.update.mockResolvedValueOnce(supportRequest);
     mockFetchVolunteers.mockResolvedValueOnce([]);
 
-    const res = await process(body);
+    const res = await process(body, undefined, true);
     expect(res).toStrictEqual(stringfyBigInt(supportRequest));
   });
 
@@ -228,7 +228,7 @@ describe("process", () => {
     expect(res).toStrictEqual(stringfyBigInt(match));
   });
 
-  it("should not randomize the assignment when shouldRandomize flag is false, returning an online match", async () => {
+  it("should not direct to queue if shouldDirectToQueue flag is false, returning null", async () => {
     const body = {
       supportRequestId: 1,
       msrId: 1,
@@ -249,54 +249,20 @@ describe("process", () => {
       ...body,
       msrId: BigInt(1),
       zendeskTicketId: BigInt(100),
-      status: "public_service" as const,
       supportType: "psychological" as const,
       lat: -23.558012418890804 as unknown as Decimal,
       lng: -46.67788121534589 as unknown as Decimal,
       updatedAt: new Date(),
       createdAt: new Date(),
     };
-    const volunteerAvailability = {
-      volunteer_id: 1,
-      current_matches: 0,
-      max_matches: 2,
-      is_available: true,
-      support_type: "psychological" as const,
-      support_expertise: "",
-      offers_online_support: true,
-      offers_libras_support: false,
-      lat: -8.054181 as unknown as Decimal,
-      lng: -34.926324 as unknown as Decimal,
-      city: "RECIFE",
-      state: "PE",
-      updated_at: new Date(),
-      created_at: new Date(),
-    };
-    const match = {
-      matchId: 1,
-      supportRequestId: 1,
-      msrId: BigInt(1),
-      volunteerId: 1,
-      msrZendeskTicketId: BigInt(1),
-      volunteerZendeskTicketId: BigInt(2),
-      supportType: "psychological" as const,
-      matchType: "msr" as const,
-      matchStage: "online" as const,
-      status: "waiting_contact" as const,
-      updatedAt: new Date(),
-      createdAt: new Date(),
-    };
     prismaMock.supportRequests.update.mockResolvedValueOnce(supportRequest);
-    mockFetchVolunteers.mockResolvedValueOnce([volunteerAvailability]);
-
-    prismaMock.matches.create.mockResolvedValueOnce(match);
-
+    mockFetchVolunteers.mockResolvedValueOnce([]);
     const res = await process(body, undefined, false);
 
-    expect(res).toStrictEqual(stringfyBigInt(match));
+    expect(res).toStrictEqual(null);
   });
 
-  it("should randomize the assignment when shouldRandomize flag is not passed, returning a public service assignment", async () => {
+  it("should not direct to queue if shouldDirectToQueue is not passed, returning null", async () => {
     const body = {
       supportRequestId: 1,
       msrId: 1,
@@ -317,7 +283,41 @@ describe("process", () => {
       ...body,
       msrId: BigInt(1),
       zendeskTicketId: BigInt(100),
-      status: "public_service" as const,
+      supportType: "psychological" as const,
+      lat: -23.558012418890804 as unknown as Decimal,
+      lng: -46.67788121534589 as unknown as Decimal,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+    };
+    prismaMock.supportRequests.update.mockResolvedValueOnce(supportRequest);
+    mockFetchVolunteers.mockResolvedValueOnce([]);
+    const res = await process(body);
+
+    expect(res).toStrictEqual(null);
+  });
+
+  it("should direct to queue when shouldRandomize flag is true and there are no volunteers available", async () => {
+    const body = {
+      supportRequestId: 1,
+      msrId: 1,
+      zendeskTicketId: 100,
+      supportType: "psychological",
+      supportExpertise: null,
+      status: "open",
+      priority: null,
+      hasDisability: null,
+      requiresLibras: null,
+      acceptsOnlineSupport: true,
+      lat: -11.23,
+      lng: 23.32,
+      city: "SAO PAULO",
+      state: "SP",
+    } as unknown as SupportRequests;
+    const supportRequest = {
+      ...body,
+      msrId: BigInt(1),
+      zendeskTicketId: BigInt(100),
+      status: "waiting_for_match" as const,
       supportType: "psychological" as const,
       lat: -23.558012418890804 as unknown as Decimal,
       lng: -46.67788121534589 as unknown as Decimal,
@@ -330,35 +330,10 @@ describe("process", () => {
       email: "test@email.com",
     } as ZendeskUser);
 
-    jest.spyOn(global.Math, "random").mockReturnValue(0.4);
     prismaMock.supportRequests.update.mockResolvedValueOnce(supportRequest);
     mockFetchVolunteers.mockResolvedValueOnce([]);
-    const res = await process(body);
+    const res = await process(body, undefined, true);
 
     expect(res).toStrictEqual(stringfyBigInt(supportRequest));
-  });
-
-  it("should return null when shouldRandomize=false and there are no volunteers available", async () => {
-    const body = {
-      supportRequestId: 1,
-      msrId: 1,
-      zendeskTicketId: 100,
-      supportType: "psychological",
-      supportExpertise: null,
-      status: "open",
-      priority: null,
-      hasDisability: null,
-      requiresLibras: null,
-      acceptsOnlineSupport: true,
-      lat: -11.23,
-      lng: 23.32,
-      city: "SAO PAULO",
-      state: "SP",
-    } as unknown as SupportRequests;
-
-    mockFetchVolunteers.mockResolvedValueOnce([]);
-    const res = await process(body, undefined, false);
-
-    expect(res).toStrictEqual(null);
   });
 });
