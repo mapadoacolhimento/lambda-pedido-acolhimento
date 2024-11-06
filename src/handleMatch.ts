@@ -37,7 +37,7 @@ const bodySchema = object({
     state: string().required(),
   }),
   matchType: mixed<MatchType>().oneOf(Object.values(MatchType)).required(),
-  shouldRandomize: boolean(),
+  shouldDirectToQueue: boolean(),
 })
   .required()
   .required()
@@ -67,12 +67,12 @@ const handler = async (
 
     const validatedBody = await bodySchema.validate(parsedBody);
 
-    const { supportRequest, matchType, shouldRandomize } = validatedBody;
+    const { supportRequest, matchType, shouldDirectToQueue } = validatedBody;
 
     const res = await process(
       supportRequest as unknown as SupportRequests,
       matchType,
-      shouldRandomize
+      shouldDirectToQueue
     );
 
     if (!res)
