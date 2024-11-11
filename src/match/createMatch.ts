@@ -33,23 +33,21 @@ export async function createMatch(
     },
   });
 
-  const isVolunteerAvailable = checkVolunteerAvailability(
-    volunteerAvailability.current_matches,
-    volunteerAvailability.max_matches
-  );
-
   await client.volunteerAvailability.update({
     where: {
       volunteer_id: volunteerAvailability.volunteer_id,
     },
     data: {
       current_matches: volunteerAvailability.current_matches + 1,
-      is_available: isVolunteerAvailable,
       updated_at: new Date().toISOString(),
     },
   });
 
-  if (!isVolunteerAvailable)
+  const shouldUpdateVolunteerStatus = checkUpdateVolunteerStatus(
+    volunteerAvailability
+  );
+
+  if (shouldUpdateVolunteerStatus)
     await updateUnavailableVolunteer(volunteerAvailability.volunteer_id);
 
   const volunteerZendeskTicketId = await createAndUpdateZendeskMatchTickets(
@@ -84,10 +82,16 @@ export async function createMatch(
   return match;
 }
 
-export function checkVolunteerAvailability(
-  currentMatches: VolunteerAvailability["current_matches"],
-  maxMatches: VolunteerAvailability["max_matches"]
+export function checkUpdateVolunteerStatus(
+  volunteerAvailability: VolunteerAvailability
 ) {
-  const isVolunteerAvailable = currentMatches + 1 < maxMatches ? true : false;
-  return isVolunteerAvailable;
+  const isPreviouslyAvailable = volunteerAvailability.is_available;
+  const currentMatches = volunteerAvailability.current_matches + 1;
+  const maxMatches = volunteerAvailability.max_matches;
+
+  const hasMoreThanMaxMatches = currentMatches >= maxMatches;
+
+  if (isPreviouslyAvailable && hasMoreThanMaxMatches) return true;
+
+  return false;
 }
