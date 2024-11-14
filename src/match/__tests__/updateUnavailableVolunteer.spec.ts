@@ -1,4 +1,4 @@
-import type { Volunteers } from "@prisma/client";
+import type { VolunteerAvailability, Volunteers } from "@prisma/client";
 import * as zendeskClient from "../../zendeskClient";
 import { prismaMock } from "../../setupTests";
 import updateUnavailableVolunteer from "../updateUnavailableVolunteer";
@@ -20,11 +20,17 @@ const mockVolunteerFromZendesk = {
     condition: "indisponivel_sem_vagas",
   },
 } as ZendeskUser;
+const mockVolunteerAvailability = {
+  volunteer_id: 1,
+} as VolunteerAvailability;
 
 describe("updateUnavailableVolunteer", () => {
   it("should throw an error if volunteer has null zendesk_ticket_id", async () => {
     prismaMock.volunteers.update.mockResolvedValueOnce(
       mockVolunteerFromDBNullZendeskUserId
+    );
+    prismaMock.volunteerAvailability.update.mockResolvedValueOnce(
+      mockVolunteerAvailability
     );
 
     await expect(updateUnavailableVolunteer(mockVolunteerId)).rejects.toThrow(
@@ -34,6 +40,9 @@ describe("updateUnavailableVolunteer", () => {
 
   it("should throw an error if no volunteer was updated on Zendesk", async () => {
     prismaMock.volunteers.update.mockResolvedValueOnce(mockVolunteerFromDB);
+    prismaMock.volunteerAvailability.update.mockResolvedValueOnce(
+      mockVolunteerAvailability
+    );
     updateUserMock.mockResolvedValueOnce(null);
 
     await expect(updateUnavailableVolunteer(mockVolunteerId)).rejects.toThrow(
@@ -43,6 +52,9 @@ describe("updateUnavailableVolunteer", () => {
 
   it("should call updateUser function with correct payload", async () => {
     prismaMock.volunteers.update.mockResolvedValueOnce(mockVolunteerFromDB);
+    prismaMock.volunteerAvailability.update.mockResolvedValueOnce(
+      mockVolunteerAvailability
+    );
     updateUserMock.mockResolvedValueOnce(mockVolunteerFromZendesk);
     await updateUnavailableVolunteer(mockVolunteerId);
 
@@ -54,6 +66,9 @@ describe("updateUnavailableVolunteer", () => {
 
   it("should update volunteer zendesk status to indisponivel_sem_vagas", async () => {
     prismaMock.volunteers.update.mockResolvedValueOnce(mockVolunteerFromDB);
+    prismaMock.volunteerAvailability.update.mockResolvedValueOnce(
+      mockVolunteerAvailability
+    );
     updateUserMock.mockResolvedValueOnce(mockVolunteerFromZendesk);
 
     const updatedVolunteer = await updateUnavailableVolunteer(mockVolunteerId);

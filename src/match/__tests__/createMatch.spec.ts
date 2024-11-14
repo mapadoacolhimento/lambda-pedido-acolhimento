@@ -1,27 +1,37 @@
-import { checkVolunteerAvailability } from "../createMatch";
+import type { VolunteerAvailability } from "@prisma/client";
+import { checkUpdateVolunteerStatus } from "../createMatch";
 
-describe("checkVolunteerAvailability()", () => {
-  it("should return false if volunteer is not available after receiving a new match", () => {
-    const currentMatches = 2;
-    const maxMatches = 3;
+const mockVolunteerAvailability = {
+  volunteer_id: 1,
+  current_matches: 1,
+  max_matches: 2,
+  is_available: true,
+} as VolunteerAvailability;
 
-    const isVolunteerAvailable = checkVolunteerAvailability(
-      currentMatches,
-      maxMatches
+describe("checkUpdateVolunteerStatus()", () => {
+  it("should return true if volunteer was previously available and is reaching the max matches", () => {
+    const shouldUpdateVolunteerStatus = checkUpdateVolunteerStatus(
+      mockVolunteerAvailability
     );
 
-    expect(isVolunteerAvailable).toStrictEqual(false);
+    expect(shouldUpdateVolunteerStatus).toStrictEqual(true);
   });
 
-  it("should return true if volunteer is still available after receiving a new match", () => {
-    const currentMatches = 1;
-    const maxMatches = 3;
+  it("should return false if volunteer was previously available but is not reaching the max matches", () => {
+    const shouldUpdateVolunteerStatus = checkUpdateVolunteerStatus({
+      ...mockVolunteerAvailability,
+      max_matches: 3,
+    });
 
-    const isVolunteerAvailable = checkVolunteerAvailability(
-      currentMatches,
-      maxMatches
-    );
+    expect(shouldUpdateVolunteerStatus).toStrictEqual(false);
+  });
 
-    expect(isVolunteerAvailable).toStrictEqual(true);
+  it("should return false if volunteer was not previously available", () => {
+    const shouldUpdateVolunteerStatus = checkUpdateVolunteerStatus({
+      ...mockVolunteerAvailability,
+      is_available: false,
+    });
+
+    expect(shouldUpdateVolunteerStatus).toStrictEqual(false);
   });
 });

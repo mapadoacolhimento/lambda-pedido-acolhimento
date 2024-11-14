@@ -15,6 +15,15 @@ export default async function updateUnavailableVolunteer(
     },
   });
 
+  const volunteerAvailability = await client.volunteerAvailability.update({
+    where: {
+      volunteer_id: volunteerId,
+    },
+    data: {
+      is_available: false,
+    },
+  });
+
   await client.volunteerStatusHistory.create({
     data: {
       volunteer_id: volunteerId,
@@ -23,7 +32,7 @@ export default async function updateUnavailableVolunteer(
     },
   });
 
-  if (!volunteer || !volunteer.zendeskUserId)
+  if (!volunteer || !volunteerAvailability || !volunteer.zendeskUserId)
     throw new Error("Couldn't fetch volunteer from db");
 
   const volunteerZendeskUser: Pick<ZendeskUser, "id" | "user_fields"> = {
