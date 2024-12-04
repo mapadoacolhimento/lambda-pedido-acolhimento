@@ -7,7 +7,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["match", "public", "mobilization", "public_services", "msr", "pii_sec"]
+  schemas  = ["match", "public", "mobilization", "public_services", "msr", "pii_sec", "iana"]
 }
 
 model auth_group {
@@ -782,4 +782,13 @@ enum VolunteerTrainingEvent {
 
   @@map("volunteer_training_event")
   @@schema("public")
+}
+
+model iana_feedback {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  user_id    BigInt
+  question   String
+  answer     String?
+  @@schema("iana")
 }
