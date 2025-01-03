@@ -100,9 +100,9 @@ const compose = async (
 
     if (shouldCreateMatch && openSupportRequests.length > 0) {
       res = [];
-      for (let i = 0; i < openSupportRequests.length; i++) {
+      for (const supportRequest of openSupportRequests) {
         const processSupportRequest = await process(
-          openSupportRequests[i] as SupportRequests,
+          supportRequest,
           MatchType.msr,
           true
         );

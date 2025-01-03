@@ -75,14 +75,6 @@ const handler = async (
       shouldDirectToQueue
     );
 
-    if (!res)
-      return callback(null, {
-        statusCode: 200,
-        body: JSON.stringify({
-          message: `No volunteers available`,
-        }),
-      });
-
     return callback(null, {
       statusCode: 200,
       body: JSON.stringify({
