@@ -7,7 +7,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["match", "public", "mobilization", "public_services", "msr", "pii_sec", "iana"]
+  schemas  = ["match", "public", "mobilization", "public_services", "msr", "pii_sec", "iana", "survey"]
 }
 
 model auth_group {
@@ -239,6 +239,10 @@ model MSRs {
 
   MSRPii           MSRPiiSec?
   MSRStatusHistory MSRStatusHistory[]
+  SurveyQualityOfLifeD0 SurveyQualityOfLifeD0[]
+  SurveyQualityOfLifeD90 SurveyQualityOfLifeD90[]
+  SurveyQualityOfLifeD180 SurveyQualityOfLifeD180[]
+
 
   @@map("msrs")
   @@schema("msr")
@@ -590,6 +594,59 @@ model BusaraABExperiment {
   @@map("busara_ab_experiment")
   @@schema("match")
 }
+
+model SurveyQualityOfLifeD0 {
+  answerId Int    @id @default(autoincrement()) @map("answer_id")
+  msrId BigInt @map("msr_id")
+  qualityOfLife String @map("quality_of_life")
+  security String
+  controllingSituations String @map("controlling_situations")
+  selfEsteem String @map("self_esteem")
+  feelings String?
+  handleViolenceImpact String @map("handle_violence_impact")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  MSRs MSRs @relation(fields: [msrId], references: [msrId])
+
+  @@map("survey_quality_of_life_d0")
+  @@schema("survey")
+}
+
+model SurveyQualityOfLifeD90 {
+  answerId Int    @id @default(autoincrement()) @map("answer_id")
+  msrId BigInt @map("msr_id")
+  qualityOfLife String @map("quality_of_life")
+  security String
+  controllingSituations String @map("controlling_situations")
+  selfEsteem String @map("self_esteem")
+  feelings String?
+  handleViolenceImpact String @map("handle_violence_impact")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  MSRs MSRs @relation(fields: [msrId], references: [msrId])
+
+  @@map("survey_quality_of_life_d90")
+  @@schema("survey")
+}
+
+model SurveyQualityOfLifeD180 {
+  answerId Int    @id @default(autoincrement()) @map("answer_id")
+  msrId BigInt @map("msr_id")
+  qualityOfLife String @map("quality_of_life")
+  security String
+  controllingSituations String @map("controlling_situations")
+  selfEsteem String @map("self_esteem")
+  feelings String?
+  handleViolenceImpact String @map("handle_violence_impact")
+  substanceUse String @map("substance_use")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  MSRs MSRs @relation(fields: [msrId], references: [msrId])
+
+  @@map("survey_quality_of_life_d180")
+  @@schema("survey")
+}
+
 
 enum SupportType {
   psychological
