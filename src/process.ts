@@ -17,7 +17,9 @@ const process = async (
   supportRequest: SupportRequests,
   matchType: MatchType = MatchType.msr,
   shouldDirectToQueue = false
-): Promise<Matches | Queue | null> => {
+): Promise<
+  Matches | Queue | Pick<SupportRequests, "supportRequestId" | "supportType">
+> => {
   try {
     const allVolunteers: VolunteerAvailability[] =
       await fetchVolunteers(supportRequest);
@@ -52,14 +54,20 @@ const process = async (
       return stringfyBigInt(supportRequestInQueue) as Queue;
     }
 
-    return null;
+    return {
+      supportRequestId: supportRequest.supportRequestId,
+      supportType: supportRequest.supportType,
+    };
   } catch (e) {
     console.error(
       `[process] - Something went wrong while processing this support request '${
         supportRequest.supportRequestId
       }': ${getErrorMessage(e)}`
     );
-    return null;
+    return {
+      supportRequestId: supportRequest.supportRequestId,
+      supportType: supportRequest.supportType,
+    };
   }
 };
 
