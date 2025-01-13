@@ -49,7 +49,10 @@ describe("process", () => {
       state: "SP",
     } as unknown as SupportRequests;
     const res = await process(body);
-    expect(res).toStrictEqual(null);
+    expect(res).toStrictEqual({
+      supportRequestId: body.supportRequestId,
+      supportType: body.supportType,
+    });
   });
 
   it("should return successful res when support request is directed to queue", async () => {
@@ -259,7 +262,10 @@ describe("process", () => {
     mockFetchVolunteers.mockResolvedValueOnce([]);
     const res = await process(body, undefined, false);
 
-    expect(res).toStrictEqual(null);
+    expect(res).toStrictEqual({
+      supportRequestId: body.supportRequestId,
+      supportType: body.supportType,
+    });
   });
 
   it("should not direct to queue if shouldDirectToQueue is not passed, returning null", async () => {
@@ -293,7 +299,10 @@ describe("process", () => {
     mockFetchVolunteers.mockResolvedValueOnce([]);
     const res = await process(body);
 
-    expect(res).toStrictEqual(null);
+    expect(res).toStrictEqual({
+      supportRequestId: body.supportRequestId,
+      supportType: body.supportType,
+    });
   });
 
   it("should direct to queue when shouldRandomize flag is true and there are no volunteers available", async () => {

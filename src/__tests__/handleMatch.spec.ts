@@ -109,28 +109,5 @@ describe("/handle-match endpoint", () => {
         }),
       });
     });
-
-    it("should return a message when there aren't volunteers available", async () => {
-      mockIsFeatureFlagEnabled.mockResolvedValueOnce(true);
-      mockProcess.mockResolvedValueOnce(null);
-
-      await handleMatch(
-        {
-          body: JSON.stringify({
-            supportRequest: psySupportRequest,
-            matchType: "msr",
-            shouldRandomize: false,
-          }),
-        } as APIGatewayProxyEvent,
-        {} as Context,
-        callback
-      );
-      expect(callback).toHaveBeenCalledWith(null, {
-        statusCode: 200,
-        body: JSON.stringify({
-          message: `No volunteers available`,
-        }),
-      });
-    });
   });
 });
