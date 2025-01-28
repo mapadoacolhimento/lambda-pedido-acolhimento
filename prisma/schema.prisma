@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["multiSchema","prismaSchemaFolder"]
+  previewFeatures = ["multiSchema", "prismaSchemaFolder"]
   binaryTargets   = ["native", "rhel-openssl-1.0.x"]
 }
 
@@ -237,12 +237,11 @@ model MSRs {
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
 
-  MSRPii           MSRPiiSec?
-  MSRStatusHistory MSRStatusHistory[]
-  SurveyQualityOfLifeD0 SurveyQualityOfLifeD0[]
-  SurveyQualityOfLifeD90 SurveyQualityOfLifeD90[]
+  MSRPii                  MSRPiiSec?
+  MSRStatusHistory        MSRStatusHistory[]
+  SurveyQualityOfLifeD0   SurveyQualityOfLifeD0[]
+  SurveyQualityOfLifeD90  SurveyQualityOfLifeD90[]
   SurveyQualityOfLifeD180 SurveyQualityOfLifeD180[]
-
 
   @@map("msrs")
   @@schema("msr")
@@ -312,22 +311,24 @@ model SupportRequestStatusHistory {
 }
 
 model Matches {
-  matchId                  Int                  @id @default(autoincrement()) @map("match_id")
-  supportRequestId         Int                  @map("support_request_id")
-  msrId                    BigInt               @map("msr_id")
-  volunteerId              Int?                 @map("volunteer_id")
-  msrZendeskTicketId       BigInt               @map("msr_zendesk_ticket_id")
-  volunteerZendeskTicketId BigInt?              @map("volunteer_zendesk_ticket_id")
-  supportType              SupportType          @map("support_type")
-  matchType                MatchType            @map("match_type")
-  matchStage               MatchStage           @map("match_stage")
-  status                   MatchStatus
-  createdAt                DateTime             @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt                DateTime             @updatedAt @map("updated_at") @db.Timestamp(6)
-  MatchStatusHistory       MatchStatusHistory[]
-  MatchSurveys             MatchSurveys[]
-  supportRequest           SupportRequests      @relation(fields: [supportRequestId], references: [supportRequestId])
-  volunteer                Volunteers?          @relation(fields: [volunteerId], references: [id])
+  matchId                        Int                              @id @default(autoincrement()) @map("match_id")
+  supportRequestId               Int                              @map("support_request_id")
+  msrId                          BigInt                           @map("msr_id")
+  volunteerId                    Int?                             @map("volunteer_id")
+  msrZendeskTicketId             BigInt                           @map("msr_zendesk_ticket_id")
+  volunteerZendeskTicketId       BigInt?                          @map("volunteer_zendesk_ticket_id")
+  supportType                    SupportType                      @map("support_type")
+  matchType                      MatchType                        @map("match_type")
+  matchStage                     MatchStage                       @map("match_stage")
+  status                         MatchStatus
+  createdAt                      DateTime                         @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                      DateTime                         @updatedAt @map("updated_at") @db.Timestamp(6)
+  MatchStatusHistory             MatchStatusHistory[]
+  MatchSurveys                   MatchSurveys[]
+  supportRequest                 SupportRequests                  @relation(fields: [supportRequestId], references: [supportRequestId])
+  volunteer                      Volunteers?                      @relation(fields: [volunteerId], references: [id])
+  PsychologicalSupportEvaluation PsychologicalSupportEvaluation[]
+  LegalSupportEvaluation         LegalSupportEvaluation[]
 
   @@map("matches")
   @@schema("match")
@@ -596,15 +597,15 @@ model BusaraABExperiment {
 }
 
 model SurveyQualityOfLifeD0 {
-  answerId Int    @id @default(autoincrement()) @map("answer_id")
-  msrId BigInt @map("msr_id")
-  qualityOfLife String @map("quality_of_life")
-  security String
-  controllingSituations String @map("controlling_situations")
-  selfEsteem String @map("self_esteem")
-  feelings String?
-  handleViolenceImpact String @map("handle_violence_impact")
-  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  answerId              Int      @id @default(autoincrement()) @map("answer_id")
+  msrId                 BigInt   @map("msr_id")
+  qualityOfLife         String   @map("quality_of_life")
+  security              String
+  controllingSituations String   @map("controlling_situations")
+  selfEsteem            String   @map("self_esteem")
+  feelings              String?
+  handleViolenceImpact  String   @map("handle_violence_impact")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
   MSRs MSRs @relation(fields: [msrId], references: [msrId])
 
@@ -613,15 +614,15 @@ model SurveyQualityOfLifeD0 {
 }
 
 model SurveyQualityOfLifeD90 {
-  answerId Int    @id @default(autoincrement()) @map("answer_id")
-  msrId BigInt @map("msr_id")
-  qualityOfLife String @map("quality_of_life")
-  security String
-  controllingSituations String @map("controlling_situations")
-  selfEsteem String @map("self_esteem")
-  feelings String?
-  handleViolenceImpact String @map("handle_violence_impact")
-  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  answerId              Int      @id @default(autoincrement()) @map("answer_id")
+  msrId                 BigInt   @map("msr_id")
+  qualityOfLife         String   @map("quality_of_life")
+  security              String
+  controllingSituations String   @map("controlling_situations")
+  selfEsteem            String   @map("self_esteem")
+  feelings              String?
+  handleViolenceImpact  String   @map("handle_violence_impact")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
   MSRs MSRs @relation(fields: [msrId], references: [msrId])
 
@@ -630,16 +631,16 @@ model SurveyQualityOfLifeD90 {
 }
 
 model SurveyQualityOfLifeD180 {
-  answerId Int    @id @default(autoincrement()) @map("answer_id")
-  msrId BigInt @map("msr_id")
-  qualityOfLife String @map("quality_of_life")
-  security String
-  controllingSituations String @map("controlling_situations")
-  selfEsteem String @map("self_esteem")
-  feelings String?
-  handleViolenceImpact String @map("handle_violence_impact")
-  substanceUse String @map("substance_use")
-  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  answerId              Int      @id @default(autoincrement()) @map("answer_id")
+  msrId                 BigInt   @map("msr_id")
+  qualityOfLife         String   @map("quality_of_life")
+  security              String
+  controllingSituations String   @map("controlling_situations")
+  selfEsteem            String   @map("self_esteem")
+  feelings              String?
+  handleViolenceImpact  String   @map("handle_violence_impact")
+  substanceUse          String   @map("substance_use")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
   MSRs MSRs @relation(fields: [msrId], references: [msrId])
 
@@ -647,6 +648,40 @@ model SurveyQualityOfLifeD180 {
   @@schema("survey")
 }
 
+model PsychologicalSupportEvaluation {
+  answerId            Int      @id @default(autoincrement()) @map("answer_id")
+  matchId             Int      @map("match_id")
+  hadToPayForSupport  String   @map("had_to_pay_for_support")
+  isStrategyUseful    String   @map("is_strategy_useful")
+  handleStressAnxiety String   @map("handle_stress_anxiety")
+  satisfactionLevel   String   @map("satisfaction_level")
+  expectationsMet     String   @map("expectations_met")
+  writtenEvaluation   String?  @map("written_evaluation")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  Matches Matches @relation(fields: [matchId], references: [matchId])
+
+  @@map("psychological_support_evaluation")
+  @@schema("survey")
+}
+
+model LegalSupportEvaluation {
+  answerId                    Int      @id @default(autoincrement()) @map("answer_id")
+  matchId                     Int      @map("match_id")
+  hadToPayForSupport          String   @map("had_to_pay_for_support")
+  hasReceivedClearInformation String   @map("has_received_clear_information")
+  handleStressAnxiety         String   @map("handle_stress_anxiety")
+  caseProgress                String   @map("case_progress")
+  satisfactionLevel           String   @map("satisfaction_level")
+  expectationsMet             String   @map("expectations_met")
+  writtenEvaluation           String?  @map("written_evaluation")
+  createdAt                   DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  Matches Matches @relation(fields: [matchId], references: [matchId])
+
+  @@map("legal_support_evaluation")
+  @@schema("survey")
+}
 
 enum SupportType {
   psychological
@@ -847,5 +882,6 @@ model iana_feedback {
   user_id    BigInt
   question   String
   answer     String?
+
   @@schema("iana")
 }
