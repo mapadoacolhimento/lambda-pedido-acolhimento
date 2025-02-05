@@ -65,7 +65,7 @@ async function createVolunteerZendeskTicket({
 
   const zendeskTicket = await createTicket(ticket);
 
-  return zendeskTicket ? zendeskTicket.id : null;
+  return zendeskTicket ? zendeskTicket : null;
 }
 
 type UpdateTicketParams = {
@@ -112,7 +112,7 @@ async function updateMsrZendeskTicketWithMatch({
 
   const zendeskTicket = await updateTicket(ticket);
 
-  return zendeskTicket ? zendeskTicket.id : null;
+  return zendeskTicket ? zendeskTicket : null;
 }
 
 type Volunteer = Pick<
@@ -173,7 +173,7 @@ export default async function createAndUpdateZendeskMatchTickets(
 
   const agent = AGENT.id;
 
-  const volunteerZendeskTicketId = await createVolunteerZendeskTicket({
+  const volunteerZendeskTicket = await createVolunteerZendeskTicket({
     agent,
     volunteer,
     msr: {
@@ -184,15 +184,15 @@ export default async function createAndUpdateZendeskMatchTickets(
     },
   });
 
-  if (!volunteerZendeskTicketId) {
+  if (!volunteerZendeskTicket) {
     throw new Error("Couldn't create volunteer match ticket");
   }
 
-  await updateMsrZendeskTicketWithMatch({
+  const msrZendeskTicket = await updateMsrZendeskTicketWithMatch({
     agent,
     volunteer: {
       ...volunteer,
-      zendeskTicketId: volunteerZendeskTicketId,
+      zendeskTicketId: volunteerZendeskTicket.id,
     },
     msrZendeskTicketId: supportRequest.zendeskTicketId,
   });
@@ -203,7 +203,7 @@ export default async function createAndUpdateZendeskMatchTickets(
   await sendEmailToMsr(
     {
       ...msr,
-      zendeskTicketId: supportRequest.zendeskTicketId,
+      encoded_id: msrZendeskTicket?.encoded_id.toString() || "",
     },
     volunteer,
     transactionalId
@@ -212,11 +212,11 @@ export default async function createAndUpdateZendeskMatchTickets(
   await sendEmailToVolunteer(
     {
       ...volunteer,
-      zendeskTicketId: volunteerZendeskTicketId,
+      encoded_id: volunteerZendeskTicket.encoded_id,
     },
     msr.name,
     supportRequest.supportType
   );
 
-  return volunteerZendeskTicketId;
+  return volunteerZendeskTicket.id;
 }

@@ -10,7 +10,7 @@ type Volunteer = Pick<
 >;
 
 type Msr = Pick<ZendeskUser, "name" | "email"> &
-  Pick<SupportRequest, "zendeskTicketId">;
+  Pick<ZendeskTicket, "encoded_id">;
 
 export async function sendEmailToMsr(
   msr: Msr,
@@ -24,7 +24,7 @@ export async function sendEmailToMsr(
     // Não consegui remover esse parâmetro do Loops, então preciamos enviar
     lawyer_phone: volunteer.phone,
     volunteer_registration_number: volunteer.registrationNumber,
-    msr_zendesk_ticket_id: msr.zendeskTicketId.toString(),
+    msr_zendesk_ticket_id: msr.encoded_id.toString(),
   };
 
   const emailRes = await sendEmail(msr.email, transactionalId, emailVars);
@@ -33,7 +33,7 @@ export async function sendEmailToMsr(
 }
 
 export async function sendEmailToVolunteer(
-  volunteer: Volunteer & { zendeskTicketId: ZendeskTicket["id"] },
+  volunteer: Volunteer & Pick<ZendeskTicket, "encoded_id">,
   msrFirstName: Msr["name"],
   supportType: SupportRequest["supportType"]
 ) {
@@ -43,7 +43,7 @@ export async function sendEmailToVolunteer(
     volunteer_first_name: getFirstName(volunteer.firstName),
     msr_first_name: getFirstName(msrFirstName),
     volunteer_phone: volunteer.phone,
-    volunteer_zendesk_ticket_id: volunteer.zendeskTicketId.toString(),
+    volunteer_zendesk_ticket_id: volunteer.encoded_id.toString(),
   };
 
   const emailRes = await sendEmail(volunteer.email, id, emailVars);
