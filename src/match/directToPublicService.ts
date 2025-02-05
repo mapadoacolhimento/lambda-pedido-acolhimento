@@ -38,7 +38,7 @@ async function updateMsrZendeskTicketWithPublicService(
 
   const zendeskTicket = await updateTicket(ticket);
 
-  return zendeskTicket ? zendeskTicket.id : null;
+  return zendeskTicket ? zendeskTicket : null;
 }
 
 export type PublicService = Pick<SupportRequest, "zendeskTicketId" | "msrId">;
@@ -70,14 +70,14 @@ export default async function directToPublicService(
     throw new Error("Couldn't fetch msr from zendesk");
   }
 
-  await updateMsrZendeskTicketWithPublicService(
+  const updatedTicket = await updateMsrZendeskTicketWithPublicService(
     updateSupportRequest.zendeskTicketId
   );
 
   await sendEmailPublicService(
     zendeskUser.email,
     zendeskUser.name,
-    updateSupportRequest.zendeskTicketId.toString()
+    updatedTicket?.encoded_id.toString() || ""
   );
 
   return updateSupportRequest;

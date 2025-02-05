@@ -18,13 +18,14 @@ export type UpdateZendeskUser = Partial<Omit<ZendeskUser, "id">> & {
 export type ZendeskTicket = {
   id: bigint;
   requester_id: bigint;
+  encoded_id: string;
 };
 
 export type UpdateZendeskTicket = Partial<Omit<ZendeskTicket, "id">> & {
   id: bigint;
 };
 
-export type CreateZendeskTicket = Omit<ZendeskTicket, "id">;
+export type CreateZendeskTicket = Omit<ZendeskTicket, "id" | "encoded_id">;
 
 export type ZendeskTicketRes = {
   ticket: ZendeskTicket;
