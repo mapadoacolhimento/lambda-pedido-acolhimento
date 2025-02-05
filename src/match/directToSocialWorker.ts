@@ -39,7 +39,7 @@ async function updateMsrZendeskTicketWithSocialworker(
 
   const zendeskTicket = await updateTicket(ticket);
 
-  return zendeskTicket ? zendeskTicket.id : null;
+  return zendeskTicket ? zendeskTicket : null;
 }
 
 export type SocialWorker = Pick<SupportRequest, "zendeskTicketId" | "msrId">;
@@ -71,14 +71,14 @@ export default async function directToSocialWorker(
     throw new Error("Couldn't fetch msr from zendesk");
   }
 
-  await updateMsrZendeskTicketWithSocialworker(
+  const updatedTicket = await updateMsrZendeskTicketWithSocialworker(
     updateSupportRequest.zendeskTicketId
   );
 
   await sendEmailSocialWorker(
     zendeskUser.email,
     zendeskUser.name,
-    updateSupportRequest.zendeskTicketId.toString()
+    updatedTicket?.encoded_id.toString() || ""
   );
 
   return updateSupportRequest;
