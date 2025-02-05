@@ -38,7 +38,7 @@ async function updateMsrZendeskTicketWithQueue(
 
   const zendeskTicket = await updateTicket(ticket);
 
-  return zendeskTicket ? zendeskTicket.id : null;
+  return zendeskTicket ? zendeskTicket : null;
 }
 
 export type Queue = Pick<SupportRequest, "zendeskTicketId" | "msrId">;
@@ -70,12 +70,14 @@ export default async function directToQueue(
     throw new Error("Couldn't fetch msr from zendesk");
   }
 
-  await updateMsrZendeskTicketWithQueue(updateSupportRequest.zendeskTicketId);
+  const updatedTicket = await updateMsrZendeskTicketWithQueue(
+    updateSupportRequest.zendeskTicketId
+  );
 
   await sendEmailQueue(
     zendeskUser.email,
     zendeskUser.name,
-    updateSupportRequest.zendeskTicketId.toString()
+    updatedTicket?.encoded_id.toString() || ""
   );
 
   return updateSupportRequest;

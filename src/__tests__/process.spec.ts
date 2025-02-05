@@ -24,6 +24,7 @@ const getUserMock = jest.spyOn(getUser, "default");
 updateTicketMock.mockImplementation(() =>
   Promise.resolve({
     id: 123123123,
+    encoded_id: "ABC-123",
   } as unknown as ZendeskTicket)
 );
 
