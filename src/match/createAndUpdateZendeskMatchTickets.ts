@@ -203,7 +203,7 @@ export default async function createAndUpdateZendeskMatchTickets(
   await sendEmailToMsr(
     {
       ...msr,
-      encoded_id: msrZendeskTicket?.encoded_id.toString() || "",
+      encoded_id: msrZendeskTicket?.encoded_id || "",
     },
     volunteer,
     transactionalId
@@ -212,7 +212,7 @@ export default async function createAndUpdateZendeskMatchTickets(
   await sendEmailToVolunteer(
     {
       ...volunteer,
-      encoded_id: volunteerZendeskTicket.encoded_id,
+      encoded_id: volunteerZendeskTicket.encoded_id || "",
     },
     msr.name,
     supportRequest.supportType

@@ -24,7 +24,7 @@ export async function sendEmailToMsr(
     // Não consegui remover esse parâmetro do Loops, então preciamos enviar
     lawyer_phone: volunteer.phone,
     volunteer_registration_number: volunteer.registrationNumber,
-    msr_zendesk_ticket_id: msr.encoded_id.toString(),
+    msr_zendesk_ticket_id: msr.encoded_id,
   };
 
   const emailRes = await sendEmail(msr.email, transactionalId, emailVars);
@@ -43,7 +43,7 @@ export async function sendEmailToVolunteer(
     volunteer_first_name: getFirstName(volunteer.firstName),
     msr_first_name: getFirstName(msrFirstName),
     volunteer_phone: volunteer.phone,
-    volunteer_zendesk_ticket_id: volunteer.encoded_id.toString(),
+    volunteer_zendesk_ticket_id: volunteer.encoded_id,
   };
 
   const emailRes = await sendEmail(volunteer.email, id, emailVars);

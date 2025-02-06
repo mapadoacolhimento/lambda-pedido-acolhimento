@@ -77,7 +77,7 @@ export default async function directToPublicService(
   await sendEmailPublicService(
     zendeskUser.email,
     zendeskUser.name,
-    updatedTicket?.encoded_id.toString() || ""
+    updatedTicket?.encoded_id || ""
   );
 
   return updateSupportRequest;

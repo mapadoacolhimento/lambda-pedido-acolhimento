@@ -78,7 +78,7 @@ export default async function directToSocialWorker(
   await sendEmailSocialWorker(
     zendeskUser.email,
     zendeskUser.name,
-    updatedTicket?.encoded_id.toString() || ""
+    updatedTicket?.encoded_id || ""
   );
 
   return updateSupportRequest;
