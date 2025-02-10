@@ -21,9 +21,11 @@ jest.spyOn(global.Math, "random").mockReturnValue(0.7);
 
 const mockVolunteerZendeskTicket = {
   id: 123123123 as unknown as bigint,
+  encoded_id: "EFG-456",
 } as ZendeskTicket;
 const mockMsrZendeskTicket = {
   id: 123412341234 as unknown as bigint,
+  encoded_id: "ABC-123",
 } as ZendeskTicket;
 const baseSupportRequestPayload = {
   msrId: 123 as unknown as bigint,
@@ -195,7 +197,7 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       expect(sendEmailToMsrMock).toHaveBeenCalledWith(
         {
           ...mockMsrFromZendesk,
-          zendeskTicketId: legalSupportRequest["zendeskTicketId"],
+          encoded_id: "ABC-123",
         },
         mockVolunteerFromDB,
         TRANSACTIONAL_EMAIL_IDS["legal"]["msr"]
@@ -210,7 +212,7 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       expect(sendEmailToVolunteerMock).toHaveBeenCalledWith(
         {
           ...mockVolunteerFromDB,
-          zendeskTicketId: mockVolunteerZendeskTicket["id"],
+          encoded_id: "EFG-456",
         },
         mockMsrFromZendesk.name,
         "legal"
@@ -296,7 +298,7 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       expect(sendEmailToMsrMock).toHaveBeenCalledWith(
         {
           ...mockMsrFromZendesk,
-          zendeskTicketId: baseSupportRequestPayload["zendeskTicketId"],
+          encoded_id: "ABC-123",
         },
         mockVolunteerFromDB,
         TRANSACTIONAL_EMAIL_IDS["psychological"]["msr"]
@@ -311,7 +313,7 @@ describe("createAndUpdateZendeskMatchTickets", () => {
       expect(sendEmailToVolunteerMock).toHaveBeenCalledWith(
         {
           ...mockVolunteerFromDB,
-          zendeskTicketId: mockVolunteerZendeskTicket["id"],
+          encoded_id: "EFG-456",
         },
         mockMsrFromZendesk.name,
         "psychological"

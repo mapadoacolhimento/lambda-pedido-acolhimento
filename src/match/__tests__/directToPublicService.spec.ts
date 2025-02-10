@@ -25,6 +25,7 @@ describe("directToPublicService", () => {
     } as SupportRequests;
     const mockMsrZendeskTicket = {
       id: 123412341234 as unknown as bigint,
+      encoded_id: "ABC-123",
     } as ZendeskTicket;
     const mockMsrZendeskUser = {
       name: "Teste MSR",
@@ -105,7 +106,7 @@ describe("directToPublicService", () => {
       1,
       "test@email.com",
       "Teste MSR",
-      "123123123"
+      "ABC-123"
     );
   });
 });

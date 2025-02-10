@@ -26,6 +26,7 @@ describe("directToSocialWorker", () => {
     } as SupportRequests;
     const mockMsrZendeskTicket = {
       id: 123412341234 as unknown as bigint,
+      encoded_id: "ABC-123",
     } as ZendeskTicket;
     const mockMsrZendeskUser = {
       name: "Teste MSR Social Worker",
@@ -106,7 +107,7 @@ describe("directToSocialWorker", () => {
       1,
       "test-social-worker@email.com",
       "Teste MSR Social Worker",
-      "123123123"
+      "ABC-123"
     );
   });
 });
