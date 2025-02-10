@@ -77,7 +77,7 @@ export default async function directToQueue(
   await sendEmailQueue(
     zendeskUser.email,
     zendeskUser.name,
-    updatedTicket?.encoded_id || ""
+    updatedTicket?.encoded_id ? updatedTicket?.encoded_id : ""
   );
 
   return updateSupportRequest;
