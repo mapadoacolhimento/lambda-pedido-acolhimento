@@ -179,7 +179,7 @@ model Volunteers {
   latitude                   Decimal?                   @db.Decimal(10, 4)
   longitude                  Decimal?                   @db.Decimal(10, 4)
   registrationNumber         String                     @map("register_number") @db.VarChar(400)
-  birth_date                 DateTime                   @db.Timestamptz(6)
+  birth_date                 DateTime?                  @db.Timestamptz(6)
   color                      String                     @db.VarChar(100)
   gender                     String                     @db.VarChar(100)
   modality                   String                     @db.VarChar(100)
