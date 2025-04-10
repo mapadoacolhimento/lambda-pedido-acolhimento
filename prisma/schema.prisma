@@ -758,6 +758,7 @@ enum MatchConfirmationStatus {
   confirmed
   denied
   expired
+  undelivered
 
   @@map("match_confirmation_status")
   @@schema("match")
