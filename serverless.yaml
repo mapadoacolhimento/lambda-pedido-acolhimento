@@ -1,6 +1,6 @@
 service: support-request-api
 
-frameworkVersion: "3"
+frameworkVersion: "3.40.0"
 useDotenv: true
 
 package:
