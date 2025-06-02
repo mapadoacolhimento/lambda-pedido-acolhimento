@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 5
     strategy:
       matrix:
-        node-version: [22.x]
+        node-version: [20.x]
 
     steps:
       - name: Checkout repository
@@ -47,7 +47,7 @@ jobs:
     timeout-minutes: 5
     strategy:
       matrix:
-        node-version: [22.x]
+        node-version: [20.x]
     environment:
       name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
     needs:
