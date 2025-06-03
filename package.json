@@ -59,7 +59,7 @@
     "prettier": "^3.0.3",
     "prisma": "^5.16.1",
     "rimraf": "^5.0.5",
-    "serverless": "^3.36.0",
+    "serverless": "^3.40.0",
     "serverless-newrelic-lambda-layers": "^5.4.0",
     "serverless-offline": "^13.2.1",
     "serverless-webpack": "^5.13.0",
