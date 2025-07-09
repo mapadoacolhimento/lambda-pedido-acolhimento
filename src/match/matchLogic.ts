@@ -20,7 +20,9 @@ export async function createIdealMatch(
   const idealVolunteer = getIdealVolunteer(supportRequest, allVolunteers);
 
   if (!idealVolunteer) return null;
-
+  console.log(
+    `Ideal volunteer found: ${idealVolunteer.volunteer_id} for support request ${supportRequest.supportRequestId}`
+  );
   const match = await createMatch(
     supportRequest,
     idealVolunteer,
@@ -39,7 +41,9 @@ export async function createExpandedMatch(
   const expandedVolunteer = getExpandedVolunteer(supportRequest, allVolunteers);
 
   if (!expandedVolunteer) return null;
-
+  console.log(
+    `Expanded volunteer found: ${expandedVolunteer.volunteer_id} for support request ${supportRequest.supportRequestId}`
+  );
   const match = await createMatch(
     supportRequest,
     expandedVolunteer,
@@ -58,7 +62,9 @@ export async function createOnlineMatch(
   const onlineVolunteer = getOnlineVolunteer(supportRequest, allVolunteers);
 
   if (!onlineVolunteer) return null;
-
+  console.log(
+    `Online volunteer found: ${onlineVolunteer.volunteer_id} for support request ${supportRequest.supportRequestId}`
+  );
   const match = await createMatch(
     supportRequest,
     onlineVolunteer,
