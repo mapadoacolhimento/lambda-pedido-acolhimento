@@ -7,7 +7,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["match", "public", "mobilization", "public_services", "msr", "pii_sec", "iana", "survey"]
+  schemas  = ["match", "public", "mobilization", "public_services", "msr", "pii_sec", "iana", "survey", "legacy_support_assessments"]
 }
 
 model auth_group {
@@ -681,6 +681,22 @@ model LegalSupportEvaluation {
 
   @@map("legal_support_evaluation")
   @@schema("survey")
+}
+
+model MdaFormsAnswers {
+  id                               Int      @id(map: "mda_forms_answers_pk") @default(autoincrement())
+  form                             String   @db.VarChar(30)
+  formId                           Int      @map("form_id") 
+  createdAt                        DateTime @default(now()) @map("created_at") @db.Timestamp(6)    
+  updatedAt                        DateTime @updatedAt  @map("updated_at") @db.Timestamp(6)  
+  organizationId                   BigInt?  @map("organization_id")
+  volunteerEmail                   String   @map("volunteer_email") @db.VarChar(254)
+  msrName                          String   @map("msr_name") @db.VarChar(200)
+  ticketId                         Int?     @map("ticket_id")
+  answers                          Json?
+
+  @@map("mda_forms_answers")
+  @@schema("legacy_support_assessments")
 }
 
 enum SupportType {
