@@ -407,7 +407,7 @@ model VolunteerAvailability {
   max_matches           Int
   is_available          Boolean
   support_type          String     @db.VarChar(20)
-  support_expertise     String     @db.VarChar(200)
+  support_expertise     String     @db.Text
   offers_online_support Boolean
   lat                   Decimal?   @db.Decimal(10, 4)
   lng                   Decimal?   @db.Decimal(10, 4)
