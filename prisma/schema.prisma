@@ -242,6 +242,8 @@ model MSRs {
   SurveyQualityOfLifeD0   SurveyQualityOfLifeD0[]
   SurveyQualityOfLifeD90  SurveyQualityOfLifeD90[]
   SurveyQualityOfLifeD180 SurveyQualityOfLifeD180[]
+  MSRViolenceHistory      MSRViolenceHistory[]
+  MSRSocioeconomicData    MSRSocioeconomicData?
 
   @@map("msrs")
   @@schema("msr")
@@ -271,6 +273,50 @@ model MSRStatusHistory {
   MSRs MSRs @relation(fields: [msrId], references: [msrId])
 
   @@map("msr_status_history")
+  @@schema("msr")
+}
+
+model MSRViolenceHistory {
+  msrViolenceHistoryId         Int       @id @default(autoincrement()) @map("msr_violence_history_id")
+  msrId                        BigInt    @map("msr_id")
+  violenceTypes                String[]  @map("violence_types")
+  violencePeriod               String?   @map("violence_period")
+  violenceOccurredInBrazil     Boolean   @map("violence_occurred_in_brazil")
+  violenceAuthorGender         String?   @map("violence_author_gender")
+  violenceAuthorRelationship   String?   @map("violence_author_relationship")
+  residesWithAuthor            Boolean?  @map("resides_with_author")
+  violenceLocation             String?   @map("violence_location")
+  violenceDescription          String?   @map("violence_description") @db.Text
+  legalActionsTaken            String?   @map("legal_actions_taken")
+  policeReport                 Boolean?  @map("police_report")
+  policeReportDifficulty       Boolean?  @map("police_report_difficulty")
+  policeReportDifficultyReason String?   @map("police_report_difficulty_reason") @db.Text
+  protectiveFactors            String?   @map("protective_factors") @db.Text
+  riskFactors                  String?   @map("risk_factors") @db.Text
+  createdAt                    DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                    DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  MSRs MSRs @relation(fields: [msrId], references: [msrId])
+
+  @@map("msr_violence_history")
+  @@schema("msr")
+}
+
+model MSRSocioeconomicData {
+  msrSocioeconomicId         Int      @id @default(autoincrement()) @map("msr_socioeconomic_id")
+  msrId                      BigInt   @unique @map("msr_id")
+  hasMonthlyIncome           Boolean? @map("has_monthly_income")
+  incomeRange                String?  @map("income_range")
+  workSituation              String?  @map("work_situation")
+  hasFinancialDependents     Boolean? @map("has_financial_dependents")
+  familyIncomeResponsibility String?  @map("family_income_responsibility")
+  ownsProperty               Boolean? @map("owns_property")
+  createdAt                  DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                  DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  MSRs MSRs @relation(fields: [msrId], references: [msrId])
+
+  @@map("msr_socioeconomic_data")
   @@schema("msr")
 }
 
