@@ -277,24 +277,24 @@ model MSRStatusHistory {
 }
 
 model MSRViolenceHistory {
-  msrViolenceHistoryId         Int       @id @default(autoincrement()) @map("msr_violence_history_id")
-  msrId                        BigInt    @map("msr_id")
-  violenceTypes                String[]  @map("violence_types")
-  violencePeriod               String?   @map("violence_period")
-  violenceOccurredInBrazil     Boolean   @map("violence_occurred_in_brazil")
-  violenceAuthorGender         String?   @map("violence_author_gender")
-  violenceAuthorRelationship   String?   @map("violence_author_relationship")
-  residesWithAuthor            Boolean?  @map("resides_with_author")
-  violenceLocation             String?   @map("violence_location")
-  violenceDescription          String?   @map("violence_description") @db.Text
-  legalActionsTaken            String?   @map("legal_actions_taken")
-  policeReport                 Boolean?  @map("police_report")
-  policeReportDifficulty       Boolean?  @map("police_report_difficulty")
-  policeReportDifficultyReason String?   @map("police_report_difficulty_reason") @db.Text
-  protectiveFactors            String?   @map("protective_factors") @db.Text
-  riskFactors                  String?   @map("risk_factors") @db.Text
-  createdAt                    DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt                    DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  msrViolenceHistoryId         Int                        @id @default(autoincrement()) @map("msr_violence_history_id")
+  msrId                        BigInt                     @unique @map("msr_id")
+  violenceTypes                ViolenceType[]             @map("violence_types")
+  violencePeriod               ViolencePeriod?            @map("violence_period")
+  violenceOccurredInBrazil     Boolean                    @map("violence_occurred_in_brazil")
+  violenceAuthorGender         PerpetratorGender?         @map("violence_author_gender")
+  violenceAuthorRelationship   PerpetratorRelationship?   @map("violence_author_relationship")
+  residesWithAuthor            Boolean?                   @map("resides_with_author")
+  violenceLocation             ViolenceLocation[]         @map("violence_location")  
+  violenceDescription          String?                    @map("violence_description") @db.Text
+  legalActionsTaken            LegalAction[]              @map("legal_actions_taken")  
+  policeReport                 Boolean?                   @map("police_report")
+  policeReportDifficultyType   PoliceReportDifficulty?    @map("police_report_difficulty")  
+  policeReportDifficultyReason String?                    @map("police_report_difficulty_reason") @db.Text
+  protectiveFactors            ProtectiveFactor[]         @map("protective_factors")  
+  riskFactors                  RiskFactor[]               @map("risk_factors")  
+  createdAt                    DateTime                   @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                    DateTime                   @updatedAt @map("updated_at") @db.Timestamp(6)
 
   MSRs MSRs @relation(fields: [msrId], references: [msrId])
 
@@ -303,16 +303,16 @@ model MSRViolenceHistory {
 }
 
 model MSRSocioeconomicData {
-  msrSocioeconomicId         Int      @id @default(autoincrement()) @map("msr_socioeconomic_id")
-  msrId                      BigInt   @unique @map("msr_id")
-  hasMonthlyIncome           Boolean? @map("has_monthly_income")
-  incomeRange                String?  @map("income_range")
-  workSituation              String?  @map("work_situation")
-  hasFinancialDependents     Boolean? @map("has_financial_dependents")
-  familyIncomeResponsibility String?  @map("family_income_responsibility")
-  ownsProperty               Boolean? @map("owns_property")
-  createdAt                  DateTime @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt                  DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+  msrSocioeconomicId         Int                           @id @default(autoincrement()) @map("msr_socioeconomic_id")
+  msrId                      BigInt                        @unique @map("msr_id")
+  hasMonthlyIncome           MonthlyIncome?                @map("has_monthly_income")
+  incomeRange                String?                       @map("income_range")  
+  workSituation              WorkSituation?                @map("work_situation")
+  hasFinancialDependents     Boolean?                      @map("has_financial_dependents")
+  familyIncomeResponsibility Boolean?                      @map("family_income_responsibility")
+  ownsProperty               Boolean?                      @map("owns_property")
+  createdAt                  DateTime                      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                  DateTime                      @updatedAt @map("updated_at") @db.Timestamp(6)
 
   MSRs MSRs @relation(fields: [msrId], references: [msrId])
 
@@ -937,6 +937,139 @@ enum VolunteerTrainingEvent {
 
   @@map("volunteer_training_event")
   @@schema("public")
+}
+
+enum ViolenceType {
+  physicalViolence
+  psychologicalViolence
+  sexualViolence
+  digitalViolence
+  patrimonialViolence
+  obstetricViolence
+  threat
+  politicalViolence
+  noViolence
+  
+  @@map("violence_type")
+  @@schema("msr")
+}
+
+enum ViolencePeriod {
+  isolatedEpisode
+  lastWeek
+  threeMonths
+  moreThanThreeMonths
+  moreThanAYear
+  moreThanThreeYears
+  moreThanSixYears
+  moreThanTenYears
+  
+  @@map("violence_period")
+  @@schema("msr")
+}
+
+enum PerpetratorGender {
+  woman
+  man
+  non_binary
+  
+  @@map("perpetrator_gender")
+  @@schema("msr")
+}
+
+enum PerpetratorRelationship {
+  nuclearFamily
+  closeFamily
+  currentPartner
+  formerPartner
+  workColleague
+  otherPeople
+  
+  @@map("perpetrator_relationship")
+  @@schema("msr")
+}
+
+enum ViolenceLocation {
+  homeSpace
+  publicSpace
+  workSpace
+  internetSpace
+  
+  @@map("violence_location")
+  @@schema("msr")
+}
+
+enum PoliceReportDifficulty {
+  no
+  discourageReporting
+  notTheirCompetence
+  refusedToReport
+  others
+  n_a 
+  
+  @@map("police_report_difficulty")
+  @@schema("msr")
+}
+
+enum LegalAction {
+  physicalExamination
+  policeInquiry
+  criminalCase
+  civilCase
+  labourCase
+  noneTaken
+  
+  @@map("legal_action")
+  @@schema("msr")
+}
+
+enum ProtectiveFactor {
+  supportNetwork
+  dontLiveWithPerpetrator
+  fellsSafe
+  isNotDependant
+  n_a 
+  
+  @@map("protective_factor")
+  @@schema("msr")
+}
+
+enum RiskFactor {
+  gunAccess
+  imprisonment
+  violenceDuringPregnancy
+  deniedPublicServices
+  noAccessToSuppportNetwork
+  perpetratorIsCriminal
+  perpetratorIsImprisoned
+  feelsIsolated
+  trustedPeopleAccess
+  otherRisks
+  neededMedicalAttention
+  
+  @@map("risk_factor")
+  @@schema("msr")
+}
+
+enum MonthlyIncome {
+  yes
+  no
+  noAccess
+  
+  @@map("monthly_income")
+  @@schema("msr")
+}
+
+enum WorkSituation {
+  employedClt
+  employedPj
+  student
+  studentWithIncome
+  retired
+  unemployed
+  
+  @@map("work_situation")
+  @@schema("msr")
 }
 
 model iana_feedback {
