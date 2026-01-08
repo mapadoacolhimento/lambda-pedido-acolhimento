@@ -31,7 +31,8 @@
     "test:stage": "jest --findRelatedTests --passWithNoTests",
     "test:ci": "jest --ci --coverage",
     "clean:build": "rimraf .serverless dist",
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "prune": "npm prune --production"
   },
   "devDependencies": {
     "@babel/core": "^7.23.3",
