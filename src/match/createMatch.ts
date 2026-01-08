@@ -32,9 +32,6 @@ export async function createMatch(
       },
     },
   });
-  console.log(
-    `Match created: ${match.matchId} for support request ${supportRequest.supportRequestId}`
-  );
 
   await client.volunteerAvailability.update({
     where: {
@@ -45,16 +42,11 @@ export async function createMatch(
       updated_at: new Date().toISOString(),
     },
   });
-  console.log(
-    `Volunteer availability updated for volunteer ${volunteerAvailability.volunteer_id}`
-  );
 
   const shouldUpdateVolunteerStatus = checkUpdateVolunteerStatus(
     volunteerAvailability
   );
-  console.log(
-    `Should update volunteer ${volunteerAvailability.volunteer_id} status: ${shouldUpdateVolunteerStatus}`
-  );
+
   if (shouldUpdateVolunteerStatus)
     await updateUnavailableVolunteer(volunteerAvailability.volunteer_id);
 
@@ -71,7 +63,7 @@ export async function createMatch(
       volunteerZendeskTicketId,
     },
   });
-  console.log(`Zendesk ticket updated for match ${match.matchId}`);
+
   await client.supportRequests.update({
     where: {
       supportRequestId: supportRequest.supportRequestId,
@@ -86,9 +78,7 @@ export async function createMatch(
       },
     },
   });
-  console.log(
-    `Support request ${supportRequest.supportRequestId} status updated to matched`
-  );
+
   return match;
 }
 

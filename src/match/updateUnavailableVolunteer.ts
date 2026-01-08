@@ -14,9 +14,7 @@ export default async function updateUnavailableVolunteer(
       condition: "indisponivel_sem_vagas",
     },
   });
-  console.log(
-    `Volunteer ${volunteerId} status updated to indisponivel_sem_vagas`
-  );
+
   const volunteerAvailability = await client.volunteerAvailability.update({
     where: {
       volunteer_id: volunteerId,
@@ -25,7 +23,7 @@ export default async function updateUnavailableVolunteer(
       is_available: false,
     },
   });
-  console.log(`Volunteer availability updated for volunteer ${volunteerId}`);
+
   await client.volunteerStatusHistory.create({
     data: {
       volunteer_id: volunteerId,
@@ -33,7 +31,7 @@ export default async function updateUnavailableVolunteer(
       created_at: new Date(),
     },
   });
-  console.log(`Volunteer status history created for volunteer ${volunteerId}`);
+
   if (!volunteer || !volunteerAvailability || !volunteer.zendeskUserId)
     throw new Error("Couldn't fetch volunteer from db");
 
