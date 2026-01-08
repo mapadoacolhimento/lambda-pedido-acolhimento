@@ -82,6 +82,8 @@ jobs:
           NEW_RELIC_ACCOUNT_ID=${{ secrets.NEW_RELIC_ACCOUNT_ID }}
           NEW_RELIC_API_KEY=${{ secrets.NEW_RELIC_API_KEY }}
           LOOPS_API_KEY=${{ secrets.LOOPS_API_KEY }}
+          PRISMA_CLI_BINARY_TARGETS=native
+          PRISMA_CLIENT_ENGINE_TYPE=binary
           EOF
 
       - name: Install serverless globally
