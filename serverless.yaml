@@ -12,7 +12,21 @@ package:
 
 custom:
   webpack:
-    includeModules: true
+    webpackConfig: 'webpack.config.js'
+    includeModules:
+      forceExclude:
+        - aws-sdk
+        - '@types/*' # Exclui tipos TypeScript
+        - 'jest*'    # Exclui Jest
+        - 'eslint*'  # Exclui ESLint
+        - 'prettier' # Exclui Prettier
+        - 'husky'    # Exclui Husky
+        - 'lint-staged' # Exclui lint-staged
+        - 'webpack'  # Webpack não vai para Lambda
+        - 'serverless*' # Serverless não vai para Lambda
+      nodeModulesRelativeDir: '../../'
+
+    excludeFiles: '**/*.test.ts'
     packagerOptions:
       scripts:
         - npx prisma generate
@@ -26,7 +40,27 @@ custom:
     cloudWatchFilter: "*"
     nrRegion: 'eu'
     enableFunctionLogs: true
-
+   # Bundle individualmente para cada função
+  individually: true
+  
+  # Excluir arquivos desnecessários
+  exclude:
+    - .git/**
+    - .github/**
+    - .vscode/**
+    - node_modules/.cache/**
+    - node_modules/.bin/**
+    - node_modules/**/test/**
+    - node_modules/**/tests/**
+    - node_modules/**/docs/**
+    - node_modules/**/*.md
+    - coverage/**
+    - dist/**
+    - '*.log'
+    
+  prune:
+    automatic: true
+    number: 3
 provider:
   name: aws
   runtime: nodejs20.x
