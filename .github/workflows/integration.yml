@@ -83,7 +83,7 @@ jobs:
           NEW_RELIC_API_KEY=${{ secrets.NEW_RELIC_API_KEY }}
           LOOPS_API_KEY=${{ secrets.LOOPS_API_KEY }}
           EOF
-    
+
       - name: Install serverless globally
         run: npm install serverless@3.40.0 --global
 
