@@ -16,7 +16,7 @@ custom:
     packagerOptions:
       scripts:
         - npx prisma generate
-        - find . -name "query_engine-*" -not -name "query_engine-rhel-openssl-*" | xargs rm
+        - find . -name "libquery_engine-*" -not -name "libquery_engine-rhel-openssl-*" | xargs rm
   serverless-offline:
     httpPort: 5000
     ignoreJWTSignature: true
