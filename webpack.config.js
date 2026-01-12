@@ -9,7 +9,7 @@ const isLocal = slsw.lib.webpack.isLocal;
 module.exports = {
   mode: isLocal ? "development" : "production",
   entry: slsw.lib.entries,
-  externals: [nodeExternals()],
+  externals: [nodeExternals(), "@prisma/client", ".prisma/client"],
   devtool: "source-map",
   resolve: {
     extensions: [".js", ".jsx", ".json", ".ts", ".tsx"],
