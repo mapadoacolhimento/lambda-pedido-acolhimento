@@ -279,18 +279,15 @@ model MSRStatusHistory {
 model MSRViolenceHistory {
   msrViolenceHistoryId         Int                        @id @default(autoincrement()) @map("msr_violence_history_id")
   msrId                        BigInt                     @unique @map("msr_id")
-  violenceTypes                ViolenceType[]             @map("violence_types")
-  violencePeriod               ViolencePeriod?            @map("violence_period")
+  violenceType                 ViolenceType[]             @map("violence_type")
+  violenceTime                 ViolenceTime?              @map("violence_time")
   violenceOccurredInBrazil     Boolean                    @map("violence_occurred_in_brazil")
-  violenceAuthorGender         PerpetratorGender?         @map("violence_author_gender")
-  violenceAuthorRelationship   PerpetratorRelationship?   @map("violence_author_relationship")
-  residesWithAuthor            Boolean?                   @map("resides_with_author")
+  PerpetratorGender            PerpetratorGender?         @map("perpetrator_gender")
+  violencePerpetrator          ViolencePerpetrator?       @map("violence_perpetrator")
+  livesWithPerpetrator         Boolean?                   @map("lives_with_perpetrator")
   violenceLocation             ViolenceLocation[]         @map("violence_location")  
-  violenceDescription          String?                    @map("violence_description") @db.Text
-  legalActionsTaken            LegalAction[]              @map("legal_actions_taken")  
-  policeReport                 Boolean?                   @map("police_report")
-  policeReportDifficultyType   PoliceReportDifficulty?    @map("police_report_difficulty")  
-  policeReportDifficultyReason String?                    @map("police_report_difficulty_reason") @db.Text
+  legalActionsTaken            LegalActionsTaken[]        @map("legal_actions_taken")  
+  legalActionDifficulty        LegalActionDifficulty?     @map("legal_action_difficulty")  
   protectiveFactors            ProtectiveFactor[]         @map("protective_factors")  
   riskFactors                  RiskFactor[]               @map("risk_factors")  
   createdAt                    DateTime                   @default(now()) @map("created_at") @db.Timestamp(6)
@@ -306,11 +303,11 @@ model MSRSocioeconomicData {
   msrSocioeconomicId         Int                           @id @default(autoincrement()) @map("msr_socioeconomic_id")
   msrId                      BigInt                        @unique @map("msr_id")
   hasMonthlyIncome           MonthlyIncome?                @map("has_monthly_income")
-  incomeRange                String?                       @map("income_range")  
-  workSituation              WorkSituation?                @map("work_situation")
+  incomeRange                IncomeRange?                  @map("income_range")  
+  EmploymentStatus           EmploymentStatus?             @map("employment_status")
   hasFinancialDependents     Boolean?                      @map("has_financial_dependents")
-  familyIncomeResponsibility Boolean?                      @map("family_income_responsibility")
-  ownsProperty               Boolean?                      @map("owns_property")
+  FamilyProvider             FamilyProvider?               @map("family_provider")
+  propertyOwnership          Boolean?                      @map("property_ownership")
   createdAt                  DateTime                      @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt                  DateTime                      @updatedAt @map("updated_at") @db.Timestamp(6)
 
@@ -940,31 +937,32 @@ enum VolunteerTrainingEvent {
 }
 
 enum ViolenceType {
-  physicalViolence
-  psychologicalViolence
-  sexualViolence
-  digitalViolence
-  patrimonialViolence
-  obstetricViolence
+  physical_violence
+  psychological_violence
+  sexual_violence
+  moral_violence
+  digital_violence
+  patrimonial_violence
+  obstetric_violence
   threat
-  politicalViolence
-  noViolence
+  political_violence
+  no_violence
   
   @@map("violence_type")
   @@schema("msr")
 }
 
-enum ViolencePeriod {
-  isolatedEpisode
-  lastWeek
-  threeMonths
-  moreThanThreeMonths
-  moreThanAYear
-  moreThanThreeYears
-  moreThanSixYears
-  moreThanTenYears
+enum ViolenceTime {
+  isolated_episode         
+  last_week               
+  less_than_3_months        
+  between_3_months_and_1_year 
+  between_1_and_3_years      
+  between_3_and_6_years      
+  between_6_and_10_years     
+  more_than_10_years
   
-  @@map("violence_period")
+  @@map("violence_time")
   @@schema("msr")
 }
 
@@ -977,98 +975,121 @@ enum PerpetratorGender {
   @@schema("msr")
 }
 
-enum PerpetratorRelationship {
-  nuclearFamily
-  closeFamily
-  currentPartner
-  formerPartner
-  workColleague
-  otherPeople
+enum ViolencePerpetrator {
+  nuclear_family
+  close_family
+  current_partner
+  ex_partner
+  work_colleague
+  other_people
   
-  @@map("perpetrator_relationship")
+  @@map("violence_perpetrator")
   @@schema("msr")
 }
 
 enum ViolenceLocation {
-  homeSpace
-  publicSpace
-  workSpace
-  internetSpace
+  home_space
+  public_space
+  work_space
+  internet_space
   
   @@map("violence_location")
   @@schema("msr")
 }
 
-enum PoliceReportDifficulty {
-  no
-  discourageReporting
-  notTheirCompetence
-  refusedToReport
-  others
-  n_a 
+enum LegalActionsTaken {
+  physical_examination
+  police_inquiry
+  criminal_case
+  civil_case
+  labour_case
+  police_report
+  protective_measure
+  none_taken
   
-  @@map("police_report_difficulty")
+  @@map("legal_actions_taken")
   @@schema("msr")
 }
 
-enum LegalAction {
-  physicalExamination
-  policeInquiry
-  criminalCase
-  civilCase
-  labourCase
-  noneTaken
+enum LegalActionDifficulty {
+  discouraged
+  not_competent
+  refused_to_register
+  no_access_to_justice
+  denied_restraining_order
+  not_applicable
   
-  @@map("legal_action")
+  @@map("legal_action_difficulty")
   @@schema("msr")
 }
 
 enum ProtectiveFactor {
-  supportNetwork
-  dontLiveWithPerpetrator
-  fellsSafe
-  isNotDependant
-  n_a 
+  support_network
+  dont_live_with_perpetrator
+  feels_safe
+  is_not_dependant
+  has_qualified_public_services
   
-  @@map("protective_factor")
+  @@map("protective_factors")
   @@schema("msr")
 }
 
 enum RiskFactor {
-  gunAccess
-  imprisonment
-  violenceDuringPregnancy
-  deniedPublicServices
-  noAccessToSuppportNetwork
-  perpetratorIsCriminal
-  perpetratorIsImprisoned
-  feelsIsolated
-  trustedPeopleAccess
-  otherRisks
-  neededMedicalAttention
+  gun_access
+  private_captivity
+  violence_during_pregnancy
+  denied_public_services
+  no_support_network
+  perpetrator_is_a_criminal
+  perpetrator_is_imprisoned
+  feels_isolated
+  other_risks
+  needed_medical_attention
   
-  @@map("risk_factor")
+  @@map("risk_factors")
   @@schema("msr")
 }
 
 enum MonthlyIncome {
   yes
   no
-  noAccess
+  no_access
   
-  @@map("monthly_income")
+  @@map("has_monthly_income")
   @@schema("msr")
 }
 
-enum WorkSituation {
-  employedClt
-  employedPj
+enum IncomeRange {
+  no_income
+  half_minimum_wage
+  up_to_one_minimum_wage
+  up_to_two_minimum_wages
+  up_to_three_minimum_wages
+  up_to_four_minimum_wages
+  five_minimum_wages_or_more
+  
+  @@map("income_range")
+  @@schema("msr")
+}
+
+enum EmploymentStatus {
+  employed_clt
+  employed_pj
   student
-  studentWithIncome
+  student_with_income
   retired
   unemployed
   
-  @@map("work_situation")
+  @@map("employment_status")
+  @@schema("msr")
+}
+
+enum FamilyProvider {
+  yes                
+  no                 
+  shared_responsibility  
+  
+  @@map("family_provider")
   @@schema("msr")
 }
 
