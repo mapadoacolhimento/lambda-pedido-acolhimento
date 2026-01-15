@@ -284,7 +284,7 @@ model MSRViolenceHistory {
   violenceOccurredInBrazil Boolean                @map("violence_occurred_in_brazil")
   perpetratorGender        PerpetratorGender?     @map("perpetrator_gender")
   violencePerpetrator      ViolencePerpetrator?   @map("violence_perpetrator")
-  livesWithPerpetrator     Boolean?               @map("lives_with_perpetrator")
+  livesWithPerpetrator     LivesWithPerpetrator[] @map("lives_with_perpetrator")
   violenceLocation         ViolenceLocation[]     @map("violence_location")
   legalActionsTaken        LegalActionsTaken[]    @map("legal_actions_taken")
   legalActionDifficulty    LegalActionDifficulty? @map("legal_action_difficulty")
@@ -992,6 +992,15 @@ enum ViolencePerpetrator {
   @@schema("msr")
 }
 
+enum LivesWithPerpetrator {
+  yes
+  no
+  never
+
+  @@map("lives_with_perpetrator")
+  @@schema("msr")
+}
+
 enum ViolenceLocation {
   home_space
   public_space
@@ -1034,6 +1043,7 @@ enum ProtectiveFactor {
   feels_safe
   is_not_dependant
   has_qualified_public_services
+  not_applicable
 
   @@map("protective_factors")
   @@schema("msr")
@@ -1050,6 +1060,7 @@ enum RiskFactor {
   feels_isolated
   other_risks
   needed_medical_attention
+  not_applicable
 
   @@map("risk_factors")
   @@schema("msr")
