@@ -277,21 +277,21 @@ model MSRStatusHistory {
 }
 
 model MSRViolenceHistory {
-  msrViolenceHistoryId         Int                        @id @default(autoincrement()) @map("msr_violence_history_id")
-  msrId                        BigInt                     @unique @map("msr_id")
-  violenceType                 ViolenceType[]             @map("violence_type")
-  violenceTime                 ViolenceTime?              @map("violence_time")
-  violenceOccurredInBrazil     Boolean                    @map("violence_occurred_in_brazil")
-  PerpetratorGender            PerpetratorGender?         @map("perpetrator_gender")
-  violencePerpetrator          ViolencePerpetrator?       @map("violence_perpetrator")
-  livesWithPerpetrator         Boolean?                   @map("lives_with_perpetrator")
-  violenceLocation             ViolenceLocation[]         @map("violence_location")  
-  legalActionsTaken            LegalActionsTaken[]        @map("legal_actions_taken")  
-  legalActionDifficulty        LegalActionDifficulty?     @map("legal_action_difficulty")  
-  protectiveFactors            ProtectiveFactor[]         @map("protective_factors")  
-  riskFactors                  RiskFactor[]               @map("risk_factors")  
-  createdAt                    DateTime                   @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt                    DateTime                   @updatedAt @map("updated_at") @db.Timestamp(6)
+  msrViolenceHistoryId     Int                    @id @default(autoincrement()) @map("msr_violence_history_id")
+  msrId                    BigInt                 @unique @map("msr_id")
+  violenceType             ViolenceType[]         @map("violence_type")
+  violenceTime             ViolenceTime?          @map("violence_time")
+  violenceOccurredInBrazil Boolean                @map("violence_occurred_in_brazil")
+  perpetratorGender        PerpetratorGender?     @map("perpetrator_gender")
+  violencePerpetrator      ViolencePerpetrator?   @map("violence_perpetrator")
+  livesWithPerpetrator     Boolean?               @map("lives_with_perpetrator")
+  violenceLocation         ViolenceLocation[]     @map("violence_location")
+  legalActionsTaken        LegalActionsTaken[]    @map("legal_actions_taken")
+  legalActionDifficulty    LegalActionDifficulty? @map("legal_action_difficulty")
+  protectiveFactors        ProtectiveFactor[]     @map("protective_factors")
+  riskFactors              RiskFactor[]           @map("risk_factors")
+  createdAt                DateTime               @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                DateTime               @updatedAt @map("updated_at") @db.Timestamp(6)
 
   MSRs MSRs @relation(fields: [msrId], references: [msrId])
 
@@ -300,16 +300,16 @@ model MSRViolenceHistory {
 }
 
 model MSRSocioeconomicData {
-  msrSocioeconomicId         Int                           @id @default(autoincrement()) @map("msr_socioeconomic_id")
-  msrId                      BigInt                        @unique @map("msr_id")
-  hasMonthlyIncome           MonthlyIncome?                @map("has_monthly_income")
-  incomeRange                IncomeRange?                  @map("income_range")  
-  EmploymentStatus           EmploymentStatus?             @map("employment_status")
-  hasFinancialDependents     Boolean?                      @map("has_financial_dependents")
-  FamilyProvider             FamilyProvider?               @map("family_provider")
-  propertyOwnership          Boolean?                      @map("property_ownership")
-  createdAt                  DateTime                      @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt                  DateTime                      @updatedAt @map("updated_at") @db.Timestamp(6)
+  msrSocioeconomicId     Int                 @id @default(autoincrement()) @map("msr_socioeconomic_id")
+  msrId                  BigInt              @unique @map("msr_id")
+  hasMonthlyIncome       MonthlyIncome?      @map("has_monthly_income")
+  monthlyIncomeRange     MonthlyIncomeRange? @map("monthly_income_range")
+  employmentStatus       EmploymentStatus?   @map("employment_status")
+  hasFinancialDependents Boolean?            @map("has_financial_dependents")
+  familyProvider         FamilyProvider?     @map("family_provider")
+  propertyOwnership      Boolean?            @map("property_ownership")
+  createdAt              DateTime            @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt              DateTime            @updatedAt @map("updated_at") @db.Timestamp(6)
 
   MSRs MSRs @relation(fields: [msrId], references: [msrId])
 
@@ -692,15 +692,18 @@ model SurveyQualityOfLifeD180 {
 }
 
 model PsychologicalSupportEvaluation {
-  answerId            Int      @id @default(autoincrement()) @map("answer_id")
-  matchId             Int      @map("match_id")
-  hadToPayForSupport  String   @map("had_to_pay_for_support")
-  isStrategyUseful    String   @map("is_strategy_useful")
-  handleStressAnxiety String   @map("handle_stress_anxiety")
-  satisfactionLevel   String   @map("satisfaction_level")
-  expectationsMet     String   @map("expectations_met")
-  writtenEvaluation   String?  @map("written_evaluation")
-  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  answerId               Int      @id @default(autoincrement()) @map("answer_id")
+  matchId                Int      @map("match_id")
+  hadToPayForSupport     String   @map("had_to_pay_for_support")
+  hasHelpedWithQuestions String   @map("has_helped_with_questions")
+  isStrategyUseful       String   @map("is_strategy_useful")
+  handleStressAnxiety    String   @map("handle_stress_anxiety")
+  satisfactionLevel      String   @map("satisfaction_level")
+  agreementsFulfilled    String   @map("agreements_fulfilled")
+  expectationsMet        String   @map("expectations_met")
+  isReceivingService     String   @map("is_receiving_service")
+  writtenEvaluation      String?  @map("written_evaluation")
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
   Matches Matches @relation(fields: [matchId], references: [matchId])
 
@@ -716,6 +719,8 @@ model LegalSupportEvaluation {
   handleStressAnxiety         String   @map("handle_stress_anxiety")
   caseProgress                String   @map("case_progress")
   satisfactionLevel           String   @map("satisfaction_level")
+  agreementsFulfilled         String   @map("agreements_fulfilled")
+  isReceivingService          String   @map("is_receiving_service")
   expectationsMet             String   @map("expectations_met")
   writtenEvaluation           String?  @map("written_evaluation")
   createdAt                   DateTime @default(now()) @map("created_at") @db.Timestamp(6)
@@ -727,16 +732,16 @@ model LegalSupportEvaluation {
 }
 
 model MdaFormsAnswers {
-  id                               Int      @id(map: "mda_forms_answers_pk") @default(autoincrement())
-  form                             String   @db.VarChar(30)
-  formId                           Int      @map("form_id") 
-  createdAt                        DateTime @default(now()) @map("created_at") @db.Timestamp(6)    
-  updatedAt                        DateTime @updatedAt  @map("updated_at") @db.Timestamp(6)  
-  organizationId                   BigInt?  @map("organization_id")
-  volunteerEmail                   String   @map("volunteer_email") @db.VarChar(254)
-  msrName                          String   @map("msr_name") @db.VarChar(200)
-  ticketId                         Int?     @map("ticket_id")
-  answers                          Json?
+  id             Int      @id(map: "mda_forms_answers_pk") @default(autoincrement())
+  form           String   @db.VarChar(30)
+  formId         Int      @map("form_id")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+  organizationId BigInt?  @map("organization_id")
+  volunteerEmail String   @map("volunteer_email") @db.VarChar(254)
+  msrName        String   @map("msr_name") @db.VarChar(200)
+  ticketId       Int?     @map("ticket_id")
+  answers        Json?
 
   @@map("mda_forms_answers")
   @@schema("legacy_support_assessments")
@@ -947,21 +952,21 @@ enum ViolenceType {
   threat
   political_violence
   no_violence
-  
+
   @@map("violence_type")
   @@schema("msr")
 }
 
 enum ViolenceTime {
-  isolated_episode         
-  last_week               
-  less_than_3_months        
-  between_3_months_and_1_year 
-  between_1_and_3_years      
-  between_3_and_6_years      
-  between_6_and_10_years     
+  isolated_episode
+  last_week
+  less_than_3_months
+  between_3_months_and_1_year
+  between_1_and_3_years
+  between_3_and_6_years
+  between_6_and_10_years
   more_than_10_years
-  
+
   @@map("violence_time")
   @@schema("msr")
 }
@@ -970,7 +975,7 @@ enum PerpetratorGender {
   woman
   man
   non_binary
-  
+
   @@map("perpetrator_gender")
   @@schema("msr")
 }
@@ -982,7 +987,7 @@ enum ViolencePerpetrator {
   ex_partner
   work_colleague
   other_people
-  
+
   @@map("violence_perpetrator")
   @@schema("msr")
 }
@@ -992,7 +997,7 @@ enum ViolenceLocation {
   public_space
   work_space
   internet_space
-  
+
   @@map("violence_location")
   @@schema("msr")
 }
@@ -1006,7 +1011,7 @@ enum LegalActionsTaken {
   police_report
   protective_measure
   none_taken
-  
+
   @@map("legal_actions_taken")
   @@schema("msr")
 }
@@ -1018,7 +1023,7 @@ enum LegalActionDifficulty {
   no_access_to_justice
   denied_restraining_order
   not_applicable
-  
+
   @@map("legal_action_difficulty")
   @@schema("msr")
 }
@@ -1029,7 +1034,7 @@ enum ProtectiveFactor {
   feels_safe
   is_not_dependant
   has_qualified_public_services
-  
+
   @@map("protective_factors")
   @@schema("msr")
 }
@@ -1045,7 +1050,7 @@ enum RiskFactor {
   feels_isolated
   other_risks
   needed_medical_attention
-  
+
   @@map("risk_factors")
   @@schema("msr")
 }
@@ -1054,12 +1059,12 @@ enum MonthlyIncome {
   yes
   no
   no_access
-  
+
   @@map("has_monthly_income")
   @@schema("msr")
 }
 
-enum IncomeRange {
+enum MonthlyIncomeRange {
   no_income
   half_minimum_wage
   up_to_one_minimum_wage
@@ -1067,8 +1072,8 @@ enum IncomeRange {
   up_to_three_minimum_wages
   up_to_four_minimum_wages
   five_minimum_wages_or_more
-  
-  @@map("income_range")
+
+  @@map("monthly_income_range")
   @@schema("msr")
 }
 
@@ -1079,16 +1084,16 @@ enum EmploymentStatus {
   student_with_income
   retired
   unemployed
-  
+
   @@map("employment_status")
   @@schema("msr")
 }
 
 enum FamilyProvider {
-  yes                
-  no                 
-  shared_responsibility  
-  
+  yes
+  no
+  shared_responsibility
+
   @@map("family_provider")
   @@schema("msr")
 }
