@@ -242,6 +242,7 @@ model MSRs {
   SurveyQualityOfLifeD0   SurveyQualityOfLifeD0[]
   SurveyQualityOfLifeD90  SurveyQualityOfLifeD90[]
   SurveyQualityOfLifeD180 SurveyQualityOfLifeD180[]
+  SurveyQualityOfLifeD270 SurveyQualityOfLifeD270[]
   MSRViolenceHistory      MSRViolenceHistory[]
   MSRSocioeconomicData    MSRSocioeconomicData?
 
@@ -284,10 +285,10 @@ model MSRViolenceHistory {
   violenceOccurredInBrazil Boolean                @map("violence_occurred_in_brazil")
   perpetratorGender        PerpetratorGender?     @map("perpetrator_gender")
   violencePerpetrator      ViolencePerpetrator?   @map("violence_perpetrator")
-  livesWithPerpetrator     LivesWithPerpetrator[] @map("lives_with_perpetrator")
+  livesWithPerpetrator     LivesWithPerpetrator? @map("lives_with_perpetrator")
   violenceLocation         ViolenceLocation[]     @map("violence_location")
   legalActionsTaken        LegalActionsTaken[]    @map("legal_actions_taken")
-  legalActionDifficulty    LegalActionDifficulty? @map("legal_action_difficulty")
+  legalActionDifficulty    LegalActionDifficulty[] @map("legal_action_difficulty")
   protectiveFactors        ProtectiveFactor[]     @map("protective_factors")
   riskFactors              RiskFactor[]           @map("risk_factors")
   createdAt                DateTime               @default(now()) @map("created_at") @db.Timestamp(6)
@@ -354,24 +355,26 @@ model SupportRequestStatusHistory {
 }
 
 model Matches {
-  matchId                        Int                              @id @default(autoincrement()) @map("match_id")
-  supportRequestId               Int                              @map("support_request_id")
-  msrId                          BigInt                           @map("msr_id")
-  volunteerId                    Int?                             @map("volunteer_id")
-  msrZendeskTicketId             BigInt                           @map("msr_zendesk_ticket_id")
-  volunteerZendeskTicketId       BigInt?                          @map("volunteer_zendesk_ticket_id")
-  supportType                    SupportType                      @map("support_type")
-  matchType                      MatchType                        @map("match_type")
-  matchStage                     MatchStage                       @map("match_stage")
-  status                         MatchStatus
-  createdAt                      DateTime                         @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt                      DateTime                         @updatedAt @map("updated_at") @db.Timestamp(6)
-  MatchStatusHistory             MatchStatusHistory[]
-  MatchSurveys                   MatchSurveys[]
-  supportRequest                 SupportRequests                  @relation(fields: [supportRequestId], references: [supportRequestId])
-  volunteer                      Volunteers?                      @relation(fields: [volunteerId], references: [id])
-  PsychologicalSupportEvaluation PsychologicalSupportEvaluation[]
-  LegalSupportEvaluation         LegalSupportEvaluation[]
+  matchId                             Int                              @id @default(autoincrement()) @map("match_id")
+  supportRequestId                    Int                              @map("support_request_id")
+  msrId                               BigInt                           @map("msr_id")
+  volunteerId                         Int?                             @map("volunteer_id")
+  msrZendeskTicketId                  BigInt                           @map("msr_zendesk_ticket_id")
+  volunteerZendeskTicketId            BigInt?                          @map("volunteer_zendesk_ticket_id")
+  supportType                         SupportType                      @map("support_type")
+  matchType                           MatchType                        @map("match_type")
+  matchStage                          MatchStage                       @map("match_stage")
+  status                              MatchStatus
+  createdAt                           DateTime                         @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                           DateTime                         @updatedAt @map("updated_at") @db.Timestamp(6)
+  MatchStatusHistory                  MatchStatusHistory[]
+  MatchSurveys                        MatchSurveys[]
+  supportRequest                      SupportRequests                  @relation(fields: [supportRequestId], references: [supportRequestId])
+  volunteer                           Volunteers?                      @relation(fields: [volunteerId], references: [id])
+  PsychologicalSupportEvaluation      PsychologicalSupportEvaluation[]
+  LegalSupportEvaluation              LegalSupportEvaluation[]
+  MsrPsychologicalSupportConclusion   MsrPsychologicalSupportConclusion[]
+  MsrLegalSupportConclusion           MsrLegalSupportConclusion[]
 
   @@map("matches")
   @@schema("match")
@@ -647,6 +650,8 @@ model SurveyQualityOfLifeD0 {
   controllingSituations String   @map("controlling_situations")
   selfEsteem            String   @map("self_esteem")
   feelings              String?
+  physicalSymptoms      String   @map("physical_symptoms")   
+  emotionalSymptoms     String   @map("emotional_symptoms") 
   handleViolenceImpact  String   @map("handle_violence_impact")
   createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
@@ -664,6 +669,8 @@ model SurveyQualityOfLifeD90 {
   controllingSituations String   @map("controlling_situations")
   selfEsteem            String   @map("self_esteem")
   feelings              String?
+  physicalSymptoms      String   @map("physical_symptoms")   
+  emotionalSymptoms     String   @map("emotional_symptoms") 
   handleViolenceImpact  String   @map("handle_violence_impact")
   createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
@@ -681,6 +688,8 @@ model SurveyQualityOfLifeD180 {
   controllingSituations String   @map("controlling_situations")
   selfEsteem            String   @map("self_esteem")
   feelings              String?
+  physicalSymptoms      String   @map("physical_symptoms")   
+  emotionalSymptoms     String   @map("emotional_symptoms") 
   handleViolenceImpact  String   @map("handle_violence_impact")
   substanceUse          String   @map("substance_use")
   createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
@@ -688,6 +697,24 @@ model SurveyQualityOfLifeD180 {
   MSRs MSRs @relation(fields: [msrId], references: [msrId])
 
   @@map("survey_quality_of_life_d180")
+  @@schema("survey")
+}
+
+model SurveyQualityOfLifeD270 {
+  answerId              Int      @id @default(autoincrement()) @map("answer_id")
+  msrId                 BigInt   @map("msr_id")
+  qualityOfLife         String   @map("quality_of_life")
+  security              String
+  controllingSituations String   @map("controlling_situations")
+  selfEsteem            String   @map("self_esteem")
+  physicalSymptoms      String   @map("physical_symptoms")   
+  emotionalSymptoms     String   @map("emotional_symptoms") 
+  handleViolenceImpact  String   @map("handle_violence_impact")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  MSRs MSRs @relation(fields: [msrId], references: [msrId])
+
+  @@map("survey_quality_of_life_d270")
   @@schema("survey")
 }
 
@@ -728,6 +755,44 @@ model LegalSupportEvaluation {
   Matches Matches @relation(fields: [matchId], references: [matchId])
 
   @@map("legal_support_evaluation")
+  @@schema("survey")
+}
+
+model MsrPsychologicalSupportConclusion {
+  answerId               Int      @id @default(autoincrement()) @map("answer_id")
+  matchId                Int      @map("match_id")
+  hasHelpedWithQuestions String   @map("has_helped_with_questions")
+  handleStressAnxiety    String   @map("handle_stress_anxiety")
+  satisfactionLevel      String   @map("satisfaction_level")
+  continueWithVolunteer  String   @map("continue_with_volunteer")
+  experienceFeedback     String?  @map("experience_feedback")
+  neededPublicServices   String   @map("needed_public_services")
+  informedAboutServices  String   @map("informed_about_services")
+  improvementSuggestions String?  @map("improvement_suggestions")
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  Matches Matches @relation(fields: [matchId], references: [matchId])
+
+  @@map("msr_psychological_support_conclusion")
+  @@schema("survey")
+}
+
+model MsrLegalSupportConclusion {
+  answerId               Int      @id @default(autoincrement()) @map("answer_id")
+  matchId                Int      @map("match_id")
+  informedAboutCase      String   @map("informed_about_case")
+  handleStressAnxiety    String   @map("handle_stress_anxiety")
+  satisfactionLevel      String   @map("satisfaction_level")
+  continueWithVolunteer  String   @map("continue_with_volunteer")
+  experienceFeedback     String?  @map("experience_feedback")
+  neededPublicServices   String   @map("needed_public_services")
+  informedAboutServices  String   @map("informed_about_services")
+  improvementSuggestions String?  @map("improvement_suggestions")
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  Matches Matches @relation(fields: [matchId], references: [matchId])
+
+  @@map("msr_legal_support_conclusion")
   @@schema("survey")
 }
 
