@@ -284,7 +284,7 @@ model MSRViolenceHistory {
   violenceTime             ViolenceTime?          @map("violence_time")
   violenceOccurredInBrazil Boolean                @map("violence_occurred_in_brazil")
   perpetratorGender        PerpetratorGender?     @map("perpetrator_gender")
-  violencePerpetrator      ViolencePerpetrator?   @map("violence_perpetrator")
+  violencePerpetrator      ViolencePerpetrator[]   @map("violence_perpetrator")
   livesWithPerpetrator     LivesWithPerpetrator? @map("lives_with_perpetrator")
   violenceLocation         ViolenceLocation[]     @map("violence_location")
   legalActionsTaken        LegalActionsTaken[]    @map("legal_actions_taken")
