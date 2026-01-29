@@ -650,8 +650,8 @@ model SurveyQualityOfLifeD0 {
   controllingSituations String   @map("controlling_situations")
   selfEsteem            String   @map("self_esteem")
   feelings              String?
-  physicalSymptoms      String   @map("physical_symptoms")   
-  emotionalSymptoms     String   @map("emotional_symptoms") 
+  physicalSymptoms      String?   @map("physical_symptoms")   
+  emotionalSymptoms     String?   @map("emotional_symptoms") 
   handleViolenceImpact  String   @map("handle_violence_impact")
   createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
@@ -669,8 +669,8 @@ model SurveyQualityOfLifeD90 {
   controllingSituations String   @map("controlling_situations")
   selfEsteem            String   @map("self_esteem")
   feelings              String?
-  physicalSymptoms      String   @map("physical_symptoms")   
-  emotionalSymptoms     String   @map("emotional_symptoms") 
+  physicalSymptoms      String?   @map("physical_symptoms")   
+  emotionalSymptoms     String?   @map("emotional_symptoms") 
   handleViolenceImpact  String   @map("handle_violence_impact")
   createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
@@ -688,8 +688,8 @@ model SurveyQualityOfLifeD180 {
   controllingSituations String   @map("controlling_situations")
   selfEsteem            String   @map("self_esteem")
   feelings              String?
-  physicalSymptoms      String   @map("physical_symptoms")   
-  emotionalSymptoms     String   @map("emotional_symptoms") 
+  physicalSymptoms      String?   @map("physical_symptoms")   
+  emotionalSymptoms     String?   @map("emotional_symptoms") 
   handleViolenceImpact  String   @map("handle_violence_impact")
   substanceUse          String   @map("substance_use")
   createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
@@ -707,8 +707,8 @@ model SurveyQualityOfLifeD270 {
   security              String
   controllingSituations String   @map("controlling_situations")
   selfEsteem            String   @map("self_esteem")
-  physicalSymptoms      String   @map("physical_symptoms")   
-  emotionalSymptoms     String   @map("emotional_symptoms") 
+  physicalSymptoms      String?   @map("physical_symptoms")   
+  emotionalSymptoms     String?   @map("emotional_symptoms") 
   handleViolenceImpact  String   @map("handle_violence_impact")
   createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
