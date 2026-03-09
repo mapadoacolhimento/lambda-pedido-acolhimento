@@ -194,13 +194,14 @@ model Volunteers {
   availability               Int
   offers_libras_support      Boolean
   street                     String?                    @db.VarChar(200)
-  Matches                    Matches[]
-  volunteer_availability     VolunteerAvailability?
-  volunteer_status_history   VolunteerStatusHistory[]
-  volunteers_formdata        volunteers_formdata?       @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_volunteer_form_data_id_ec6c5a18_fk_volunteer")
-  volunteer_segments         VolunteerSegments[]
-  volunteer_unsubscriptions  VolunteerUnsubscriptions[]
-  volunteer_training_history VolunteerTrainingHistory[]
+  Matches                     Matches[]
+  volunteer_availability      VolunteerAvailability?
+  volunteer_status_history    VolunteerStatusHistory[]
+  volunteers_formdata         volunteers_formdata?       @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_volunteer_form_data_id_ec6c5a18_fk_volunteer")
+  volunteer_segments          VolunteerSegments[]
+  volunteer_unsubscriptions   VolunteerUnsubscriptions[]
+  volunteer_training_history  VolunteerTrainingHistory[]
+  VolunteerInstrumentalRecord VolunteerInstrumentalRecord[]
 
   @@index([form_data_id], map: "volunteers_volunteer_form_data_id_ec6c5a18")
   @@map("volunteers")
@@ -382,6 +383,8 @@ model Matches {
   PsychologicalSupportFollowUpII          PsychologicalSupportFollowUpII[]
   VolunteerPsychologicalSupportConclusion VolunteerPsychologicalSupportConclusion[]
   SupportInterruption                     SupportInterruption[]
+  MsrInstrumentalRecord                   MsrInstrumentalRecord[]
+  VolunteerInstrumentalRecord             VolunteerInstrumentalRecord[]
 
   @@map("matches")
   @@schema("match")
@@ -1103,6 +1106,43 @@ model SupportInterruption {
   @@schema("survey")
 }
 
+model MsrInstrumentalRecord {
+  msrInstrumentalRecordId Int                @id @default(autoincrement()) @map("msr_instrumental_record_id")
+  matchId                 Int?               @map("match_id")
+  msrId                   BigInt             @map("msr_id")
+  instrumentalType        InstrumentalType   @map("instrumental_type")
+  status                  InstrumentalStatus @default(sent) @map("status")
+  answerId                Int?               @map("answer_id")
+  sentAt                  DateTime           @default(now()) @map("sent_at") @db.Timestamp(6)
+  answeredAt              DateTime?          @map("answered_at") @db.Timestamp(6)
+  createdAt               DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt               DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  match Matches? @relation(fields: [matchId], references: [matchId])
+
+  @@map("msr_instrumental_record")
+  @@schema("survey")
+}
+
+model VolunteerInstrumentalRecord {
+  volunteerInstrumentalRecordId Int                @id @default(autoincrement()) @map("volunteer_instrumental_record_id")
+  matchId                       Int                @map("match_id")
+  volunteerId                   Int                @map("volunteer_id")
+  instrumentalType              InstrumentalType   @map("instrumental_type")
+  status                        InstrumentalStatus @default(sent) @map("status")
+  answerId                      Int?               @map("answer_id")
+  sentAt                        DateTime           @default(now()) @map("sent_at") @db.Timestamp(6)
+  answeredAt                    DateTime?          @map("answered_at") @db.Timestamp(6)
+  createdAt                     DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                     DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  match     Matches    @relation(fields: [matchId], references: [matchId])
+  volunteer Volunteers @relation(fields: [volunteerId], references: [id])
+
+  @@map("volunteer_instrumental_record")
+  @@schema("survey")
+}
+
 model MdaFormsAnswers {
   id             Int      @id(map: "mda_forms_answers_pk") @default(autoincrement())
   form           String   @db.VarChar(30)
@@ -1693,6 +1733,38 @@ enum SuspensionReason {
   other
 
   @@map("suspension_reason")
+  @@schema("survey")
+}
+
+enum InstrumentalType {
+  // MSR
+  quality_of_life_d0
+  quality_of_life_d90
+  quality_of_life_d180
+  quality_of_life_d270
+  psychological_support_evaluation
+  legal_support_evaluation
+  msr_psychological_support_conclusion
+  msr_legal_support_conclusion
+
+  // Volunteer
+  psychological_support_follow_up_i
+  psychological_support_follow_up_ii
+  legal_support_follow_up_i
+  legal_support_follow_up_ii
+  volunteer_psychological_support_conclusion
+  volunteer_legal_support_conclusion
+  support_interruption
+
+  @@map("instrumental_type")
+  @@schema("survey")
+}
+
+enum InstrumentalStatus {
+  sent
+  answered
+
+  @@map("instrumental_status")
   @@schema("survey")
 }
 
