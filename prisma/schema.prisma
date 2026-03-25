@@ -279,16 +279,16 @@ model MSRStatusHistory {
 }
 
 model MSRViolenceHistory {
-  msrViolenceHistoryId     Int                    @id @default(autoincrement()) @map("msr_violence_history_id")
-  msrId                    BigInt                 @unique @map("msr_id")
-  violenceType             ViolenceType[]         @map("violence_type")
-  violenceTime             ViolenceTime?          @map("violence_time")
-  violenceOccurredInBrazil Boolean                @map("violence_occurred_in_brazil")
-  perpetratorGender        PerpetratorGender?     @map("perpetrator_gender")
+  msrViolenceHistoryId     Int                     @id @default(autoincrement()) @map("msr_violence_history_id")
+  msrId                    BigInt                  @unique @map("msr_id")
+  violenceType             ViolenceType[]          @map("violence_type")
+  violenceTime             ViolenceTime?           @map("violence_time")
+  violenceOccurredInBrazil Boolean                 @map("violence_occurred_in_brazil")
+  perpetratorGender        PerpetratorGender?      @map("perpetrator_gender")
   violencePerpetrator      ViolencePerpetrator[]   @map("violence_perpetrator")
-  livesWithPerpetrator     LivesWithPerpetrator? @map("lives_with_perpetrator")
-  violenceLocation         ViolenceLocation[]     @map("violence_location")
-  legalActionsTaken        LegalActionsTaken[]    @map("legal_actions_taken")
+  livesWithPerpetrator     LivesWithPerpetrator?   @map("lives_with_perpetrator")
+  violenceLocation         ViolenceLocation[]      @map("violence_location")
+  legalActionsTaken        LegalActionsTaken[]     @map("legal_actions_taken")
   legalActionDifficulty    LegalActionDifficulty[] @map("legal_action_difficulty")
   protectiveFactors        ProtectiveFactor[]      @map("protective_factors")
   riskFactors              RiskFactor[]            @map("risk_factors")
@@ -660,8 +660,8 @@ model SurveyQualityOfLifeD0 {
   controllingSituations String   @map("controlling_situations")
   selfEsteem            String   @map("self_esteem")
   feelings              String?
-  physicalSymptoms      String?   @map("physical_symptoms")   
-  emotionalSymptoms     String?   @map("emotional_symptoms") 
+  physicalSymptoms      String?  @map("physical_symptoms")
+  emotionalSymptoms     String?  @map("emotional_symptoms")
   handleViolenceImpact  String   @map("handle_violence_impact")
   createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
@@ -679,8 +679,8 @@ model SurveyQualityOfLifeD90 {
   controllingSituations String   @map("controlling_situations")
   selfEsteem            String   @map("self_esteem")
   feelings              String?
-  physicalSymptoms      String?   @map("physical_symptoms")   
-  emotionalSymptoms     String?   @map("emotional_symptoms") 
+  physicalSymptoms      String?  @map("physical_symptoms")
+  emotionalSymptoms     String?  @map("emotional_symptoms")
   handleViolenceImpact  String   @map("handle_violence_impact")
   createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
@@ -698,10 +698,10 @@ model SurveyQualityOfLifeD180 {
   controllingSituations String   @map("controlling_situations")
   selfEsteem            String   @map("self_esteem")
   feelings              String?
-  physicalSymptoms      String?   @map("physical_symptoms")   
-  emotionalSymptoms     String?   @map("emotional_symptoms") 
+  physicalSymptoms      String?  @map("physical_symptoms")
+  emotionalSymptoms     String?  @map("emotional_symptoms")
   handleViolenceImpact  String   @map("handle_violence_impact")
-  substanceUse          String   @map("substance_use")
+  substanceUse          String?  @map("substance_use")
   createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
   MSRs MSRs @relation(fields: [msrId], references: [msrId])
@@ -717,8 +717,8 @@ model SurveyQualityOfLifeD270 {
   security              String
   controllingSituations String   @map("controlling_situations")
   selfEsteem            String   @map("self_esteem")
-  physicalSymptoms      String?   @map("physical_symptoms")   
-  emotionalSymptoms     String?   @map("emotional_symptoms") 
+  physicalSymptoms      String?  @map("physical_symptoms")
+  emotionalSymptoms     String?  @map("emotional_symptoms")
   handleViolenceImpact  String   @map("handle_violence_impact")
   createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
@@ -729,18 +729,17 @@ model SurveyQualityOfLifeD270 {
 }
 
 model PsychologicalSupportEvaluation {
-  answerId               Int      @id @default(autoincrement()) @map("answer_id")
-  matchId                Int      @map("match_id")
-  hadToPayForSupport     String   @map("had_to_pay_for_support")
-  hasHelpedWithQuestions String?   @map("has_helped_with_questions")
-  isStrategyUseful       String   @map("is_strategy_useful")
-  handleStressAnxiety    String   @map("handle_stress_anxiety")
-  satisfactionLevel      String   @map("satisfaction_level")
-  agreementsFulfilled    String?   @map("agreements_fulfilled")
-  expectationsMet        String   @map("expectations_met")
-  isReceivingService     String?   @map("is_receiving_service")
-  writtenEvaluation      String?  @map("written_evaluation")
-  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  answerId            Int      @id @default(autoincrement()) @map("answer_id")
+  matchId             Int      @map("match_id")
+  hadToPayForSupport  String   @map("had_to_pay_for_support")
+  isStrategyUseful    String   @map("is_strategy_useful")
+  handleStressAnxiety String   @map("handle_stress_anxiety")
+  satisfactionLevel   String   @map("satisfaction_level")
+  agreementsFulfilled String?  @map("agreements_fulfilled")
+  expectationsMet     String   @map("expectations_met")
+  isReceivingService  String?  @map("is_receiving_service")
+  writtenEvaluation   String?  @map("written_evaluation")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
   Matches Matches @relation(fields: [matchId], references: [matchId])
 
@@ -756,8 +755,8 @@ model LegalSupportEvaluation {
   handleStressAnxiety         String   @map("handle_stress_anxiety")
   caseProgress                String   @map("case_progress")
   satisfactionLevel           String   @map("satisfaction_level")
-  agreementsFulfilled         String?   @map("agreements_fulfilled")
-  isReceivingService          String?   @map("is_receiving_service")
+  agreementsFulfilled         String?  @map("agreements_fulfilled")
+  isReceivingService          String?  @map("is_receiving_service")
   expectationsMet             String   @map("expectations_met")
   writtenEvaluation           String?  @map("written_evaluation")
   createdAt                   DateTime @default(now()) @map("created_at") @db.Timestamp(6)
@@ -771,7 +770,7 @@ model LegalSupportEvaluation {
 model MsrPsychologicalSupportConclusion {
   answerId               Int      @id @default(autoincrement()) @map("answer_id")
   matchId                Int      @map("match_id")
-  hasHelpedWithQuestions String   @map("has_helped_with_questions")
+  isStrategyUseful       String   @map("is_strategy_useful")
   handleStressAnxiety    String   @map("handle_stress_anxiety")
   satisfactionLevel      String   @map("satisfaction_level")
   continueWithVolunteer  String   @map("continue_with_volunteer")
@@ -873,7 +872,8 @@ model LegalSupportFollowUpII {
   violenceAssessment           String                       @map("violence_assessment") @db.Text
   mainDemandCategory           MainDemandCategory           @map("main_demand_category")
   mainDemandDescription        String                       @map("main_demand_description") @db.Text
-  legalProcessStage            String?                      @map("legal_process_stage")
+  legalProcessStageCriminal    String?                      @map("legal_process_stage_criminal")
+  legalProcessStageCivil       String?                      @map("legal_process_stage_civil")
   safetyPlanUsed               SafetyPlanUsed               @map("safety_plan_used")
   safetyPlanDescription        String?                      @map("safety_plan_description") @db.Text
   violenceProcessImpacts       String[]                     @map("violence_process_impacts")
