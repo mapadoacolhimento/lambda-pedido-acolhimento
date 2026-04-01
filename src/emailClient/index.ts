@@ -1,7 +1,10 @@
 import type { Volunteers } from "@prisma/client";
 import sendEmail from "./sendEmail";
-import { getFirstName } from "../utils";
-import { TRANSACTIONAL_EMAIL_IDS } from "../constants";
+import { getFirstName, getInfoMsr } from "../utils";
+import {
+  TRANSACTIONAL_EMAIL_IDS,
+  TRANSATIONAL_EMAIL_WITH_INFO,
+} from "../constants";
 import type { SupportRequest, ZendeskTicket, ZendeskUser } from "../types";
 
 type Volunteer = Pick<
@@ -98,6 +101,46 @@ export async function sendEmailSocialWorker(
   };
 
   const emailRes = await sendEmail(msrEmail, id, emailVars);
+
+  return emailRes;
+}
+
+export async function sendEmailToVolunteerWihtMsrInfo(
+  volunteer: Volunteer & Pick<ZendeskTicket, "encoded_id">,
+  msrFirstName: Msr["name"],
+  supportType: SupportRequest["supportType"],
+  msrId: bigint
+) {
+  const msrInfo = await getInfoMsr(msrId);
+
+  if (!msrInfo) {
+    return await sendEmailToVolunteer(volunteer, msrFirstName, supportType);
+  }
+  const id = TRANSATIONAL_EMAIL_WITH_INFO[supportType]["volunteer"];
+  const emailVars = {
+    volunteer_first_name: getFirstName(volunteer.firstName),
+    msr_first_name: getFirstName(msrFirstName),
+    volunteer_phone: volunteer.phone,
+    volunteer_zendesk_ticket_id: volunteer.encoded_id,
+    gender: msrInfo.gender,
+    age: msrInfo.age,
+    state: msrInfo.state,
+    violence_type: msrInfo.violenceTime,
+    monthly_income_range: msrInfo.monthlyIncomeRange,
+    employment_status: msrInfo.employmentStatus,
+    has_financial_dependents: msrInfo.hasFinancialDependents,
+    family_provider: msrInfo.familyProvider,
+    property_ownership: msrInfo.propertyOwnership,
+    violence_time: msrInfo.violenceTime,
+    perpetrator_gender: msrInfo.perpetratorGender,
+    violence_perpetrator: msrInfo.violencePerpetrator,
+    lives_with_perpetrator: msrInfo.livesWithPerpetrator,
+    violence_location: msrInfo.violenceLocation,
+    legal_actions_taken: msrInfo.legalActionsTaken,
+    legal_action_difficulty: msrInfo.legalActionsTaken,
+  };
+
+  const emailRes = await sendEmail(volunteer.email, id, emailVars);
 
   return emailRes;
 }

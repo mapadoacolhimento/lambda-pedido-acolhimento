@@ -7,4 +7,5 @@ export { default as getCurrentDate } from "./getCurrentDate";
 export { default as isProduction } from "./isProduction";
 export { default as getFirstName } from "./getFirstName";
 export { default as notFoundErrorPayload } from "./notFoundErrorPayload";
+export { default as getInfoMsr } from "./getMsrInfo";
 export * from "./stringfyBigInt";

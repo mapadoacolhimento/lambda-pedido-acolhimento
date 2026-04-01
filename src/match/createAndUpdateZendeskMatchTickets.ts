@@ -1,7 +1,11 @@
 import type { VolunteerAvailability, Volunteers } from "@prisma/client";
-import client from "../prismaClient";
+import client, { isFeatureFlagEnabled } from "../prismaClient";
 import { createTicket, getUser, updateTicket } from "../zendeskClient";
-import { sendEmailToMsr, sendEmailToVolunteer } from "../emailClient";
+import {
+  sendEmailToMsr,
+  sendEmailToVolunteer,
+  sendEmailToVolunteerWihtMsrInfo,
+} from "../emailClient";
 import { getCurrentDate, getErrorMessage } from "../utils";
 import {
   ZENDESK_CUSTOM_FIELDS_DICIO,
@@ -9,6 +13,7 @@ import {
   ZENDESK_SUBDOMAIN,
   AGENT,
   TRANSACTIONAL_EMAIL_IDS,
+  NEW_EMAIL_TO_VOLUNTEER_FEATURE_FLAG,
 } from "../constants";
 import type { SupportRequest, ZendeskTicket, ZendeskUser } from "../types";
 
@@ -211,16 +216,34 @@ export default async function createAndUpdateZendeskMatchTickets(
     transactionalId
   );
 
-  await sendEmailToVolunteer(
-    {
-      ...volunteer,
-      encoded_id: volunteerZendeskTicket?.encoded_id
-        ? volunteerZendeskTicket?.encoded_id
-        : "",
-    },
-    msr.name,
-    supportRequest.supportType
+  const isNewEmailToVolunteerEnabled = await isFeatureFlagEnabled(
+    NEW_EMAIL_TO_VOLUNTEER_FEATURE_FLAG
   );
+
+  if (isNewEmailToVolunteerEnabled) {
+    await sendEmailToVolunteerWihtMsrInfo(
+      {
+        ...volunteer,
+        encoded_id: volunteerZendeskTicket?.encoded_id
+          ? volunteerZendeskTicket?.encoded_id
+          : "",
+      },
+      msr.name,
+      supportRequest.supportType,
+      msr.id
+    );
+  } else {
+    await sendEmailToVolunteer(
+      {
+        ...volunteer,
+        encoded_id: volunteerZendeskTicket?.encoded_id
+          ? volunteerZendeskTicket?.encoded_id
+          : "",
+      },
+      msr.name,
+      supportRequest.supportType
+    );
+  }
 
   return volunteerZendeskTicket.id;
 }
