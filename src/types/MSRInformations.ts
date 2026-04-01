@@ -2,7 +2,6 @@ export type MSRInformations = {
   age: string;
   gender: string;
   state: string;
-  hasMonthlyIncome: string;
   monthlyIncomeRange: string;
   employmentStatus: string;
   hasFinancialDependents: string;

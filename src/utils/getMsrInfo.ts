@@ -1,7 +1,6 @@
 import client from "../prismaClient";
 import {
   MONTHLY_INCOME_RANGES,
-  HAS_MONTHLY_INCOME,
   FAMILY_PROVIDER,
   EMPLOYMENT_STATUS,
   VIOLENCE_TYPES,
@@ -69,6 +68,9 @@ export default async function getMsrInfo(msrId: bigint) {
     if (!msr || !msrSocioeconomicData || !msrViolenceHistory) {
       return null;
     }
+    const hasMonthlyIncome = msrSocioeconomicData?.hasMonthlyIncome;
+    const incomeAccessSuffix =
+      hasMonthlyIncome === "no_access" ? " (Sem acesso a renda)" : "";
 
     const msrInfo: MSRInformations = {
       age: msr?.MSRPii?.dateOfBirth
@@ -76,11 +78,9 @@ export default async function getMsrInfo(msrId: bigint) {
         : "Não informado",
       gender: msr?.gender ? GENDER[msr.gender] : "Não informado",
       state: msr?.state ? msr.state : "Não informado",
-      hasMonthlyIncome: msrSocioeconomicData.hasMonthlyIncome
-        ? HAS_MONTHLY_INCOME[msrSocioeconomicData.hasMonthlyIncome]
-        : "Não informado",
       monthlyIncomeRange: msrSocioeconomicData.monthlyIncomeRange
-        ? MONTHLY_INCOME_RANGES[msrSocioeconomicData.monthlyIncomeRange]
+        ? MONTHLY_INCOME_RANGES[msrSocioeconomicData.monthlyIncomeRange] +
+          incomeAccessSuffix
         : "Não informado",
       employmentStatus: msrSocioeconomicData.employmentStatus
         ? EMPLOYMENT_STATUS[msrSocioeconomicData.employmentStatus]

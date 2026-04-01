@@ -125,7 +125,7 @@ export async function sendEmailToVolunteerWihtMsrInfo(
     gender: msrInfo.gender,
     age: msrInfo.age,
     state: msrInfo.state,
-    violence_type: msrInfo.violenceTime,
+    violence_type: msrInfo.violenceType,
     monthly_income_range: msrInfo.monthlyIncomeRange,
     employment_status: msrInfo.employmentStatus,
     has_financial_dependents: msrInfo.hasFinancialDependents,
@@ -137,7 +137,7 @@ export async function sendEmailToVolunteerWihtMsrInfo(
     lives_with_perpetrator: msrInfo.livesWithPerpetrator,
     violence_location: msrInfo.violenceLocation,
     legal_actions_taken: msrInfo.legalActionsTaken,
-    legal_action_difficulty: msrInfo.legalActionsTaken,
+    legal_action_difficulty: msrInfo.legalActionDifficulty,
   };
 
   const emailRes = await sendEmail(volunteer.email, id, emailVars);
