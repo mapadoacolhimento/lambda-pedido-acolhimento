@@ -17,6 +17,9 @@ import {
 import type { MSRInformations } from "../types";
 
 function mapArrayType(fieldType: string[], map: Record<string, string>) {
+  if (fieldType.length === 0) {
+    return "Não informado";
+  }
   return fieldType
     .map((type) => map[type])
     .filter((v): v is string => !!v)
@@ -63,7 +66,7 @@ export default async function getMsrInfo(msrId: bigint) {
     const msrViolenceHistory = msr?.MSRViolenceHistory[0];
     const msrSocioeconomicData = msr?.MSRSocioeconomicData;
 
-    if (!msrSocioeconomicData || !msrViolenceHistory) {
+    if (!msr || !msrSocioeconomicData || !msrViolenceHistory) {
       return null;
     }
 
