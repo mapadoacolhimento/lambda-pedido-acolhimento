@@ -3,7 +3,7 @@ import sendEmail from "./sendEmail";
 import { getFirstName, getInfoMsr } from "../utils";
 import {
   TRANSACTIONAL_EMAIL_IDS,
-  TRANSATIONAL_EMAIL_WITH_INFO,
+  TRANSACTIONAL_EMAIL_WITH_INFO,
 } from "../constants";
 import type { SupportRequest, ZendeskTicket, ZendeskUser } from "../types";
 
@@ -105,7 +105,7 @@ export async function sendEmailSocialWorker(
   return emailRes;
 }
 
-export async function sendEmailToVolunteerWihtMsrInfo(
+export async function sendEmailToVolunteerWithMsrInfo(
   volunteer: Volunteer & Pick<ZendeskTicket, "encoded_id">,
   msrFirstName: Msr["name"],
   supportType: SupportRequest["supportType"],
@@ -116,7 +116,7 @@ export async function sendEmailToVolunteerWihtMsrInfo(
   if (!msrInfo) {
     return await sendEmailToVolunteer(volunteer, msrFirstName, supportType);
   }
-  const id = TRANSATIONAL_EMAIL_WITH_INFO[supportType]["volunteer"];
+  const id = TRANSACTIONAL_EMAIL_WITH_INFO[supportType]["volunteer"];
   const emailVars = {
     volunteer_first_name: getFirstName(volunteer.firstName),
     msr_first_name: getFirstName(msrFirstName),

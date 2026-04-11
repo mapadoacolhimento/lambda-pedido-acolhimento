@@ -5,7 +5,7 @@ import {
   EMPLOYMENT_STATUS,
   VIOLENCE_TYPES,
   VIOLENCE_TIME,
-  PREPATATOR_GENDER,
+  PERPETRATOR_GENDER,
   VIOLENCE_PERPETRATOR,
   LIVES_WITH_PERPETRATOR,
   VIOLENCE_LOCATION,
@@ -101,7 +101,7 @@ export default async function getMsrInfo(msrId: bigint) {
         ? VIOLENCE_TIME[msrViolenceHistory.violenceTime]
         : "Não informado",
       perpetratorGender: msrViolenceHistory.perpetratorGender
-        ? PREPATATOR_GENDER[msrViolenceHistory.perpetratorGender]
+        ? PERPETRATOR_GENDER[msrViolenceHistory.perpetratorGender]
         : "Não informado",
       violencePerpetrator: msrViolenceHistory.violencePerpetrator
         ? mapArrayType(

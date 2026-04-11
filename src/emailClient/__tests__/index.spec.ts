@@ -3,7 +3,7 @@ import {
   sendEmailSocialWorker,
   sendEmailToMsr,
   sendEmailToVolunteer,
-  sendEmailToVolunteerWihtMsrInfo,
+  sendEmailToVolunteerWithMsrInfo,
 } from "..";
 import * as sendEmail from "../../emailClient/sendEmail";
 import { prismaMock } from "../../setupTests";
@@ -212,7 +212,7 @@ describe("sendEmailToVolunteer", () => {
           dateOfBirth: "2000-01-17",
         },
       } as unknown as MSRs);
-      const res = await sendEmailToVolunteerWihtMsrInfo(
+      const res = await sendEmailToVolunteerWithMsrInfo(
         volunteer,
         msr.name,
         "psychological",
@@ -231,7 +231,7 @@ describe("sendEmailToVolunteer", () => {
           age: "26",
           gender: "Mulher cisgênero",
           state: "MG",
-          monthly_income_range: "Entre meio a um salário mínimo",
+          monthly_income_range: "Até um salário mínimo",
           employment_status: "Empregada (CLT)",
           has_financial_dependents: "Sim",
           family_provider: "Sim",
@@ -253,7 +253,7 @@ describe("sendEmailToVolunteer", () => {
   describe("Legal with MSR information not found", () => {
     it("should call sendEmail with correct params", async () => {
       prismaMock.mSRs.findUnique.mockResolvedValueOnce(null);
-      const res = await sendEmailToVolunteerWihtMsrInfo(
+      const res = await sendEmailToVolunteerWithMsrInfo(
         volunteer,
         msr.name,
         "legal",
@@ -318,7 +318,7 @@ describe("sendEmailToVolunteer", () => {
           dateOfBirth: "2000-01-17",
         },
       } as unknown as MSRs);
-      const res = await sendEmailToVolunteerWihtMsrInfo(
+      const res = await sendEmailToVolunteerWithMsrInfo(
         volunteer,
         msr.name,
         "legal",
@@ -337,8 +337,7 @@ describe("sendEmailToVolunteer", () => {
           age: "26",
           gender: "Mulher cisgênero",
           state: "MG",
-          monthly_income_range:
-            "Entre meio a um salário mínimo (Sem acesso a renda)",
+          monthly_income_range: "Até um salário mínimo (Sem acesso a renda)",
           employment_status: "Empregada (CLT)",
           has_financial_dependents: "Sim",
           family_provider: "Sim",
@@ -347,7 +346,7 @@ describe("sendEmailToVolunteer", () => {
             "Violência física,Violência psicológica,Violência sexual",
           violence_time: "Entre 3 meses e 1 ano",
           perpetrator_gender: "Homem",
-          violence_perpetrator: "Parceiro(a) anterior",
+          violence_perpetrator: "Ex-parceiro(a)",
           lives_with_perpetrator: "Não",
           violence_location: "Ambiente doméstico",
           legal_actions_taken:

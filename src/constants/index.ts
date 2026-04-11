@@ -60,7 +60,7 @@ export const TRANSACTIONAL_EMAIL_IDS = {
   },
 };
 
-export const TRANSATIONAL_EMAIL_WITH_INFO = {
+export const TRANSACTIONAL_EMAIL_WITH_INFO = {
   psychological: {
     msr: "clv4977jg01a7hlj1twd22zq1",
     volunteer: "cmn6it2qq00640iyhikye2b77",
@@ -74,10 +74,10 @@ export const TRANSATIONAL_EMAIL_WITH_INFO = {
 export const MONTHLY_INCOME_RANGES = {
   no_income: "Sem renda",
   half_minimum_wage: "Até meio salário mínimo",
-  up_to_one_minimum_wage: "Entre meio a um salário mínimo",
-  up_to_two_minimum_wages: "Entre um a dois salários mínimos",
-  up_to_three_minimum_wages: "Entre dois a três salários mínimos",
-  up_to_four_minimum_wages: "Entre três a quatro salários mínimos",
+  up_to_one_minimum_wage: "Até um salário mínimo",
+  up_to_two_minimum_wages: "Até dois salários mínimos",
+  up_to_three_minimum_wages: "Até três salários mínimos",
+  up_to_four_minimum_wages: "Até quatro salários mínimos",
   five_minimum_wages_or_more: "Cinco salários mínimos ou mais",
 };
 
@@ -116,18 +116,16 @@ export const VIOLENCE_TYPES = {
 };
 
 export const VIOLENCE_TIME = {
-  isolated_episode: "Episódio isolado",
   last_week: " Na última semana",
-  last_month: "No último mês",
-  less_than_3_months: "Nos últimos 3 meses",
+  less_than_3_months: "Há menos de 3 meses",
   between_3_months_and_1_year: "Entre 3 meses e 1 ano",
   between_1_and_3_years: "Entre 1 e 3 anos",
   between_3_and_6_years: "Entre 3 e 6 anos",
   between_6_and_10_years: "Entre 6 e 10 anos",
-  more_than_10_years: "Mais de 10 anos",
+  more_than_10_years: "Há mais de 10 anos",
 };
 
-export const PREPATATOR_GENDER = {
+export const PERPETRATOR_GENDER = {
   woman: "Mulher",
   man: "Homem",
   non_binary: "Não-binário",
@@ -135,9 +133,9 @@ export const PREPATATOR_GENDER = {
 
 export const VIOLENCE_PERPETRATOR = {
   nuclear_family: "Família nuclear",
-  close_family: "Família próxima",
+  close_family: "Famíliar",
   current_partner: "Parceiro(a) atual",
-  ex_partner: "Parceiro(a) anterior",
+  ex_partner: "Ex-parceiro(a)",
   work_colleague: "Colega de trabalho",
   other_people: "Outras pessoas",
 };
@@ -171,7 +169,7 @@ export const LEGAL_ACTION_TAKEN = {
   civil_case: "Processo Cível/Direito de Família",
   labour_case: "Processo trabalhista",
   police_report: "Registro de Ocorrência (B.O)",
-  protective_measure: "equerimento de Medida Protetiva (Delegacia de Polícia)",
+  protective_measure: "Requerimento de Medida Protetiva (Delegacia de Polícia)",
   none_taken: "Não foi realizada nenhuma providência jurídica",
 };
 

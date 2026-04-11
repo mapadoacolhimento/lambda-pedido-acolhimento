@@ -18,9 +18,9 @@ const sendEmailToVolunteerMock = jest.spyOn(
   emailClient,
   "sendEmailToVolunteer"
 );
-const sendEmailToVolunteerWihtMsrInfoMock = jest.spyOn(
+const sendEmailToVolunteerWithMsrInfoMock = jest.spyOn(
   emailClient,
-  "sendEmailToVolunteerWihtMsrInfo"
+  "sendEmailToVolunteerWithMsrInfo"
 );
 const mockIsFeatureFlagEnabled = jest.spyOn(prisma, "isFeatureFlagEnabled");
 
@@ -231,7 +231,7 @@ describe("createAndUpdateZendeskMatchTickets", () => {
         legalSupportRequest,
         mockVolunteerId
       );
-      expect(sendEmailToVolunteerWihtMsrInfoMock).toHaveBeenCalledWith(
+      expect(sendEmailToVolunteerWithMsrInfoMock).toHaveBeenCalledWith(
         {
           ...mockVolunteerFromDB,
           encoded_id: "EFG-456",
@@ -348,7 +348,7 @@ describe("createAndUpdateZendeskMatchTickets", () => {
         baseSupportRequestPayload,
         mockVolunteerId
       );
-      expect(sendEmailToVolunteerWihtMsrInfoMock).toHaveBeenCalledWith(
+      expect(sendEmailToVolunteerWithMsrInfoMock).toHaveBeenCalledWith(
         {
           ...mockVolunteerFromDB,
           encoded_id: "EFG-456",

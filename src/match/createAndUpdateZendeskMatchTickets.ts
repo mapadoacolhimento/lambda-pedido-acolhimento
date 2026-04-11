@@ -4,7 +4,7 @@ import { createTicket, getUser, updateTicket } from "../zendeskClient";
 import {
   sendEmailToMsr,
   sendEmailToVolunteer,
-  sendEmailToVolunteerWihtMsrInfo,
+  sendEmailToVolunteerWithMsrInfo,
 } from "../emailClient";
 import { getCurrentDate, getErrorMessage } from "../utils";
 import {
@@ -221,12 +221,10 @@ export default async function createAndUpdateZendeskMatchTickets(
   );
 
   if (isNewEmailToVolunteerEnabled) {
-    await sendEmailToVolunteerWihtMsrInfo(
+    await sendEmailToVolunteerWithMsrInfo(
       {
         ...volunteer,
-        encoded_id: volunteerZendeskTicket?.encoded_id
-          ? volunteerZendeskTicket?.encoded_id
-          : "",
+        encoded_id: volunteerZendeskTicket?.encoded_id ?? "",
       },
       msr.name,
       supportRequest.supportType,
@@ -236,9 +234,7 @@ export default async function createAndUpdateZendeskMatchTickets(
     await sendEmailToVolunteer(
       {
         ...volunteer,
-        encoded_id: volunteerZendeskTicket?.encoded_id
-          ? volunteerZendeskTicket?.encoded_id
-          : "",
+        encoded_id: volunteerZendeskTicket?.encoded_id ?? "",
       },
       msr.name,
       supportRequest.supportType
