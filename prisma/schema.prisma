@@ -1372,7 +1372,6 @@ enum ViolenceType {
 }
 
 enum ViolenceTime {
-  isolated_episode
   last_week
   less_than_3_months
   between_3_months_and_1_year
