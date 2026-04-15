@@ -832,7 +832,7 @@ model LegalSupportFollowUpI {
   legalChallengesExist        Boolean                      @map("legal_challenges_exist")
   legalChallenges             String?                      @map("legal_challenges") @db.Text
   publicServiceReferral       PublicServiceReferralType?   @map("public_service_referral")
-  publicServiceReferralReason PublicServiceReferralReason? @map("public_service_referral_reason")
+  publicServiceReferralReason String[]                     @map("public_service_referral_reason")
   publicServicesArticulated   String[]                     @map("public_services_articulated")
   psychologistContact         PsychologistContact          @map("psychologist_contact")
   psychologistCollaboration   PsychologistCollaboration    @map("psychologist_collaboration")
@@ -872,8 +872,8 @@ model LegalSupportFollowUpII {
   violenceAssessment           String                       @map("violence_assessment") @db.Text
   mainDemandCategory           MainDemandCategory           @map("main_demand_category")
   mainDemandDescription        String                       @map("main_demand_description") @db.Text
-  legalProcessStageCriminal    String?                      @map("legal_process_stage_criminal")
-  legalProcessStageCivil       String?                      @map("legal_process_stage_civil")
+  legalProcessStageCriminal    String[]                     @map("legal_process_stage_criminal")
+  legalProcessStageCivil       String[]                     @map("legal_process_stage_civil")
   safetyPlanUsed               SafetyPlanUsed               @map("safety_plan_used")
   safetyPlanDescription        String?                      @map("safety_plan_description") @db.Text
   violenceProcessImpacts       String[]                     @map("violence_process_impacts")
@@ -883,7 +883,7 @@ model LegalSupportFollowUpII {
   psychologicalDocumentUsed    Boolean                      @map("psychological_document_used")
   legalChallengesExist         Boolean                      @map("legal_challenges_exist")
   legalChallenges              String?                      @map("legal_challenges") @db.Text
-  publicServiceReferralReason  PublicServiceReferralReason? @map("public_service_referral_reason")
+  publicServiceReferralReason  String[]                     @map("public_service_referral_reason")
   publicServicesArticulated    String[]                     @map("public_services_articulated")
   psychologistContact          PsychologistContact          @map("psychologist_contact")
   psychologistCollaboration    PsychologistCollaboration    @map("psychologist_collaboration")
@@ -921,15 +921,15 @@ model VolunteerLegalSupportConclusion {
   mainDemandCategory                 MainDemandCategory           @map("main_demand_category")
   mainDemandDescription              String                       @map("main_demand_description") @db.Text
   safetyPlanUsed                     SafetyPlanUsed               @map("safety_plan_used")
-  jurisdiction                       String                       @map("jurisdiction") @db.Text
-  usedGenderPrecedents               Boolean                      @map("used_gender_precedents")
-  usedHumanRightsArguments           Boolean                      @map("used_human_rights_arguments")
-  psychologicalDocumentUsed          Boolean                      @map("psychological_document_used")
-  caseConductionDetails              String                       @map("case_conduction_details") @db.Text
+  jurisdiction                       String?                      @map("jurisdiction") @db.Text
+  usedGenderPrecedents               Boolean?                     @map("used_gender_precedents")
+  usedHumanRightsArguments           Boolean?                     @map("used_human_rights_arguments")
+  psychologicalDocumentUsed          Boolean?                     @map("psychological_document_used")
+  caseConductionDetails              String?                      @map("case_conduction_details") @db.Text
   violenceProcessImpacts             String[]                     @map("violence_process_impacts")
   legalChallenges                    String?                      @map("legal_challenges") @db.Text
   expectedOutcomeAchieved            String                       @map("expected_outcome_achieved") @db.Text
-  publicServiceReferralReason        PublicServiceReferralReason? @map("public_service_referral_reason")
+  publicServiceReferralReason        String[]                     @map("public_service_referral_reason")
   publicServicesArticulated          String[]                     @map("public_services_articulated")
   psychologistContact                PsychologistContact          @map("psychologist_contact")
   psychologistCollaboration          PsychologistCollaboration    @map("psychologist_collaboration")
@@ -938,13 +938,13 @@ model VolunteerLegalSupportConclusion {
   genderProceduralAbuseReport        Boolean?                     @map("gender_procedural_abuse_report")
   teamResponseToReport               String?                      @map("team_response_to_report") @db.Text
   lessonsLearned                     String?                      @map("lessons_learned") @db.Text
-  challengesFaced                    String?                      @map("challenges_faced") @db.Text
   volunteerFeelings                  String?                      @map("volunteer_feelings") @db.Text
   requestedTechnicalSupport          Boolean                      @map("requested_technical_support")
   technicalSupportHelp               String[]                     @map("technical_support_help")
   supportSatisfaction                SupportSatisfaction          @map("support_satisfaction")
   messageToTeam                      String?                      @map("message_to_team") @db.Text
   suggestions                        String?                      @map("suggestions") @db.Text
+  wasLegalActionRequired             Boolean?                     @map("was_legal_action_required")
   createdAt                          DateTime                     @default(now()) @map("created_at") @db.Timestamp(6)
 
   match Matches @relation(fields: [matchId], references: [matchId])
@@ -977,7 +977,7 @@ model PsychologicalSupportFollowUpI {
   clinicalDifficulties        String?                      @map("clinical_difficulties") @db.Text
   bondingStrategies           String                       @map("bonding_strategies") @db.Text
   caseReferrals               String[]                     @map("case_referrals")
-  publicServiceReferralReason PublicServiceReferralReason? @map("public_service_referral_reason")
+  publicServiceReferralReason String[]                     @map("public_service_referral_reason")
   publicServicesArticulated   String[]                     @map("public_services_articulated")
   lawyerContact               LawyerContact                @map("lawyer_contact")
   lawyerCollaboration         LawyerCollaboration          @map("lawyer_collaboration")
@@ -1002,7 +1002,7 @@ model PsychologicalSupportFollowUpII {
   matchId                         Int                          @map("match_id")
   stillInSupport                  Boolean                      @map("still_in_support")
   isAttendanceRegular             Boolean                      @map("is_attendance_regular")
-  irregularAttendanceReason       IrregularAttendanceReason?   @map("irregular_attendance_reason")
+  irregularAttendanceReason       String[]                     @map("irregular_attendance_reason")
   respectsAgreements              Boolean                      @map("respects_agreements")
   extraContactFrequency           ExtraContactFrequency?       @map("extra_contact_frequency")
   agreementIssuesDescription      String?                      @map("agreement_issues_description") @db.Text
@@ -1021,7 +1021,7 @@ model PsychologicalSupportFollowUpII {
   clinicalDifficulties            String?                      @map("clinical_difficulties") @db.Text
   newBondingStrategies            Boolean                      @map("new_bonding_strategies")
   newBondingStrategiesDescription String?                      @map("new_bonding_strategies_description") @db.Text
-  publicServiceReferralReason     PublicServiceReferralReason? @map("public_service_referral_reason")
+  publicServiceReferralReason     String[]                     @map("public_service_referral_reason")
   publicServicesArticulated       String[]                     @map("public_services_articulated")
   lawyerContact                   LawyerContact                @map("lawyer_contact")
   lawyerCollaboration             LawyerCollaboration          @map("lawyer_collaboration")
@@ -1062,7 +1062,7 @@ model VolunteerPsychologicalSupportConclusion {
   clinicalDifficulties         String?                      @map("clinical_difficulties") @db.Text
   bondingStrategies            String?                      @map("bonding_strategies") @db.Text
   skillsAcquired               String?                      @map("skills_acquired") @db.Text
-  publicServiceReferralReason  PublicServiceReferralReason? @map("public_service_referral_reason")
+  publicServiceReferralReason  String[]                     @map("public_service_referral_reason")
   publicServicesArticulated    String[]                     @map("public_services_articulated")
   lawyerContact                LawyerContact                @map("lawyer_contact")
   lawyerCollaboration          LawyerCollaboration          @map("lawyer_collaboration")
@@ -1071,7 +1071,6 @@ model VolunteerPsychologicalSupportConclusion {
   reportedGenderViolence       Boolean?                     @map("reported_gender_violence")
   teamResponseToReport         String?                      @map("team_response_to_report") @db.Text
   lessonsLearned               String?                      @map("lessons_learned") @db.Text
-  challengesFaced              String?                      @map("challenges_faced") @db.Text
   volunteerFeelings            String?                      @map("volunteer_feelings") @db.Text
   requestedTechnicalSupport    Boolean                      @map("requested_technical_support")
   technicalSupportHelp         String[]                     @map("technical_support_help")
@@ -1091,13 +1090,14 @@ model SupportInterruption {
   matchId                    Int                 @map("match_id")
   hasDifferentDemandInfo     Boolean             @map("has_different_demand_info")
   differentDemandDescription String?             @map("different_demand_description") @db.Text
-  interruptionReason         InterruptionReason  @map("interruption_reason")
+  interruptionReason         String[]            @map("interruption_reason")
   redirectAreaNeeded         RedirectAreaNeeded? @map("redirect_area_needed")
   publicServicesReferral     String[]            @map("public_services_referral")
   stayInProject              Boolean             @map("stay_in_project")
   exitOrSuspend              ExitOrSuspend?      @map("exit_or_suspend")
   suspensionCategory         SuspensionCategory? @map("suspension_category")
   suspensionReason           SuspensionReason?   @map("suspension_reason")
+  exitReason                 String?             @map("exit_reason")
   createdAt                  DateTime            @default(now()) @map("created_at") @db.Timestamp(6)
 
   match Matches @relation(fields: [matchId], references: [matchId])
@@ -1597,6 +1597,7 @@ enum PsychologistContact {
   in_contact
   not_in_contact
   not_receiving_support
+  unknown
 
   @@map("psychologist_contact")
   @@schema("survey")
@@ -1606,6 +1607,7 @@ enum LawyerContact {
   in_contact
   not_in_contact
   not_receiving_support
+  unknown
 
   @@map("lawyer_contact")
   @@schema("survey")
@@ -1617,17 +1619,6 @@ enum PublicServiceReferralType {
   not_applicable
 
   @@map("public_service_referral_type")
-  @@schema("survey")
-}
-
-enum PublicServiceReferralReason {
-  physical_psychological_risk
-  mental_health_demand
-  social_vulnerability
-  exceeds_scope
-  no_need_identified
-
-  @@map("public_service_referral_reason")
   @@schema("survey")
 }
 
@@ -1665,36 +1656,6 @@ enum ExtraContactFrequency {
   on_weekends
 
   @@map("extra_contact_frequency")
-  @@schema("survey")
-}
-
-enum IrregularAttendanceReason {
-  missed_without_notice
-  forgetfulness
-  last_minute_cancellation
-  domestic_care_overload
-  prevented_by_perpetrator
-  other
-  not_applicable
-
-  @@map("irregular_attendance_reason")
-  @@schema("survey")
-}
-
-enum InterruptionReason {
-  volunteer_suspension_or_exit
-  msr_not_eligible
-  no_bonding
-  msr_opted_out
-  msr_disappeared
-  conflict_of_interest
-  schedule_incompatibility
-  divergent_legal_area
-  support_outside_project
-  msr_needs_in_person
-  public_service_referral_needed
-
-  @@map("interruption_reason")
   @@schema("survey")
 }
 
