@@ -7,6 +7,7 @@ import * as emailClient from "../../emailClient";
 import * as getCurrentDate from "../../utils/getCurrentDate";
 import { prismaMock } from "../../setupTests";
 import { AGENT, TRANSACTIONAL_EMAIL_IDS } from "../../constants";
+import * as prisma from "../../prismaClient";
 
 const getCurrentDateMock = jest.spyOn(getCurrentDate, "default");
 const createTicketMock = jest.spyOn(zendeskClient, "createTicket");
@@ -17,6 +18,12 @@ const sendEmailToVolunteerMock = jest.spyOn(
   emailClient,
   "sendEmailToVolunteer"
 );
+const sendEmailToVolunteerWithMsrInfoMock = jest.spyOn(
+  emailClient,
+  "sendEmailToVolunteerWithMsrInfo"
+);
+const mockIsFeatureFlagEnabled = jest.spyOn(prisma, "isFeatureFlagEnabled");
+
 jest.spyOn(global.Math, "random").mockReturnValue(0.7);
 
 const mockVolunteerZendeskTicket = {
@@ -218,6 +225,22 @@ describe("createAndUpdateZendeskMatchTickets", () => {
         "legal"
       );
     });
+    it("should call send email to volunteer with correct params with MSR informations", async () => {
+      mockIsFeatureFlagEnabled.mockResolvedValueOnce(true);
+      await createAndUpdateZendeskMatchTickets(
+        legalSupportRequest,
+        mockVolunteerId
+      );
+      expect(sendEmailToVolunteerWithMsrInfoMock).toHaveBeenCalledWith(
+        {
+          ...mockVolunteerFromDB,
+          encoded_id: "EFG-456",
+        },
+        mockMsrFromZendesk.name,
+        "legal",
+        mockMsrFromZendesk.id
+      );
+    });
   });
 
   describe("Psychological", () => {
@@ -317,6 +340,22 @@ describe("createAndUpdateZendeskMatchTickets", () => {
         },
         mockMsrFromZendesk.name,
         "psychological"
+      );
+    });
+    it("should call send email to volunteer with correct params with MSR informations", async () => {
+      mockIsFeatureFlagEnabled.mockResolvedValueOnce(true);
+      await createAndUpdateZendeskMatchTickets(
+        baseSupportRequestPayload,
+        mockVolunteerId
+      );
+      expect(sendEmailToVolunteerWithMsrInfoMock).toHaveBeenCalledWith(
+        {
+          ...mockVolunteerFromDB,
+          encoded_id: "EFG-456",
+        },
+        mockMsrFromZendesk.name,
+        "psychological",
+        mockMsrFromZendesk.id
       );
     });
   });

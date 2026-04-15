@@ -36,6 +36,7 @@ export const VOLUNTEER_SUPPORT_TYPE_DICIO = {
 
 export const NEW_MATCH_FEATURE_FLAG = "NEW_MATCH";
 export const SOCIAL_WORKER_FEATURE_FLAG = "SOCIAL_WORKER";
+export const NEW_EMAIL_TO_VOLUNTEER_FEATURE_FLAG = "NEW_EMAIL_TO_VOLUNTEER";
 
 export const MSR_TEST_ZENDESK_USER_ID = "22858077211028";
 
@@ -57,4 +58,123 @@ export const TRANSACTIONAL_EMAIL_IDS = {
     msr: "clv43f8gd02evj3woijkqcgng",
     volunteer: "clv43jw1t00yj79ezuug2kh6z",
   },
+};
+
+export const TRANSACTIONAL_EMAIL_WITH_INFO = {
+  psychological: {
+    msr: "clv4977jg01a7hlj1twd22zq1",
+    volunteer: "cmn6it2qq00640iyhikye2b77",
+  },
+  legal: {
+    msr: "clv43f8gd02evj3woijkqcgng",
+    volunteer: "cmn6gu68l0bfp0i250o3o2py1",
+  },
+};
+
+export const MONTHLY_INCOME_RANGES = {
+  no_income: "Sem renda",
+  half_minimum_wage: "Até meio salário mínimo",
+  up_to_one_minimum_wage: "Até um salário mínimo",
+  up_to_two_minimum_wages: "Até dois salários mínimos",
+  up_to_three_minimum_wages: "Até três salários mínimos",
+  up_to_four_minimum_wages: "Até quatro salários mínimos",
+  five_minimum_wages_or_more: "Cinco salários mínimos ou mais",
+};
+
+export const EMPLOYMENT_STATUS = {
+  employed_clt: "Empregada (CLT)",
+  employed_pj: "Empregada (PJ)",
+  student: "Estudante",
+  student_with_income: "Estudante com renda",
+  retired: "Aposentada",
+  unemployed: "Desempregada",
+};
+
+export const HAS_MONTHLY_INCOME = {
+  yes: "Sim",
+  no: "Não",
+  no_access: "Sem acesso a renda",
+};
+
+export const FAMILY_PROVIDER = {
+  yes: "Sim",
+  no: "Não",
+  shared_responsibility: "Divide a responsabilidade com outra pessoa",
+};
+
+export const VIOLENCE_TYPES = {
+  physical_violence: "Violência física",
+  psychological_violence: "Violência psicológica",
+  sexual_violence: "Violência sexual",
+  moral_violence: "Violência moral",
+  digital_violence: "Violência digital",
+  patrimonial_violence: "Violência patrimonial",
+  obstetric_violence: "Violência obstétrica",
+  threat: "Ameaça",
+  political_violence: "Violência política",
+  no_violence: "Sem violência",
+};
+
+export const VIOLENCE_TIME = {
+  last_week: " Na última semana",
+  less_than_3_months: "Há menos de 3 meses",
+  between_3_months_and_1_year: "Entre 3 meses e 1 ano",
+  between_1_and_3_years: "Entre 1 e 3 anos",
+  between_3_and_6_years: "Entre 3 e 6 anos",
+  between_6_and_10_years: "Entre 6 e 10 anos",
+  more_than_10_years: "Há mais de 10 anos",
+};
+
+export const PERPETRATOR_GENDER = {
+  woman: "Mulher",
+  man: "Homem",
+  non_binary: "Não-binário",
+};
+
+export const VIOLENCE_PERPETRATOR = {
+  nuclear_family: "Família nuclear",
+  close_family: "Famíliar",
+  current_partner: "Parceiro(a) atual",
+  ex_partner: "Ex-parceiro(a)",
+  work_colleague: "Colega de trabalho",
+  other_people: "Outras pessoas",
+};
+
+export const LIVES_WITH_PERPETRATOR = {
+  yes: "Sim",
+  no: "Não",
+  never: "Nunca",
+};
+
+export const VIOLENCE_LOCATION = {
+  home_space: "Ambiente doméstico",
+  public_space: "Ambiente Público",
+  work_space: "Ambiente de trabalho",
+  internet_space: "Internet/rede sociais",
+};
+
+export const LEGAL_ACTION_DIFFICULTY = {
+  discouraged: "Desencorajou sob o argumento de inexistência criminosa",
+  not_competent: "Informou não ser de sua competência",
+  refused_to_register: "Negou-se a registrar a ocorrência",
+  no_access_to_justice: "Não viabilizou o acesso à justiça",
+  denied_restraining_order: "Negou o requerimento à medida protetiva",
+  not_applicable: "Não se aplica",
+};
+
+export const LEGAL_ACTION_TAKEN = {
+  physical_examination: "Exame de corpo de delito (IML)",
+  police_inquiry: "Inquérito policial",
+  criminal_case: "Processo Penal/Criminal",
+  civil_case: "Processo Cível/Direito de Família",
+  labour_case: "Processo trabalhista",
+  police_report: "Registro de Ocorrência (B.O)",
+  protective_measure: "Requerimento de Medida Protetiva (Delegacia de Polícia)",
+  none_taken: "Não foi realizada nenhuma providência jurídica",
+};
+
+export const GENDER = {
+  cis_woman: "Mulher cisgênero",
+  trans_woman: "Mulher transgênero/travesti",
+  not_found: "Não informado",
 };
