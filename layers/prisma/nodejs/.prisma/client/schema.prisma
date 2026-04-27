@@ -1,0 +1,1779 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema", "prismaSchemaFolder"]
+  binaryTargets   = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["match", "public", "mobilization", "public_services", "msr", "pii_sec", "iana", "survey", "legacy_support_assessments"]
+}
+
+model auth_group {
+  id                     Int                      @id @default(autoincrement())
+  name                   String                   @unique @db.VarChar(150)
+  auth_group_permissions auth_group_permissions[]
+  auth_user_groups       auth_user_groups[]
+
+  @@index([name], map: "auth_group_name_a6ea08ec_like")
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model auth_group_permissions {
+  id              BigInt          @id @default(autoincrement())
+  group_id        Int
+  permission_id   Int
+  auth_permission auth_permission @relation(fields: [permission_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_group_permissio_permission_id_84c5c92e_fk_auth_perm")
+  auth_group      auth_group      @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_group_permissions_group_id_b120cbf9_fk_auth_group_id")
+
+  @@unique([group_id, permission_id], map: "auth_group_permissions_group_id_permission_id_0cd325b0_uniq")
+  @@index([group_id], map: "auth_group_permissions_group_id_b120cbf9")
+  @@index([permission_id], map: "auth_group_permissions_permission_id_84c5c92e")
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model auth_permission {
+  id                         Int                          @id @default(autoincrement())
+  name                       String                       @db.VarChar(255)
+  content_type_id            Int
+  codename                   String                       @db.VarChar(100)
+  auth_group_permissions     auth_group_permissions[]
+  django_content_type        django_content_type          @relation(fields: [content_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_permission_content_type_id_2f476e4b_fk_django_co")
+  auth_user_user_permissions auth_user_user_permissions[]
+
+  @@unique([content_type_id, codename], map: "auth_permission_content_type_id_codename_01ab375a_uniq")
+  @@index([content_type_id], map: "auth_permission_content_type_id_2f476e4b")
+  @@schema("public")
+}
+
+model auth_user {
+  id                         Int                          @id @default(autoincrement())
+  password                   String                       @db.VarChar(128)
+  last_login                 DateTime?                    @db.Timestamptz(6)
+  is_superuser               Boolean
+  username                   String                       @unique @db.VarChar(150)
+  first_name                 String                       @db.VarChar(150)
+  last_name                  String                       @db.VarChar(150)
+  email                      String                       @db.VarChar(254)
+  is_staff                   Boolean
+  is_active                  Boolean
+  date_joined                DateTime                     @db.Timestamptz(6)
+  auth_user_groups           auth_user_groups[]
+  auth_user_user_permissions auth_user_user_permissions[]
+  django_admin_log           django_admin_log[]
+  volunteers_formdata        volunteers_formdata?
+
+  @@index([username], map: "auth_user_username_6821ab7c_like")
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model auth_user_groups {
+  id         BigInt     @id @default(autoincrement())
+  user_id    Int
+  group_id   Int
+  auth_group auth_group @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_groups_group_id_97559544_fk_auth_group_id")
+  auth_user  auth_user  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_groups_user_id_6a12ed8b_fk_auth_user_id")
+
+  @@unique([user_id, group_id], map: "auth_user_groups_user_id_group_id_94350c0c_uniq")
+  @@index([group_id], map: "auth_user_groups_group_id_97559544")
+  @@index([user_id], map: "auth_user_groups_user_id_6a12ed8b")
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model auth_user_user_permissions {
+  id              BigInt          @id @default(autoincrement())
+  user_id         Int
+  permission_id   Int
+  auth_permission auth_permission @relation(fields: [permission_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm")
+  auth_user       auth_user       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id")
+
+  @@unique([user_id, permission_id], map: "auth_user_user_permissions_user_id_permission_id_14a6b632_uniq")
+  @@index([permission_id], map: "auth_user_user_permissions_permission_id_1fbb5f2c")
+  @@index([user_id], map: "auth_user_user_permissions_user_id_a95ead1b")
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model django_admin_log {
+  id                  Int                  @id @default(autoincrement())
+  action_time         DateTime             @db.Timestamptz(6)
+  object_id           String?
+  object_repr         String               @db.VarChar(200)
+  action_flag         Int                  @db.SmallInt
+  change_message      String
+  content_type_id     Int?
+  user_id             Int
+  django_content_type django_content_type? @relation(fields: [content_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "django_admin_log_content_type_id_c4bce8eb_fk_django_co")
+  auth_user           auth_user            @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "django_admin_log_user_id_c564eba6_fk_auth_user_id")
+
+  @@index([content_type_id], map: "django_admin_log_content_type_id_c4bce8eb")
+  @@index([user_id], map: "django_admin_log_user_id_c564eba6")
+  @@schema("public")
+}
+
+model django_content_type {
+  id               Int                @id @default(autoincrement())
+  app_label        String             @db.VarChar(100)
+  model            String             @db.VarChar(100)
+  auth_permission  auth_permission[]
+  django_admin_log django_admin_log[]
+
+  @@unique([app_label, model], map: "django_content_type_app_label_model_76bd3d3b_uniq")
+  @@schema("public")
+}
+
+model django_migrations {
+  id      BigInt   @id @default(autoincrement())
+  app     String   @db.VarChar(255)
+  name    String   @db.VarChar(255)
+  applied DateTime @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model django_session {
+  session_key  String   @id @db.VarChar(40)
+  session_data String
+  expire_date  DateTime @db.Timestamptz(6)
+
+  @@index([expire_date], map: "django_session_expire_date_a5c62663")
+  @@index([session_key], map: "django_session_session_key_c0390e0f_like")
+  @@schema("public")
+}
+
+model integrations_logs {
+  id          BigInt   @id(map: "volunteers_integrationlogs_pkey") @default(autoincrement())
+  type        String   @db.VarChar(30)
+  created_at  DateTime @db.Timestamptz(6)
+  status      String   @db.VarChar(30)
+  error       String
+  data        Json
+  integration String   @db.VarChar(15)
+  external_id BigInt?
+  form_type   String   @db.VarChar(15)
+  internal_id BigInt?
+
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model Volunteers {
+  id                          Int                           @id(map: "volunteers_volunteer_pkey") @default(autoincrement())
+  created_at                  DateTime                      @db.Timestamptz(6)
+  updated_at                  DateTime                      @db.Timestamptz(6)
+  condition                   String                        @db.VarChar(60)
+  firstName                   String                        @map("first_name") @db.VarChar(200)
+  lastName                    String                        @map("last_name") @db.VarChar(200)
+  email                       String                        @unique @db.VarChar(254)
+  phone                       String                        @db.VarChar(100)
+  zipcode                     String                        @db.VarChar(9)
+  state                       String                        @db.VarChar(9)
+  city                        String                        @db.VarChar(100)
+  neighborhood                String                        @db.VarChar(100)
+  latitude                    Decimal?                      @db.Decimal(10, 4)
+  longitude                   Decimal?                      @db.Decimal(10, 4)
+  registrationNumber          String                        @map("register_number") @db.VarChar(400)
+  birth_date                  DateTime?                     @db.Timestamptz(6)
+  color                       String                        @db.VarChar(100)
+  gender                      String                        @db.VarChar(100)
+  modality                    String                        @db.VarChar(100)
+  fields_of_work              String                        @db.Text
+  years_of_experience         String                        @db.VarChar(100)
+  approach                    String?                       @db.VarChar(100)
+  form_data_id                BigInt?
+  occupation                  String                        @db.VarChar(12)
+  moodle_id                   Int?
+  form_entries_id             BigInt?
+  zendeskUserId               BigInt?                       @map("zendesk_user_id")
+  availability                Int
+  offers_libras_support       Boolean
+  street                      String?                       @db.VarChar(200)
+  Matches                     Matches[]
+  volunteer_availability      VolunteerAvailability?
+  volunteer_status_history    VolunteerStatusHistory[]
+  volunteers_formdata         volunteers_formdata?          @relation(fields: [form_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_volunteer_form_data_id_ec6c5a18_fk_volunteer")
+  volunteer_segments          VolunteerSegments[]
+  volunteer_unsubscriptions   VolunteerUnsubscriptions[]
+  volunteer_training_history  VolunteerTrainingHistory[]
+  VolunteerInstrumentalRecord VolunteerInstrumentalRecord[]
+
+  @@index([form_data_id], map: "volunteers_volunteer_form_data_id_ec6c5a18")
+  @@map("volunteers")
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model volunteers_formdata {
+  id          BigInt       @id @default(autoincrement())
+  type_form   String       @db.VarChar(10)
+  step        Int
+  values      Json
+  user_id     Int          @unique
+  created_at  DateTime     @db.Timestamptz(6)
+  total_steps Int
+  updated_at  DateTime     @db.Timestamptz(6)
+  volunteers  Volunteers[]
+  auth_user   auth_user    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteers_formdata_user_id_c9262138_fk_auth_user_id")
+
+  @@schema("public")
+}
+
+model MSRs {
+  msrId                BigInt    @id @default(autoincrement()) @map("msr_id")
+  gender               Gender
+  raceColor            Race      @map("race_color")
+  hasDisability        Boolean?  @map("has_disability")
+  acceptsOnlineSupport Boolean?  @map("accepts_online_support")
+  zipcode              String    @db.VarChar(9)
+  neighborhood         String    @db.VarChar(100)
+  city                 String    @db.VarChar(100)
+  state                String    @db.VarChar(9)
+  status               MSRStatus
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  MSRPii                  MSRPiiSec?
+  MSRStatusHistory        MSRStatusHistory[]
+  SurveyQualityOfLifeD0   SurveyQualityOfLifeD0[]
+  SurveyQualityOfLifeD90  SurveyQualityOfLifeD90[]
+  SurveyQualityOfLifeD180 SurveyQualityOfLifeD180[]
+  SurveyQualityOfLifeD270 SurveyQualityOfLifeD270[]
+  MSRViolenceHistory      MSRViolenceHistory[]
+  MSRSocioeconomicData    MSRSocioeconomicData?
+
+  @@map("msrs")
+  @@schema("msr")
+}
+
+model MSRPiiSec {
+  msrId       BigInt    @id @default(autoincrement()) @map("msr_id")
+  firstName   String?   @map("first_name") @db.VarChar(200)
+  email       String    @unique @db.VarChar(254)
+  phone       String    @db.VarChar(100)
+  dateOfBirth DateTime? @map("date_of_birth") @db.Date
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  MSRs MSRs @relation(fields: [msrId], references: [msrId])
+
+  @@map("msr_pii")
+  @@schema("pii_sec")
+}
+
+model MSRStatusHistory {
+  msrStatusHistoryId Int       @id @default(autoincrement()) @map("msr_status_history_id")
+  msrId              BigInt    @map("msr_id")
+  status             MSRStatus
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+
+  MSRs MSRs @relation(fields: [msrId], references: [msrId])
+
+  @@map("msr_status_history")
+  @@schema("msr")
+}
+
+model MSRViolenceHistory {
+  msrViolenceHistoryId     Int                     @id @default(autoincrement()) @map("msr_violence_history_id")
+  msrId                    BigInt                  @unique @map("msr_id")
+  violenceType             ViolenceType[]          @map("violence_type")
+  violenceTime             ViolenceTime?           @map("violence_time")
+  violenceOccurredInBrazil Boolean                 @map("violence_occurred_in_brazil")
+  perpetratorGender        PerpetratorGender?      @map("perpetrator_gender")
+  violencePerpetrator      ViolencePerpetrator[]   @map("violence_perpetrator")
+  livesWithPerpetrator     LivesWithPerpetrator?   @map("lives_with_perpetrator")
+  violenceLocation         ViolenceLocation[]      @map("violence_location")
+  legalActionsTaken        LegalActionsTaken[]     @map("legal_actions_taken")
+  legalActionDifficulty    LegalActionDifficulty[] @map("legal_action_difficulty")
+  protectiveFactors        ProtectiveFactor[]      @map("protective_factors")
+  riskFactors              RiskFactor[]            @map("risk_factors")
+  createdAt                DateTime                @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                DateTime                @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  MSRs MSRs @relation(fields: [msrId], references: [msrId])
+
+  @@map("msr_violence_history")
+  @@schema("msr")
+}
+
+model MSRSocioeconomicData {
+  msrSocioeconomicId     Int                 @id @default(autoincrement()) @map("msr_socioeconomic_id")
+  msrId                  BigInt              @unique @map("msr_id")
+  hasMonthlyIncome       MonthlyIncome?      @map("has_monthly_income")
+  monthlyIncomeRange     MonthlyIncomeRange? @map("monthly_income_range")
+  employmentStatus       EmploymentStatus?   @map("employment_status")
+  hasFinancialDependents Boolean?            @map("has_financial_dependents")
+  familyProvider         FamilyProvider?     @map("family_provider")
+  propertyOwnership      Boolean?            @map("property_ownership")
+  createdAt              DateTime            @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt              DateTime            @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  MSRs MSRs @relation(fields: [msrId], references: [msrId])
+
+  @@map("msr_socioeconomic_data")
+  @@schema("msr")
+}
+
+model SupportRequests {
+  supportRequestId            Int                           @id @default(autoincrement()) @map("support_request_id")
+  msrId                       BigInt                        @map("msr_id")
+  zendeskTicketId             BigInt                        @unique @map("zendesk_ticket_id")
+  supportType                 SupportType                   @map("support_type")
+  supportExpertise            String?                       @map("support_expertise")
+  priority                    Int?
+  hasDisability               Boolean?                      @map("has_disability")
+  requiresLibras              Boolean?                      @map("requires_libras")
+  acceptsOnlineSupport        Boolean                       @map("accepts_online_support")
+  lat                         Decimal?                      @db.Decimal(10, 4)
+  lng                         Decimal?                      @db.Decimal(10, 4)
+  city                        String?
+  state                       String?
+  status                      SupportRequestsStatus
+  createdAt                   DateTime                      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                   DateTime                      @updatedAt @map("updated_at") @db.Timestamp(6)
+  Matches                     Matches[]
+  MatchConfirmations          MatchConfirmations[]
+  SupportRequestStatusHistory SupportRequestStatusHistory[]
+
+  @@map("support_requests")
+  @@schema("match")
+}
+
+model SupportRequestStatusHistory {
+  supportRequestStatusHistoryId Int                   @id @default(autoincrement()) @map("support_request_status_history_id")
+  supportRequestId              Int                   @map("support_request_id")
+  status                        SupportRequestsStatus
+  createdAt                     DateTime              @default(now()) @map("created_at") @db.Timestamp(6)
+  supportRequest                SupportRequests       @relation(fields: [supportRequestId], references: [supportRequestId])
+
+  @@map("support_request_status_history")
+  @@schema("match")
+}
+
+model Matches {
+  matchId                                 Int                                       @id @default(autoincrement()) @map("match_id")
+  supportRequestId                        Int                                       @map("support_request_id")
+  msrId                                   BigInt                                    @map("msr_id")
+  volunteerId                             Int?                                      @map("volunteer_id")
+  msrZendeskTicketId                      BigInt                                    @map("msr_zendesk_ticket_id")
+  volunteerZendeskTicketId                BigInt?                                   @map("volunteer_zendesk_ticket_id")
+  supportType                             SupportType                               @map("support_type")
+  matchType                               MatchType                                 @map("match_type")
+  matchStage                              MatchStage                                @map("match_stage")
+  status                                  MatchStatus
+  createdAt                               DateTime                                  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                               DateTime                                  @updatedAt @map("updated_at") @db.Timestamp(6)
+  MatchStatusHistory                      MatchStatusHistory[]
+  MatchSurveys                            MatchSurveys[]
+  supportRequest                          SupportRequests                           @relation(fields: [supportRequestId], references: [supportRequestId])
+  volunteer                               Volunteers?                               @relation(fields: [volunteerId], references: [id])
+  PsychologicalSupportEvaluation          PsychologicalSupportEvaluation[]
+  LegalSupportEvaluation                  LegalSupportEvaluation[]
+  MsrPsychologicalSupportConclusion       MsrPsychologicalSupportConclusion[]
+  MsrLegalSupportConclusion               MsrLegalSupportConclusion[]
+  LegalSupportFollowUpI                   LegalSupportFollowUpI[]
+  LegalSupportFollowUpII                  LegalSupportFollowUpII[]
+  VolunteerLegalSupportConclusion         VolunteerLegalSupportConclusion[]
+  PsychologicalSupportFollowUpI           PsychologicalSupportFollowUpI[]
+  PsychologicalSupportFollowUpII          PsychologicalSupportFollowUpII[]
+  VolunteerPsychologicalSupportConclusion VolunteerPsychologicalSupportConclusion[]
+  SupportInterruption                     SupportInterruption[]
+  MsrInstrumentalRecord                   MsrInstrumentalRecord[]
+  VolunteerInstrumentalRecord             VolunteerInstrumentalRecord[]
+
+  @@map("matches")
+  @@schema("match")
+}
+
+model MatchConfirmations {
+  matchConfirmationId Int                     @id @default(autoincrement()) @map("match_confirmation_id")
+  supportRequestId    Int                     @map("support_request_id")
+  msrId               BigInt                  @map("msr_id")
+  volunteerId         Int                     @map("volunteer_id")
+  status              MatchConfirmationStatus
+  matchType           MatchType               @map("match_type")
+  matchStage          MatchStage              @map("match_stage")
+  matchId             Int?                    @map("match_id")
+  createdAt           DateTime                @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt           DateTime                @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  SupportRequest                 SupportRequests                  @relation(fields: [supportRequestId], references: [supportRequestId])
+  MatchConfirmationStatusHistory MatchConfirmationStatusHistory[]
+
+  @@map("match_confirmations")
+  @@schema("match")
+}
+
+model MatchConfirmationStatusHistory {
+  matchConfirmationStatusHistoryId Int                     @id @default(autoincrement()) @map("match_confirmation_status_history_id")
+  matchConfirmationId              Int                     @map("match_confirmation_id")
+  status                           MatchConfirmationStatus
+  createdAt                        DateTime                @default(now()) @map("created_at") @db.Timestamp(6)
+  MatchConfirmation                MatchConfirmations      @relation(fields: [matchConfirmationId], references: [matchConfirmationId])
+
+  @@map("match_confirmation_status_history")
+  @@schema("match")
+}
+
+model MatchStatusHistory {
+  matchStatusHistoryId Int         @id @default(autoincrement()) @map("match_status_history_id")
+  matchId              Int         @map("match_id")
+  status               MatchStatus
+  createdAt            DateTime    @default(now()) @map("created_at") @db.Timestamp(6)
+  match                Matches     @relation(fields: [matchId], references: [matchId])
+
+  @@map("match_status_history")
+  @@schema("match")
+}
+
+model MatchSurveys {
+  matchSurveyId Int        @id @default(autoincrement()) @map("match_survey_id")
+  matchId       Int        @map("match_id")
+  createdAt     DateTime   @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt     DateTime   @updatedAt @map("updated_at") @db.Timestamp(6)
+  surveyType    SurveyType @map("survey_type")
+  match         Matches    @relation(fields: [matchId], references: [matchId])
+
+  @@map("match_surveys")
+  @@schema("match")
+}
+
+model Cities {
+  city_id    Int      @id @default(autoincrement())
+  city_value String   @db.VarChar(100)
+  city_label String   @db.VarChar(100)
+  state      String   @db.VarChar(2)
+  ibge_code  Int
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+
+  @@map("cities")
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model VolunteerAvailability {
+  volunteer_id          Int        @id
+  current_matches       Int
+  max_matches           Int
+  is_available          Boolean
+  support_type          String     @db.VarChar(20)
+  support_expertise     String     @db.Text
+  offers_online_support Boolean
+  lat                   Decimal?   @db.Decimal(10, 4)
+  lng                   Decimal?   @db.Decimal(10, 4)
+  city                  String     @db.VarChar(100)
+  created_at            DateTime   @db.Timestamptz(6)
+  updated_at            DateTime   @db.Timestamptz(6)
+  state                 String     @db.VarChar(9)
+  offers_libras_support Boolean
+  volunteers            Volunteers @relation(fields: [volunteer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteer_availability_volunteer_id_ff544bbb_fk_volunteers_id")
+
+  @@map("volunteer_availability")
+  @@schema("public")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model VolunteerStatusHistory {
+  id           BigInt     @id @default(autoincrement())
+  created_at   DateTime   @default(now()) @db.Timestamptz(6)
+  volunteer_id Int
+  status       String     @db.VarChar(60)
+  volunteers   Volunteers @relation(fields: [volunteer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "volunteer_status_history_volunteer_id_d1e0ea8c_fk_volunteers_id")
+
+  @@index([volunteer_id], map: "volunteer_status_history_volunteer_id_d1e0ea8c")
+  @@map("volunteer_status_history")
+  @@schema("public")
+}
+
+model VolunteerSegments {
+  volunteer_segment_id    BigInt   @id @default(autoincrement())
+  segment_name            String   @db.VarChar(100)
+  volunteer_id            Int
+  volunteer_segment_group String   @db.VarChar(100)
+  created_at              DateTime @default(now()) @db.Timestamp(6)
+  updatedAt               DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  volunteers Volunteers @relation(fields: [volunteer_id], references: [id])
+
+  @@map("volunteer_segments")
+  @@schema("public")
+}
+
+model VolunteerUnsubscriptions {
+  volunteer_unsubscription_id BigInt   @id @default(autoincrement())
+  volunteer_id                Int
+  unsubscription_reason       String   @db.VarChar()
+  unsubscription_description  String   @db.Text()
+  created_at                  DateTime @default(now()) @db.Timestamp(6)
+  updated_at                  DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  volunteers Volunteers @relation(fields: [volunteer_id], references: [id])
+
+  @@map("volunteer_unsubscriptions")
+  @@schema("public")
+}
+
+model VolunteerTrainingHistory {
+  volunteer_training_history_id BigInt                 @id @default(autoincrement())
+  volunteer_id                  Int
+  moodle_user_id                Int
+  event                         VolunteerTrainingEvent
+  created_at                    DateTime               @default(now()) @db.Timestamp(6)
+
+  volunteers Volunteers @relation(fields: [volunteer_id], references: [id])
+
+  @@map("volunteer_training_history")
+  @@schema("public")
+}
+
+model FeatureFlag {
+  id             BigInt  @id @default(autoincrement())
+  featureEnabled Boolean @default(false) @map("feature_enabled")
+  featureName    String  @unique @map("feature_name")
+
+  @@map("feature_flag")
+  @@schema("match")
+}
+
+model BusaraHashes {
+  msrEmail String @id @map("msr_email") @db.VarChar(254)
+  hash     String @db.VarChar(1000)
+
+  @@map("busara_hashes")
+  @@schema("match")
+}
+
+model Mutipliers {
+  multiplierId                        Int                                  @id @default(autoincrement()) @map("multiplier_id")
+  gender                              Gender
+  age                                 Int
+  region                              Region
+  state                               String                               @db.VarChar(9)
+  city                                String                               @default("not_found") @db.VarChar(100)
+  householdType                       MultiplierHouseholdType              @default(not_found) @map("household_type")
+  hasChildren                         Boolean?                             @map("has_children")
+  howManyChildren                     Int?                                 @map("how_many_children")
+  race                                Race
+  sexuality                           Sexuality
+  religion                            Religion
+  hasDisability                       Boolean                              @map("has_disability")
+  disabilityType                      String[]                             @default([]) @map("disability_type")
+  hasInternetAccess                   Boolean                              @map("has_internet_access")
+  isAvailable                         Boolean                              @map("is_available")
+  shiftAvailability                   String[]                             @map("shift_availability")
+  educationLevel                      EducationLevel                       @map("education_level")
+  isUniversityStudent                 Boolean                              @map("is_university_student")
+  universityType                      MultiplierUniversityType             @map("university_type")
+  createdAt                           DateTime                             @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                           DateTime                             @updatedAt @map("updated_at") @db.Timestamp(6)
+  multiplierPii                       MutiplierPii?
+  multiplierRegistrationOpenQuestions MultiplierRegistrationOpenQuestions?
+  multiplierJourneyEvents             MultiplierJourneyEvents[]
+
+  @@map("multipliers")
+  @@schema("mobilization")
+}
+
+model MutiplierPii {
+  multiplierPiiId Int        @id @default(autoincrement()) @map("multiplier_pii_id")
+  multiplierId    Int        @unique @map("multiplier_id")
+  email           String     @db.VarChar(254)
+  firstName       String     @map("first_name") @db.VarChar(200)
+  lastName        String     @map("last_name") @db.VarChar(400)
+  phone           String     @db.VarChar(100)
+  zip_code        String     @db.VarChar(9)
+  createdAt       DateTime   @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt       DateTime   @updatedAt @map("updated_at") @db.Timestamp(6)
+  multupliers     Mutipliers @relation(fields: [multiplierId], references: [multiplierId])
+
+  @@map("multiplier_pii")
+  @@schema("mobilization")
+}
+
+model MultiplierRegistrationOpenQuestions {
+  multiplier_registration_open_questions_id Int        @id @default(autoincrement()) @map("multiplier_registration_open_questions_id")
+  multiplierId                              Int        @unique @map("multiplier_id")
+  universityName                            String     @map("university_name") @db.VarChar(200)
+  universityCourse                          String     @map("university_course") @db.VarChar(200)
+  howSheHeardAboutUs                        String     @map("how_she_heard_about_us") @db.Text
+  reasonsForParticipating                   String     @map("reasons_for_participating") @db.Text
+  multipliers                               Mutipliers @relation(fields: [multiplierId], references: [multiplierId])
+
+  @@map("multiplier_registration_open_questions")
+  @@schema("mobilization")
+}
+
+model MultiplierJourneyEvents {
+  multiplierJourneyEventId Int                    @id @default(autoincrement()) @map("multiplier_journey_event_id")
+  multiplierId             Int                    @map("multiplier_id")
+  event                    MultiplierJourneyEvent
+  createdAt                DateTime               @default(now()) @map("created_at") @db.Timestamp(6)
+
+  multipliers Mutipliers @relation(fields: [multiplierId], references: [multiplierId])
+
+  @@map("multiplier_journey_events")
+  @@schema("mobilization")
+}
+
+model PublicServices {
+  publicServiceId Int      @id @default(autoincrement()) @map("public_service_id")
+  serviceType     String   @map("service_type") @db.VarChar(400)
+  serviceName     String   @map("service_name") @db.VarChar(400)
+  zipcode         String   @db.VarChar(9)
+  address         String   @db.VarChar(400)
+  phone           String   @db.VarChar(200)
+  email           String   @db.VarChar(400)
+  region          String   @db.VarChar(15)
+  state           String   @db.VarChar(9)
+  city            String   @db.VarChar(100)
+  lat             Decimal? @db.Decimal(10, 4)
+  lng             Decimal? @db.Decimal(10, 4)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("public_services")
+  @@schema("public_services")
+}
+
+model BusaraABExperiment {
+  BusaraABExperimenId Int    @id @default(autoincrement()) @map("busara_ab_experiment_id")
+  matchId             Int?   @map("match_id")
+  supportRequestId    Int    @map("support_request_id")
+  msrId               BigInt @map("msr_id")
+  transactionalId     String @map("transactional_id") @db.VarChar(50)
+
+  @@map("busara_ab_experiment")
+  @@schema("match")
+}
+
+model SurveyQualityOfLifeD0 {
+  answerId              Int      @id @default(autoincrement()) @map("answer_id")
+  msrId                 BigInt   @map("msr_id")
+  qualityOfLife         String   @map("quality_of_life")
+  security              String
+  controllingSituations String   @map("controlling_situations")
+  selfEsteem            String   @map("self_esteem")
+  feelings              String?
+  physicalSymptoms      String?  @map("physical_symptoms")
+  emotionalSymptoms     String?  @map("emotional_symptoms")
+  handleViolenceImpact  String   @map("handle_violence_impact")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  MSRs MSRs @relation(fields: [msrId], references: [msrId])
+
+  @@map("survey_quality_of_life_d0")
+  @@schema("survey")
+}
+
+model SurveyQualityOfLifeD90 {
+  answerId              Int      @id @default(autoincrement()) @map("answer_id")
+  msrId                 BigInt   @map("msr_id")
+  qualityOfLife         String   @map("quality_of_life")
+  security              String
+  controllingSituations String   @map("controlling_situations")
+  selfEsteem            String   @map("self_esteem")
+  feelings              String?
+  physicalSymptoms      String?  @map("physical_symptoms")
+  emotionalSymptoms     String?  @map("emotional_symptoms")
+  handleViolenceImpact  String   @map("handle_violence_impact")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  MSRs MSRs @relation(fields: [msrId], references: [msrId])
+
+  @@map("survey_quality_of_life_d90")
+  @@schema("survey")
+}
+
+model SurveyQualityOfLifeD180 {
+  answerId              Int      @id @default(autoincrement()) @map("answer_id")
+  msrId                 BigInt   @map("msr_id")
+  qualityOfLife         String   @map("quality_of_life")
+  security              String
+  controllingSituations String   @map("controlling_situations")
+  selfEsteem            String   @map("self_esteem")
+  feelings              String?
+  physicalSymptoms      String?  @map("physical_symptoms")
+  emotionalSymptoms     String?  @map("emotional_symptoms")
+  handleViolenceImpact  String   @map("handle_violence_impact")
+  substanceUse          String?  @map("substance_use")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  MSRs MSRs @relation(fields: [msrId], references: [msrId])
+
+  @@map("survey_quality_of_life_d180")
+  @@schema("survey")
+}
+
+model SurveyQualityOfLifeD270 {
+  answerId              Int      @id @default(autoincrement()) @map("answer_id")
+  msrId                 BigInt   @map("msr_id")
+  qualityOfLife         String   @map("quality_of_life")
+  security              String
+  controllingSituations String   @map("controlling_situations")
+  selfEsteem            String   @map("self_esteem")
+  physicalSymptoms      String?  @map("physical_symptoms")
+  emotionalSymptoms     String?  @map("emotional_symptoms")
+  handleViolenceImpact  String   @map("handle_violence_impact")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  MSRs MSRs @relation(fields: [msrId], references: [msrId])
+
+  @@map("survey_quality_of_life_d270")
+  @@schema("survey")
+}
+
+model PsychologicalSupportEvaluation {
+  answerId            Int      @id @default(autoincrement()) @map("answer_id")
+  matchId             Int      @map("match_id")
+  hadToPayForSupport  String   @map("had_to_pay_for_support")
+  isStrategyUseful    String   @map("is_strategy_useful")
+  handleStressAnxiety String   @map("handle_stress_anxiety")
+  satisfactionLevel   String   @map("satisfaction_level")
+  agreementsFulfilled String?  @map("agreements_fulfilled")
+  expectationsMet     String   @map("expectations_met")
+  isReceivingService  String?  @map("is_receiving_service")
+  writtenEvaluation   String?  @map("written_evaluation")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  Matches Matches @relation(fields: [matchId], references: [matchId])
+
+  @@map("psychological_support_evaluation")
+  @@schema("survey")
+}
+
+model LegalSupportEvaluation {
+  answerId                    Int      @id @default(autoincrement()) @map("answer_id")
+  matchId                     Int      @map("match_id")
+  hadToPayForSupport          String   @map("had_to_pay_for_support")
+  hasReceivedClearInformation String   @map("has_received_clear_information")
+  handleStressAnxiety         String   @map("handle_stress_anxiety")
+  caseProgress                String   @map("case_progress")
+  satisfactionLevel           String   @map("satisfaction_level")
+  agreementsFulfilled         String?  @map("agreements_fulfilled")
+  isReceivingService          String?  @map("is_receiving_service")
+  expectationsMet             String   @map("expectations_met")
+  writtenEvaluation           String?  @map("written_evaluation")
+  createdAt                   DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  Matches Matches @relation(fields: [matchId], references: [matchId])
+
+  @@map("legal_support_evaluation")
+  @@schema("survey")
+}
+
+model MsrPsychologicalSupportConclusion {
+  answerId               Int      @id @default(autoincrement()) @map("answer_id")
+  matchId                Int      @map("match_id")
+  isStrategyUseful       String   @map("is_strategy_useful")
+  handleStressAnxiety    String   @map("handle_stress_anxiety")
+  satisfactionLevel      String   @map("satisfaction_level")
+  continueWithVolunteer  String   @map("continue_with_volunteer")
+  experienceFeedback     String?  @map("experience_feedback")
+  neededPublicServices   String   @map("needed_public_services")
+  informedAboutServices  String   @map("informed_about_services")
+  improvementSuggestions String?  @map("improvement_suggestions")
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  Matches Matches @relation(fields: [matchId], references: [matchId])
+
+  @@map("msr_psychological_support_conclusion")
+  @@schema("survey")
+}
+
+model MsrLegalSupportConclusion {
+  answerId               Int      @id @default(autoincrement()) @map("answer_id")
+  matchId                Int      @map("match_id")
+  informedAboutCase      String   @map("informed_about_case")
+  handleStressAnxiety    String   @map("handle_stress_anxiety")
+  satisfactionLevel      String   @map("satisfaction_level")
+  continueWithVolunteer  String   @map("continue_with_volunteer")
+  experienceFeedback     String?  @map("experience_feedback")
+  neededPublicServices   String   @map("needed_public_services")
+  informedAboutServices  String   @map("informed_about_services")
+  improvementSuggestions String?  @map("improvement_suggestions")
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  Matches Matches @relation(fields: [matchId], references: [matchId])
+
+  @@map("msr_legal_support_conclusion")
+  @@schema("survey")
+}
+
+model LegalSupportFollowUpI {
+  answerId                    Int                          @id @default(autoincrement()) @map("answer_id")
+  matchId                     Int                          @map("match_id")
+  disabilityType              DisabilityType?              @map("disability_type")
+  supportStartDate            DateTime                     @map("support_start_date") @db.Date
+  hasProBonoContract          Boolean                      @map("has_pro_bono_contract")
+  weeklyHours                 WeeklyHours                  @map("weekly_hours")
+  contractFormat              ContractFormat               @map("contract_format")
+  safeContactMethods          String[]                     @map("safe_contact_methods")
+  violenceAwareness           ViolenceAwareness            @map("violence_awareness")
+  violenceTypes               String[]                     @map("violence_types")
+  behavioralImpacts           String[]                     @map("behavioral_impacts")
+  relationshipImpacts         String[]                     @map("relationship_impacts")
+  socioeconomicImpacts        String[]                     @map("socioeconomic_impacts")
+  securityImpacts             String[]                     @map("security_impacts")
+  violenceAssessment          String                       @map("violence_assessment") @db.Text
+  mainDemandCategory          MainDemandCategory           @map("main_demand_category")
+  mainDemandSubcategory       String?                      @map("main_demand_subcategory")
+  caseConductionDetails       String                       @map("case_conduction_details") @db.Text
+  proBonoInCaseFiles          ProBonoInCaseFiles           @map("pro_bono_in_case_files")
+  safetyPlanUsed              SafetyPlanUsed               @map("safety_plan_used")
+  safetyPlanDescription       String?                      @map("safety_plan_description") @db.Text
+  violenceProcessImpacts      String[]                     @map("violence_process_impacts")
+  psychologicalDocumentUsed   Boolean                      @map("psychological_document_used")
+  legalChallengesExist        Boolean                      @map("legal_challenges_exist")
+  legalChallenges             String?                      @map("legal_challenges") @db.Text
+  publicServiceReferral       PublicServiceReferralType?   @map("public_service_referral")
+  publicServiceReferralReason PublicServiceReferralReason? @map("public_service_referral_reason")
+  publicServicesArticulated   String[]                     @map("public_services_articulated")
+  psychologistContact         PsychologistContact          @map("psychologist_contact")
+  psychologistCollaboration   PsychologistCollaboration    @map("psychologist_collaboration")
+  suicideRiskConcern          Boolean                      @map("suicide_risk_concern")
+  genderProceduralAbuse       Boolean                      @map("gender_procedural_abuse")
+  genderProceduralAbuseReport Boolean?                     @map("gender_procedural_abuse_report")
+  teamResponseToReport        String?                      @map("team_response_to_report") @db.Text
+  volunteerFeelings           String?                      @map("volunteer_feelings") @db.Text
+  needTechnicalSupportLast45d Boolean                      @map("need_technical_support_last_45d")
+  technicalSupportHelp        String[]                     @map("technical_support_help")
+  stillNeedHelp               String?                      @map("still_need_help") @db.Text
+  supportSatisfaction         SupportSatisfaction          @map("support_satisfaction")
+  suggestions                 String?                      @map("suggestions") @db.Text
+  createdAt                   DateTime                     @default(now()) @map("created_at") @db.Timestamp(6)
+
+  match Matches @relation(fields: [matchId], references: [matchId])
+
+  @@map("legal_support_follow_up_i")
+  @@schema("survey")
+}
+
+model LegalSupportFollowUpII {
+  answerId                     Int                          @id @default(autoincrement()) @map("answer_id")
+  matchId                      Int                          @map("match_id")
+  stillInSupport               Boolean                      @map("still_in_support")
+  weeklyHours                  WeeklyHours                  @map("weekly_hours")
+  respectsAgreements           Boolean                      @map("respects_agreements")
+  extraContactFrequency        ExtraContactFrequency?       @map("extra_contact_frequency")
+  agreementIssuesDescription   String?                      @map("agreement_issues_description") @db.Text
+  violenceAwareness            ViolenceAwareness            @map("violence_awareness")
+  newViolenceSinceLastForm     Boolean                      @map("new_violence_since_last_form")
+  newViolenceTypes             String[]                     @map("new_violence_types")
+  behavioralImpacts            String[]                     @map("behavioral_impacts")
+  relationshipImpacts          String[]                     @map("relationship_impacts")
+  socioeconomicImpacts         String[]                     @map("socioeconomic_impacts")
+  securityImpacts              String[]                     @map("security_impacts")
+  violenceAssessment           String                       @map("violence_assessment") @db.Text
+  mainDemandCategory           MainDemandCategory           @map("main_demand_category")
+  mainDemandDescription        String                       @map("main_demand_description") @db.Text
+  legalProcessStageCriminal    String?                      @map("legal_process_stage_criminal")
+  legalProcessStageCivil       String?                      @map("legal_process_stage_civil")
+  safetyPlanUsed               SafetyPlanUsed               @map("safety_plan_used")
+  safetyPlanDescription        String?                      @map("safety_plan_description") @db.Text
+  violenceProcessImpacts       String[]                     @map("violence_process_impacts")
+  caseConductionDetails        String                       @map("case_conduction_details") @db.Text
+  latestCaseUpdate             String                       @map("latest_case_update") @db.Text
+  proBonoInCaseFiles           Boolean                      @map("pro_bono_in_case_files")
+  psychologicalDocumentUsed    Boolean                      @map("psychological_document_used")
+  legalChallengesExist         Boolean                      @map("legal_challenges_exist")
+  legalChallenges              String?                      @map("legal_challenges") @db.Text
+  publicServiceReferralReason  PublicServiceReferralReason? @map("public_service_referral_reason")
+  publicServicesArticulated    String[]                     @map("public_services_articulated")
+  psychologistContact          PsychologistContact          @map("psychologist_contact")
+  psychologistCollaboration    PsychologistCollaboration    @map("psychologist_collaboration")
+  suicideRiskConcern           Boolean                      @map("suicide_risk_concern")
+  genderProceduralAbuse        Boolean                      @map("gender_procedural_abuse")
+  genderProceduralAbuseReport  Boolean?                     @map("gender_procedural_abuse_report")
+  teamResponseToReport         String?                      @map("team_response_to_report") @db.Text
+  volunteerFeelings            String?                      @map("volunteer_feelings") @db.Text
+  requestedTechnicalSupport90d Boolean                      @map("requested_technical_support_90d")
+  technicalSupportHelp         String[]                     @map("technical_support_help")
+  stillNeedHelp                String?                      @map("still_need_help") @db.Text
+  suggestions                  String?                      @map("suggestions") @db.Text
+  createdAt                    DateTime                     @default(now()) @map("created_at") @db.Timestamp(6)
+
+  match Matches @relation(fields: [matchId], references: [matchId])
+
+  @@map("legal_support_follow_up_ii")
+  @@schema("survey")
+}
+
+model VolunteerLegalSupportConclusion {
+  answerId                           Int                          @id @default(autoincrement()) @map("answer_id")
+  matchId                            Int                          @map("match_id")
+  supportEndDate                     DateTime                     @map("support_end_date") @db.Date
+  weeklyHours                        WeeklyHours                  @map("weekly_hours")
+  respectsAgreements                 Boolean                      @map("respects_agreements")
+  proBonoInCaseFiles                 Boolean                      @map("pro_bono_in_case_files")
+  violenceAwareness                  Boolean                      @map("violence_awareness")
+  violenceTypes                      String[]                     @map("violence_types")
+  behavioralImpacts                  String[]                     @map("behavioral_impacts")
+  relationshipImpacts                String[]                     @map("relationship_impacts")
+  socioeconomicImpacts               String[]                     @map("socioeconomic_impacts")
+  securityImpacts                    String[]                     @map("security_impacts")
+  violenceAssessment                 String                       @map("violence_assessment") @db.Text
+  mainDemandCategory                 MainDemandCategory           @map("main_demand_category")
+  mainDemandDescription              String                       @map("main_demand_description") @db.Text
+  safetyPlanUsed                     SafetyPlanUsed               @map("safety_plan_used")
+  jurisdiction                       String                       @map("jurisdiction") @db.Text
+  usedGenderPrecedents               Boolean                      @map("used_gender_precedents")
+  usedHumanRightsArguments           Boolean                      @map("used_human_rights_arguments")
+  psychologicalDocumentUsed          Boolean                      @map("psychological_document_used")
+  caseConductionDetails              String                       @map("case_conduction_details") @db.Text
+  violenceProcessImpacts             String[]                     @map("violence_process_impacts")
+  legalChallenges                    String?                      @map("legal_challenges") @db.Text
+  expectedOutcomeAchieved            String                       @map("expected_outcome_achieved") @db.Text
+  publicServiceReferralReason        PublicServiceReferralReason? @map("public_service_referral_reason")
+  publicServicesArticulated          String[]                     @map("public_services_articulated")
+  psychologistContact                PsychologistContact          @map("psychologist_contact")
+  psychologistCollaboration          PsychologistCollaboration    @map("psychologist_collaboration")
+  psychologistCollaborationLearnings String?                      @map("psychologist_collaboration_learnings") @db.Text
+  genderProceduralAbuse              Boolean                      @map("gender_procedural_abuse")
+  genderProceduralAbuseReport        Boolean?                     @map("gender_procedural_abuse_report")
+  teamResponseToReport               String?                      @map("team_response_to_report") @db.Text
+  lessonsLearned                     String?                      @map("lessons_learned") @db.Text
+  challengesFaced                    String?                      @map("challenges_faced") @db.Text
+  volunteerFeelings                  String?                      @map("volunteer_feelings") @db.Text
+  requestedTechnicalSupport          Boolean                      @map("requested_technical_support")
+  technicalSupportHelp               String[]                     @map("technical_support_help")
+  supportSatisfaction                SupportSatisfaction          @map("support_satisfaction")
+  messageToTeam                      String?                      @map("message_to_team") @db.Text
+  suggestions                        String?                      @map("suggestions") @db.Text
+  createdAt                          DateTime                     @default(now()) @map("created_at") @db.Timestamp(6)
+
+  match Matches @relation(fields: [matchId], references: [matchId])
+
+  @@map("volunteer_legal_support_conclusion")
+  @@schema("survey")
+}
+
+model PsychologicalSupportFollowUpI {
+  answerId                    Int                          @id @default(autoincrement()) @map("answer_id")
+  matchId                     Int                          @map("match_id")
+  disabilityType              DisabilityType?              @map("disability_type")
+  supportStartDate            DateTime                     @map("support_start_date") @db.Date
+  hasProBonoContract          Boolean                      @map("has_pro_bono_contract")
+  hasAbsencePolicy            Boolean                      @map("has_absence_policy")
+  contractFormat              ContractFormat               @map("contract_format")
+  safeContactMethods          String[]                     @map("safe_contact_methods")
+  violenceAwareness           ViolenceAwareness            @map("violence_awareness")
+  violenceTypes               String[]                     @map("violence_types")
+  behavioralImpacts           String[]                     @map("behavioral_impacts")
+  relationshipImpacts         String[]                     @map("relationship_impacts")
+  socioeconomicImpacts        String[]                     @map("socioeconomic_impacts")
+  securityImpacts             String[]                     @map("security_impacts")
+  violenceAssessment          String                       @map("violence_assessment") @db.Text
+  mainDemand                  String[]                     @map("main_demand")
+  caseConductionDetails       String                       @map("case_conduction_details") @db.Text
+  safetyPlanUsed              SafetyPlanUsed               @map("safety_plan_used")
+  safetyPlanDescription       String?                      @map("safety_plan_description") @db.Text
+  clinicalDifficultiesExist   Boolean                      @map("clinical_difficulties_exist")
+  clinicalDifficulties        String?                      @map("clinical_difficulties") @db.Text
+  bondingStrategies           String                       @map("bonding_strategies") @db.Text
+  caseReferrals               String[]                     @map("case_referrals")
+  publicServiceReferralReason PublicServiceReferralReason? @map("public_service_referral_reason")
+  publicServicesArticulated   String[]                     @map("public_services_articulated")
+  lawyerContact               LawyerContact                @map("lawyer_contact")
+  lawyerCollaboration         LawyerCollaboration          @map("lawyer_collaboration")
+  suicideRiskConcern          Boolean                      @map("suicide_risk_concern")
+  hasPsychiatricSupport       Boolean                      @map("has_psychiatric_support")
+  volunteerFeelings           String?                      @map("volunteer_feelings") @db.Text
+  needTechnicalSupportLast45d Boolean                      @map("need_technical_support_last_45d")
+  technicalSupportHelp        String[]                     @map("technical_support_help")
+  stillNeedHelp               String?                      @map("still_need_help") @db.Text
+  supportSatisfaction         SupportSatisfaction          @map("support_satisfaction")
+  suggestions                 String?                      @map("suggestions") @db.Text
+  createdAt                   DateTime                     @default(now()) @map("created_at") @db.Timestamp(6)
+
+  match Matches @relation(fields: [matchId], references: [matchId])
+
+  @@map("psychological_support_follow_up_i")
+  @@schema("survey")
+}
+
+model PsychologicalSupportFollowUpII {
+  answerId                        Int                          @id @default(autoincrement()) @map("answer_id")
+  matchId                         Int                          @map("match_id")
+  stillInSupport                  Boolean                      @map("still_in_support")
+  isAttendanceRegular             Boolean                      @map("is_attendance_regular")
+  irregularAttendanceReason       IrregularAttendanceReason?   @map("irregular_attendance_reason")
+  respectsAgreements              Boolean                      @map("respects_agreements")
+  extraContactFrequency           ExtraContactFrequency?       @map("extra_contact_frequency")
+  agreementIssuesDescription      String?                      @map("agreement_issues_description") @db.Text
+  violenceAwareness               ViolenceAwareness            @map("violence_awareness")
+  newViolenceSinceLastForm        String[]                     @map("new_violence_since_last_form")
+  behavioralImpacts               String[]                     @map("behavioral_impacts")
+  relationshipImpacts             String[]                     @map("relationship_impacts")
+  socioeconomicImpacts            String[]                     @map("socioeconomic_impacts")
+  securityImpacts                 String[]                     @map("security_impacts")
+  violenceAssessment              String                       @map("violence_assessment") @db.Text
+  mainDemand                      String[]                     @map("main_demand")
+  caseConductionDetails           String?                      @map("case_conduction_details") @db.Text
+  safetyPlanUsed                  SafetyPlanUsed               @map("safety_plan_used")
+  safetyPlanDescription           String?                      @map("safety_plan_description") @db.Text
+  clinicalDifficultiesExist       Boolean                      @map("clinical_difficulties_exist")
+  clinicalDifficulties            String?                      @map("clinical_difficulties") @db.Text
+  newBondingStrategies            Boolean                      @map("new_bonding_strategies")
+  newBondingStrategiesDescription String?                      @map("new_bonding_strategies_description") @db.Text
+  publicServiceReferralReason     PublicServiceReferralReason? @map("public_service_referral_reason")
+  publicServicesArticulated       String[]                     @map("public_services_articulated")
+  lawyerContact                   LawyerContact                @map("lawyer_contact")
+  lawyerCollaboration             LawyerCollaboration          @map("lawyer_collaboration")
+  suicideRiskConcern              Boolean                      @map("suicide_risk_concern")
+  hasPsychiatricSupport           Boolean                      @map("has_psychiatric_support")
+  experiencedGenderViolence       Boolean                      @map("experienced_gender_violence")
+  reportedGenderViolence          Boolean?                     @map("reported_gender_violence")
+  teamResponseToReport            String?                      @map("team_response_to_report") @db.Text
+  volunteerFeelings               String?                      @map("volunteer_feelings") @db.Text
+  requestedTechnicalSupport90d    Boolean                      @map("requested_technical_support_90d")
+  technicalSupportHelp            String[]                     @map("technical_support_help")
+  stillNeedHelp                   String?                      @map("still_need_help") @db.Text
+  supportSatisfaction             SupportSatisfaction          @map("support_satisfaction")
+  suggestions                     String?                      @map("suggestions") @db.Text
+  createdAt                       DateTime                     @default(now()) @map("created_at") @db.Timestamp(6)
+
+  match Matches @relation(fields: [matchId], references: [matchId])
+
+  @@map("psychological_support_follow_up_ii")
+  @@schema("survey")
+}
+
+model VolunteerPsychologicalSupportConclusion {
+  answerId                     Int                          @id @default(autoincrement()) @map("answer_id")
+  matchId                      Int                          @map("match_id")
+  supportEndDate               DateTime                     @map("support_end_date") @db.Date
+  supportOutsideOrg            Boolean                      @map("support_outside_org")
+  violenceAwareness            Boolean                      @map("violence_awareness")
+  violenceTypes                String[]                     @map("violence_types")
+  behavioralImpacts            String[]                     @map("behavioral_impacts")
+  relationshipImpacts          String[]                     @map("relationship_impacts")
+  socioeconomicImpacts         String[]                     @map("socioeconomic_impacts")
+  securityImpacts              String[]                     @map("security_impacts")
+  violenceAssessment           String                       @map("violence_assessment") @db.Text
+  psychologicalOutcomes        String[]                     @map("psychological_outcomes")
+  safetyPlanUsed               SafetyPlanUsed               @map("safety_plan_used")
+  processOutcomeDescription    String?                      @map("process_outcome_description") @db.Text
+  clinicalDifficulties         String?                      @map("clinical_difficulties") @db.Text
+  bondingStrategies            String?                      @map("bonding_strategies") @db.Text
+  skillsAcquired               String?                      @map("skills_acquired") @db.Text
+  publicServiceReferralReason  PublicServiceReferralReason? @map("public_service_referral_reason")
+  publicServicesArticulated    String[]                     @map("public_services_articulated")
+  lawyerContact                LawyerContact                @map("lawyer_contact")
+  lawyerCollaboration          LawyerCollaboration          @map("lawyer_collaboration")
+  lawyerCollaborationLearnings String?                      @map("lawyer_collaboration_learnings") @db.Text
+  experiencedGenderViolence    Boolean                      @map("experienced_gender_violence")
+  reportedGenderViolence       Boolean?                     @map("reported_gender_violence")
+  teamResponseToReport         String?                      @map("team_response_to_report") @db.Text
+  lessonsLearned               String?                      @map("lessons_learned") @db.Text
+  challengesFaced              String?                      @map("challenges_faced") @db.Text
+  volunteerFeelings            String?                      @map("volunteer_feelings") @db.Text
+  requestedTechnicalSupport    Boolean                      @map("requested_technical_support")
+  technicalSupportHelp         String[]                     @map("technical_support_help")
+  supportSatisfaction          SupportSatisfaction          @map("support_satisfaction")
+  messageToTeam                String?                      @map("message_to_team") @db.Text
+  suggestions                  String?                      @map("suggestions") @db.Text
+  createdAt                    DateTime                     @default(now()) @map("created_at") @db.Timestamp(6)
+
+  match Matches @relation(fields: [matchId], references: [matchId])
+
+  @@map("volunteer_psychological_support_conclusion")
+  @@schema("survey")
+}
+
+model SupportInterruption {
+  answerId                   Int                 @id @default(autoincrement()) @map("answer_id")
+  matchId                    Int                 @map("match_id")
+  hasDifferentDemandInfo     Boolean             @map("has_different_demand_info")
+  differentDemandDescription String?             @map("different_demand_description") @db.Text
+  interruptionReason         InterruptionReason  @map("interruption_reason")
+  redirectAreaNeeded         RedirectAreaNeeded? @map("redirect_area_needed")
+  publicServicesReferral     String[]            @map("public_services_referral")
+  stayInProject              Boolean             @map("stay_in_project")
+  exitOrSuspend              ExitOrSuspend?      @map("exit_or_suspend")
+  suspensionCategory         SuspensionCategory? @map("suspension_category")
+  suspensionReason           SuspensionReason?   @map("suspension_reason")
+  createdAt                  DateTime            @default(now()) @map("created_at") @db.Timestamp(6)
+
+  match Matches @relation(fields: [matchId], references: [matchId])
+
+  @@map("support_interruption")
+  @@schema("survey")
+}
+
+model MsrInstrumentalRecord {
+  msrInstrumentalRecordId Int                @id @default(autoincrement()) @map("msr_instrumental_record_id")
+  matchId                 Int?               @map("match_id")
+  msrId                   BigInt             @map("msr_id")
+  instrumentalType        InstrumentalType   @map("instrumental_type")
+  status                  InstrumentalStatus @default(sent) @map("status")
+  answerId                Int?               @map("answer_id")
+  sentAt                  DateTime           @default(now()) @map("sent_at") @db.Timestamp(6)
+  answeredAt              DateTime?          @map("answered_at") @db.Timestamp(6)
+  createdAt               DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt               DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  match Matches? @relation(fields: [matchId], references: [matchId])
+
+  @@map("msr_instrumental_record")
+  @@schema("survey")
+}
+
+model VolunteerInstrumentalRecord {
+  volunteerInstrumentalRecordId Int                @id @default(autoincrement()) @map("volunteer_instrumental_record_id")
+  matchId                       Int                @map("match_id")
+  volunteerId                   Int                @map("volunteer_id")
+  instrumentalType              InstrumentalType   @map("instrumental_type")
+  status                        InstrumentalStatus @default(sent) @map("status")
+  answerId                      Int?               @map("answer_id")
+  sentAt                        DateTime           @default(now()) @map("sent_at") @db.Timestamp(6)
+  answeredAt                    DateTime?          @map("answered_at") @db.Timestamp(6)
+  createdAt                     DateTime           @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                     DateTime           @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  match     Matches    @relation(fields: [matchId], references: [matchId])
+  volunteer Volunteers @relation(fields: [volunteerId], references: [id])
+
+  @@map("volunteer_instrumental_record")
+  @@schema("survey")
+}
+
+model MdaFormsAnswers {
+  id             Int      @id(map: "mda_forms_answers_pk") @default(autoincrement())
+  form           String   @db.VarChar(30)
+  formId         Int      @map("form_id")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+  organizationId BigInt?  @map("organization_id")
+  volunteerEmail String   @map("volunteer_email") @db.VarChar(254)
+  msrName        String   @map("msr_name") @db.VarChar(200)
+  ticketId       Int?     @map("ticket_id")
+  answers        Json?
+
+  @@map("mda_forms_answers")
+  @@schema("legacy_support_assessments")
+}
+
+enum SupportType {
+  psychological
+  legal
+
+  @@map("support_type")
+  @@schema("match")
+}
+
+enum MSRStatus {
+  registered
+  unregistered
+  registered_by_public_service
+
+  @@map("msr_status")
+  @@schema("msr")
+}
+
+enum SupportRequestsStatus {
+  open
+  matched
+  social_worker
+  scheduled_social_worker
+  expired_social_worker
+  public_service
+  public_service_with_social_worker
+  waiting_for_match
+  waiting_for_match_with_priority
+  waiting_for_confirmation
+  duplicated
+  closed
+  special_case
+  waived
+
+  @@map("support_requests_status")
+  @@schema("match")
+}
+
+enum MatchType {
+  msr
+  daily
+  manual
+  old
+
+  @@map("match_type")
+  @@schema("match")
+}
+
+enum MatchStage {
+  ideal
+  expanded
+  online
+  old
+  manual
+
+  @@map("match_stage")
+  @@schema("match")
+}
+
+enum MatchStatus {
+  completed
+  expired
+  in_contact
+  interrupted_after_support
+  interrupted_before_support
+  waiting_contact
+  started_contact
+
+  @@map("match_status")
+  @@schema("match")
+}
+
+enum MatchConfirmationStatus {
+  waiting
+  confirmed
+  denied
+  expired
+  undelivered
+
+  @@map("match_confirmation_status")
+  @@schema("match")
+}
+
+enum SurveyType {
+  triagem_1
+  triagem_2
+  acompanhamento_1
+  acompanhamento_2
+
+  @@map("survey_type")
+  @@schema("match")
+}
+
+enum Gender {
+  cis_woman
+  trans_woman
+  not_found
+
+  @@map("gender")
+  @@schema("public")
+}
+
+enum Region {
+  norte
+  nordeste
+  centro_oeste
+  sudeste
+  sul
+  not_found
+
+  @@map("region")
+  @@schema("public")
+}
+
+enum Race {
+  black
+  brown
+  indigenous
+  yellow
+  white
+  prefer_not_to_answer
+  not_found
+
+  @@map("race")
+  @@schema("public")
+}
+
+enum Sexuality {
+  lesbian
+  bisexual
+  heterosexual
+  asexual
+  not_found
+
+  @@map("sexuality")
+  @@schema("public")
+}
+
+enum Religion {
+  atheist
+  candomble
+  catholic
+  spiritist
+  evangelical
+  umbanda
+  others
+  not_found
+
+  @@map("religion")
+  @@schema("public")
+}
+
+enum EducationLevel {
+  basic_education
+  high_school
+  completed_undergraduate
+  incomplete_undergraduate
+  not_found
+
+  @@map("education_level")
+  @@schema("public")
+}
+
+enum MultiplierUniversityType {
+  public
+  private
+  not_found
+
+  @@map("multiplier_university_type")
+  @@schema("mobilization")
+}
+
+enum MultiplierHouseholdType {
+  urban
+  rural
+  not_found
+
+  @@map("multiplier_household_type")
+  @@schema("mobilization")
+}
+
+enum MultiplierJourneyEvent {
+  registration
+  general_onboarding
+
+  @@map("multiplier_journey_event")
+  @@schema("mobilization")
+}
+
+enum VolunteerTrainingEvent {
+  started_training
+  finished_training
+
+  @@map("volunteer_training_event")
+  @@schema("public")
+}
+
+enum ViolenceType {
+  physical_violence
+  psychological_violence
+  sexual_violence
+  moral_violence
+  digital_violence
+  patrimonial_violence
+  obstetric_violence
+  threat
+  political_violence
+  no_violence
+
+  @@map("violence_type")
+  @@schema("msr")
+}
+
+enum ViolenceTime {
+  last_week
+  less_than_3_months
+  between_3_months_and_1_year
+  between_1_and_3_years
+  between_3_and_6_years
+  between_6_and_10_years
+  more_than_10_years
+
+  @@map("violence_time")
+  @@schema("msr")
+}
+
+enum PerpetratorGender {
+  woman
+  man
+  non_binary
+
+  @@map("perpetrator_gender")
+  @@schema("msr")
+}
+
+enum ViolencePerpetrator {
+  nuclear_family
+  close_family
+  current_partner
+  ex_partner
+  work_colleague
+  other_people
+
+  @@map("violence_perpetrator")
+  @@schema("msr")
+}
+
+enum LivesWithPerpetrator {
+  yes
+  no
+  never
+
+  @@map("lives_with_perpetrator")
+  @@schema("msr")
+}
+
+enum ViolenceLocation {
+  home_space
+  public_space
+  work_space
+  internet_space
+
+  @@map("violence_location")
+  @@schema("msr")
+}
+
+enum LegalActionsTaken {
+  physical_examination
+  police_inquiry
+  criminal_case
+  civil_case
+  labour_case
+  police_report
+  protective_measure
+  none_taken
+
+  @@map("legal_actions_taken")
+  @@schema("msr")
+}
+
+enum LegalActionDifficulty {
+  discouraged
+  not_competent
+  refused_to_register
+  no_access_to_justice
+  denied_restraining_order
+  not_applicable
+
+  @@map("legal_action_difficulty")
+  @@schema("msr")
+}
+
+enum ProtectiveFactor {
+  support_network
+  dont_live_with_perpetrator
+  feels_safe
+  is_not_dependant
+  has_qualified_public_services
+  not_applicable
+
+  @@map("protective_factors")
+  @@schema("msr")
+}
+
+enum RiskFactor {
+  gun_access
+  private_captivity
+  violence_during_pregnancy
+  denied_public_services
+  no_support_network
+  perpetrator_is_a_criminal
+  perpetrator_is_imprisoned
+  feels_isolated
+  other_risks
+  needed_medical_attention
+  not_applicable
+
+  @@map("risk_factors")
+  @@schema("msr")
+}
+
+enum MonthlyIncome {
+  yes
+  no
+  no_access
+
+  @@map("has_monthly_income")
+  @@schema("msr")
+}
+
+enum MonthlyIncomeRange {
+  no_income
+  half_minimum_wage
+  up_to_one_minimum_wage
+  up_to_two_minimum_wages
+  up_to_three_minimum_wages
+  up_to_four_minimum_wages
+  five_minimum_wages_or_more
+
+  @@map("monthly_income_range")
+  @@schema("msr")
+}
+
+enum EmploymentStatus {
+  employed_clt
+  employed_pj
+  student
+  student_with_income
+  retired
+  unemployed
+
+  @@map("employment_status")
+  @@schema("msr")
+}
+
+enum FamilyProvider {
+  yes
+  no
+  shared_responsibility
+
+  @@map("family_provider")
+  @@schema("msr")
+}
+
+enum DisabilityType {
+  physical
+  visual
+  hearing
+  intellectual
+  psychic
+  multiple
+  not_pcd
+
+  @@map("disability_type")
+  @@schema("survey")
+}
+
+enum WeeklyHours {
+  one_hour
+  two_hours
+  three_to_five_hours
+  more_than_five_hours
+
+  @@map("weekly_hours")
+  @@schema("survey")
+}
+
+enum ContractFormat {
+  remote
+  in_person
+  hybrid
+
+  @@map("contract_format")
+  @@schema("survey")
+}
+
+enum ViolenceAwareness {
+  yes
+  no
+  insufficient_input
+
+  @@map("violence_awareness")
+  @@schema("survey")
+}
+
+enum MainDemandCategory {
+  family_law
+  criminal_law
+  labor_law
+  property_rights
+  justice_system_info
+  other
+
+  @@map("main_demand_category")
+  @@schema("survey")
+}
+
+enum ProBonoInCaseFiles {
+  yes
+  no
+  not_applicable
+
+  @@map("pro_bono_status")
+  @@schema("survey")
+}
+
+enum SafetyPlanUsed {
+  yes
+  no
+  not_applicable
+
+  @@map("safety_plan_used")
+  @@schema("survey")
+}
+
+enum PsychologistContact {
+  in_contact
+  not_in_contact
+  not_receiving_support
+
+  @@map("psychologist_contact")
+  @@schema("survey")
+}
+
+enum LawyerContact {
+  in_contact
+  not_in_contact
+  not_receiving_support
+
+  @@map("lawyer_contact")
+  @@schema("survey")
+}
+
+enum PublicServiceReferralType {
+  referral_with_interruption
+  articulation_with_continuity
+  not_applicable
+
+  @@map("public_service_referral_type")
+  @@schema("survey")
+}
+
+enum PublicServiceReferralReason {
+  physical_psychological_risk
+  mental_health_demand
+  social_vulnerability
+  exceeds_scope
+  no_need_identified
+
+  @@map("public_service_referral_reason")
+  @@schema("survey")
+}
+
+enum PsychologistCollaboration {
+  yes
+  no
+  not_applicable
+
+  @@map("psychologist_collaboration")
+  @@schema("survey")
+}
+
+enum LawyerCollaboration {
+  yes
+  no
+  not_applicable
+
+  @@map("lawyer_collaboration")
+  @@schema("survey")
+}
+
+enum SupportSatisfaction {
+  yes
+  no
+  not_applicable
+
+  @@map("support_satisfaction")
+  @@schema("survey")
+}
+
+enum ExtraContactFrequency {
+  once_a_week
+  twice_a_week
+  three_or_more_times_a_week
+  on_weekends
+
+  @@map("extra_contact_frequency")
+  @@schema("survey")
+}
+
+enum IrregularAttendanceReason {
+  missed_without_notice
+  forgetfulness
+  last_minute_cancellation
+  domestic_care_overload
+  prevented_by_perpetrator
+  other
+  not_applicable
+
+  @@map("irregular_attendance_reason")
+  @@schema("survey")
+}
+
+enum InterruptionReason {
+  volunteer_suspension_or_exit
+  msr_not_eligible
+  no_bonding
+  msr_opted_out
+  msr_disappeared
+  conflict_of_interest
+  schedule_incompatibility
+  divergent_legal_area
+  support_outside_project
+  msr_needs_in_person
+  public_service_referral_needed
+
+  @@map("interruption_reason")
+  @@schema("survey")
+}
+
+enum RedirectAreaNeeded {
+  civil
+  family
+  labor
+  criminal
+
+  @@map("redirect_area_needed")
+  @@schema("survey")
+}
+
+enum ExitOrSuspend {
+  exit
+  suspend
+
+  @@map("exit_or_suspend")
+  @@schema("survey")
+}
+
+enum SuspensionCategory {
+  one_month
+  three_months
+  six_months
+
+  @@map("suspension_category")
+  @@schema("survey")
+}
+
+enum SuspensionReason {
+  vacation
+  work_or_study
+  maternity
+  health
+  other
+
+  @@map("suspension_reason")
+  @@schema("survey")
+}
+
+enum InstrumentalType {
+  // MSR
+  quality_of_life_d0
+  quality_of_life_d90
+  quality_of_life_d180
+  quality_of_life_d270
+  psychological_support_evaluation
+  legal_support_evaluation
+  msr_psychological_support_conclusion
+  msr_legal_support_conclusion
+
+  // Volunteer
+  psychological_support_follow_up_i
+  psychological_support_follow_up_ii
+  legal_support_follow_up_i
+  legal_support_follow_up_ii
+  volunteer_psychological_support_conclusion
+  volunteer_legal_support_conclusion
+  support_interruption
+
+  @@map("instrumental_type")
+  @@schema("survey")
+}
+
+enum InstrumentalStatus {
+  sent
+  answered
+
+  @@map("instrumental_status")
+  @@schema("survey")
+}
+
+model iana_feedback {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  user_id    BigInt
+  question   String
+  answer     String?
+
+  @@schema("iana")
+}
