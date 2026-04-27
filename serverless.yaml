@@ -4,7 +4,11 @@ frameworkVersion: "3.40.0"
 useDotenv: true
 
 package:
+  individually: true
   patterns:
+    - '!node_modules/.prisma/**'
+    - '!node_modules/@prisma/**'
+    - '!node_modules/prisma/**'
     - '!node_modules/.prisma/client/libquery_engine-*'
     - 'node_modules/.prisma/client/libquery_engine-rhel-*'
     - '!node_modules/prisma/libquery_engine-*'
@@ -47,13 +51,23 @@ provider:
     ZENDESK_API_TOKEN: ${env:ZENDESK_API_TOKEN}
     LOOPS_API_KEY: ${env:LOOPS_API_KEY}
 
+layers:
+  prisma:
+    path: layers/prisma
+    name: ${self:service}-${sls:stage}-prisma
+    compatibleRuntimes:
+      - nodejs20.x
+    retain: false
+
 functions:
   auth:
     handler: handler.auth
 
   compose:
     handler: handler.compose
-    timeout: 30 # max timeout for api gateway
+    timeout: 30
+    layers:
+      - !Ref PrismaLambdaLayer
     events:
       - httpApi:
           path: /compose
@@ -64,6 +78,8 @@ functions:
 
   sign:
     handler: handler.sign
+    layers:
+      - !Ref PrismaLambdaLayer
     events:
       - httpApi:
           path: /sign
@@ -72,6 +88,8 @@ functions:
   manualMatch:
     handler: handler.manualMatch
     timeout: 30
+    layers:
+      - !Ref PrismaLambdaLayer
     events:
       - httpApi:
           path: /manual-match
@@ -80,6 +98,8 @@ functions:
   handleMatch:
     handler: handler.handleMatch
     timeout: 30
+    layers:
+      - !Ref PrismaLambdaLayer
     events:
       - httpApi:
           path: /handle-match
@@ -91,6 +111,8 @@ functions:
   createMatch:
     handler: handler.createNewMatch
     timeout: 30
+    layers:
+      - !Ref PrismaLambdaLayer
     events:
       - httpApi:
           path: /create-match
@@ -102,6 +124,8 @@ functions:
   findVolunteer:
     handler: handler.findVolunteer
     timeout: 30
+    layers:
+      - !Ref PrismaLambdaLayer
     events:
       - httpApi:
           path: /find-volunteer
@@ -112,6 +136,8 @@ functions:
 
   feature-flag:
     handler: handler.featureFlag
+    layers:
+      - !Ref PrismaLambdaLayer
     events:
       - httpApi:
           path: /feature-flag

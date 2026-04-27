@@ -18,4 +18,4 @@ coverage
 # Serverless
 .serverless
 .webpack
-.webpackCache
+.webpackCachelayers/prisma/nodejs
