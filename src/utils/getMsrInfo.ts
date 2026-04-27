@@ -66,6 +66,7 @@ export default async function getMsrInfo(msrId: bigint) {
     const msrSocioeconomicData = msr?.MSRSocioeconomicData;
 
     if (!msr || !msrSocioeconomicData || !msrViolenceHistory) {
+      console.log("deploy staging");
       return null;
     }
     const hasMonthlyIncome = msrSocioeconomicData?.hasMonthlyIncome;
