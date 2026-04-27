@@ -4,19 +4,29 @@ frameworkVersion: "3.40.0"
 useDotenv: true
 
 package:
+  individually: true  # cada função empacotada separada — reduz muito
   patterns:
     - '!node_modules/.prisma/client/libquery_engine-*'
-    - 'node_modules/.prisma/client/libquery_engine-rhel-*'
+    - 'node_modules/.prisma/client/libquery_engine-rhel-openssl-3.0.x'
     - '!node_modules/prisma/libquery_engine-*'
     - '!node_modules/@prisma/engines/**'
+    - '!node_modules/@prisma/engines'
+    - '!node_modules/.cache/**'
+    - '!test/**'
+    - '!coverage/**'
+    - '!.git/**'
 
 custom:
   webpack:
-    includeModules: true
+    includeModules:
+      forceExclude:        # exclui o que não vai pro bundle
+        - aws-sdk
+        - '@aws-sdk/client-s3'  # ajuste para seus SDKs
+      packagePath: ./package.json
     packagerOptions:
       scripts:
         - npx prisma generate
-        - find . -name "libquery_engine-*" -not -name "libquery_engine-rhel-openssl-*" | xargs rm
+        - find . -name "libquery_engine-*" -not -name "libquery_engine-rhel-openssl-*" -delete
   serverless-offline:
     httpPort: 5000
     ignoreJWTSignature: true
