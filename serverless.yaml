@@ -138,4 +138,4 @@ functions:
 plugins:
   - serverless-webpack
   - serverless-offline
-  - serverless-newrelic-lambda-layers
+  #- serverless-newrelic-lambda-layers
