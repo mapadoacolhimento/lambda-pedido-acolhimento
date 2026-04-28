@@ -83,7 +83,8 @@
   },
   "dependencies": {
     "@prisma/client": "^5.16.1",
-    "@turf/turf": "^6.5.0",
+    "@turf/distance": "^7.3.5",
+    "@turf/helpers": "^7.3.5",
     "dotenv-safe": "^8.2.0",
     "isomorphic-fetch": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
