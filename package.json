@@ -74,7 +74,8 @@
     },
     "testEnvironment": "node",
     "modulePathIgnorePatterns": [
-      ".serverless"
+      ".serverless",
+      "<rootDir>/layers"
     ],
     "clearMocks": true,
     "setupFilesAfterEnv": [

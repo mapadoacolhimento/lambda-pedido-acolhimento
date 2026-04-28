@@ -1,7 +1,3 @@
-import { PrismaClient } from "@prisma/client";
-
-const client = new PrismaClient();
-
-export default client;
-
+import { prisma } from "./db";
+export default prisma;
 export { default as isFeatureFlagEnabled } from "./isFeatureFlagEnabled";
