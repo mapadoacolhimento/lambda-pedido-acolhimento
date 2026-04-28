@@ -4,7 +4,7 @@ import { createNewMatch } from "../../handler";
 import type { Decimal } from "@prisma/client/runtime/library";
 import * as createMatch from "../match/createMatch";
 import { stringfyBigInt } from "../utils";
-import type { Matches } from "@prisma/client";
+import type { Matches, SupportRequests } from "@prisma/client";
 
 const validBody = {
   supportRequestId: 1,
@@ -126,7 +126,7 @@ describe("/create-match endpoint", () => {
   it("should return an error res when volunteer_availability is not found", async () => {
     const callback = jest.fn();
     prismaMock.supportRequests.findUnique.mockResolvedValueOnce(
-      mockSupportRequest
+      mockSupportRequest as SupportRequests
     );
     prismaMock.volunteerAvailability.findUnique.mockResolvedValueOnce(null);
 
@@ -151,7 +151,7 @@ describe("/create-match endpoint", () => {
 
     it("should return a res with match payload when match was created", async () => {
       prismaMock.supportRequests.findUnique.mockResolvedValueOnce(
-        mockSupportRequest
+        mockSupportRequest as SupportRequests
       );
       prismaMock.volunteerAvailability.findUnique.mockResolvedValueOnce(
         mockVolunteerAvailability
