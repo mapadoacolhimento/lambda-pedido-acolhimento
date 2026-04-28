@@ -4,11 +4,20 @@ frameworkVersion: "3.40.0"
 useDotenv: true
 
 package:
+  individually: true
   patterns:
     - '!node_modules/.prisma/client/libquery_engine-*'
-    - 'node_modules/.prisma/client/libquery_engine-rhel-*'
+    - 'node_modules/.prisma/client/libquery_engine-rhel-openssl-*'
     - '!node_modules/prisma/libquery_engine-*'
     - '!node_modules/@prisma/engines/**'
+    - '!node_modules/@prisma/engines'
+    - '!node_modules/prisma/build/**'
+    - '!node_modules/prisma/build/public/**'
+    - '!node_modules/@prisma/client/runtime/binary.js'
+    - '!node_modules/@prisma/client/runtime/edge*.js'
+    - '!node_modules/@prisma/client/runtime/react-native.js'
+    - '!node_modules/@prisma/client/runtime/*.wasm'
+    - '!node_modules/.cache/**'
 
 custom:
   webpack:
@@ -16,7 +25,14 @@ custom:
     packagerOptions:
       scripts:
         - npx prisma generate
-        - find . -name "libquery_engine-*" -not -name "libquery_engine-rhel-openssl-*" | xargs rm
+        - find . -name "libquery_engine-*" -not -name "libquery_engine-rhel-openssl-3.0.x*" -delete
+        - find . -name "schema-engine-*" -delete
+        - find . -name "*.wasm" -delete
+        - find . -name "icon-1024.png" -delete
+        - find . -path "*runtime/binary.js" -delete
+        - find . -path "*runtime/react-native.js" -delete
+        - find . -path "*runtime/edge*.js" -delete
+        - find . -name "*.d.ts" -delete
   serverless-offline:
     httpPort: 5000
     ignoreJWTSignature: true
