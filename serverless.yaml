@@ -18,6 +18,11 @@ package:
     - '!node_modules/@prisma/client/runtime/react-native.js'
     - '!node_modules/@prisma/client/runtime/*.wasm'
     - '!node_modules/.cache/**'
+    - '!node_modules/prisma/build/**'
+    - '!node_modules/prisma/prisma-client/**'
+    - '!node_modules/@prisma/fetch-engine/**'
+    - '!node_modules/@prisma/get-platform/**'
+    - '!node_modules/tr46/**'
 
 custom:
   webpack:
@@ -138,4 +143,4 @@ functions:
 plugins:
   - serverless-webpack
   - serverless-offline
-  #- serverless-newrelic-lambda-layers
+  - serverless-newrelic-lambda-layers
