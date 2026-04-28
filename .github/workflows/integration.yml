@@ -90,5 +90,11 @@ jobs:
       - name: Serverless AWS authentication
         run: sls config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
+      - name: Package and check size
+        run: |
+          serverless package --stage $STAGE
+          du -sh .serverless/*.zip
+          unzip -l .serverless/sign.zip | sort -k1 -rn | head -20  
+
       - name: Deploy API
         run: npm run deploy -- --stage $STAGE

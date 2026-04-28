@@ -32,7 +32,6 @@ custom:
         - find . -path "*runtime/binary.js" -delete
         - find . -path "*runtime/react-native.js" -delete
         - find . -path "*runtime/edge*.js" -delete
-        - find . -name "*.d.ts" -delete
   serverless-offline:
     httpPort: 5000
     ignoreJWTSignature: true
