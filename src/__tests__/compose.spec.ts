@@ -149,12 +149,12 @@ describe("/compose endpoint", () => {
 
     it("should call prisma with correct support request payload", async () => {
       prismaMock.supportRequests.create.mockResolvedValueOnce(
-        mockPsySupportRequest
+        mockPsySupportRequest as SupportRequests
       );
       prismaMock.supportRequests.create.mockResolvedValueOnce({
         ...mockLegalSupportRequest,
         status: "duplicated",
-      });
+      } as SupportRequests);
 
       await compose(
         {
@@ -198,10 +198,10 @@ describe("/compose endpoint", () => {
     describe("When NOVO_MATCH feature flag is", () => {
       beforeEach(() => {
         prismaMock.supportRequests.create.mockResolvedValueOnce(
-          mockPsySupportRequest
+          mockPsySupportRequest as SupportRequests
         );
         prismaMock.supportRequests.create.mockResolvedValueOnce(
-          mockLegalSupportRequest
+          mockLegalSupportRequest as SupportRequests
         );
       });
 
@@ -265,7 +265,7 @@ describe("/compose endpoint", () => {
         prismaMock.supportRequests.create.mockResolvedValueOnce({
           ...mockLegalSupportRequest,
           status: "duplicated",
-        });
+        } as SupportRequests);
 
         await compose(
           {
@@ -332,13 +332,13 @@ describe("/compose endpoint", () => {
       it("should create match for valid support requests", async () => {
         mockProcess.mockResolvedValueOnce(mockMatch);
         prismaMock.supportRequests.create.mockResolvedValueOnce(
-          mockPsySupportRequest
+          mockPsySupportRequest as SupportRequests
         );
         prismaMock.supportRequests.create.mockResolvedValueOnce({
           ...mockLegalSupportRequest,
           status: "closed",
           state: "INT",
-        });
+        } as SupportRequests);
 
         await compose(
           {
