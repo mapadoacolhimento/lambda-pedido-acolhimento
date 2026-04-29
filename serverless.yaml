@@ -48,7 +48,7 @@ custom:
     enableFunctionLogs: true
   prune:
     automatic: true
-    number: 5
+    number: 10
 
 provider:
   name: aws
