@@ -1,5 +1,7 @@
 import type { VolunteerAvailability } from "@prisma/client";
-import * as turf from "@turf/turf";
+import { point } from "@turf/helpers";
+import type { Coord } from "@turf/helpers";
+import distance from "@turf/distance";
 import type { SupportRequest } from "../types";
 
 export function filterVolunteersWithLatLng(
@@ -46,13 +48,13 @@ export function calcDistance(
   pointA: number[],
   pointB: number[]
 ): number | null {
-  const a: turf.Coord = turf.point(pointA);
+  const a: Coord = point(pointA);
 
-  const b: turf.Coord = turf.point(pointB);
+  const b: Coord = point(pointB);
 
-  const distance = turf.distance(a, b);
+  const findDistance = distance(a, b);
 
-  return distance ? Number(distance) : null;
+  return findDistance ? Number(findDistance) : null;
 }
 
 export function findVolunteerInTheSameCity(

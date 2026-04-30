@@ -41,7 +41,10 @@ async function updateMsrZendeskTicketWithQueue(
   return zendeskTicket ? zendeskTicket : null;
 }
 
-export type Queue = Pick<SupportRequest, "zendeskTicketId" | "msrId">;
+export type Queue = Pick<
+  SupportRequest,
+  "zendeskTicketId" | "msrId" | "supportRequestId"
+>;
 
 export default async function directToQueue(
   supportRequestId: number
@@ -61,6 +64,7 @@ export default async function directToQueue(
     select: {
       zendeskTicketId: true,
       msrId: true,
+      supportRequestId: true,
     },
   });
 

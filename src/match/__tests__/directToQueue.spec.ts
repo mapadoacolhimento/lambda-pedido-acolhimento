@@ -61,6 +61,7 @@ describe("directToQueue", () => {
       select: {
         zendeskTicketId: true,
         msrId: true,
+        supportRequestId: true,
       },
     });
   });

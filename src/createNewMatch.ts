@@ -55,6 +55,16 @@ export default async function handler(
       validatedBody;
 
     const supportRequest = await client.supportRequests.findUnique({
+      select: {
+        lat: true,
+        lng: true,
+        supportRequestId: true,
+        msrId: true,
+        zendeskTicketId: true,
+        supportType: true,
+        city: true,
+        state: true,
+      },
       where: { supportRequestId: supportRequestId },
     });
 

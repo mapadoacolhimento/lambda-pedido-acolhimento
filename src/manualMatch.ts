@@ -52,6 +52,16 @@ export default async function handler(
 
     // Fetch the supportRequest using ZendeskTicketId
     const supportRequest = await client.supportRequests.findUnique({
+      select: {
+        lat: true,
+        lng: true,
+        supportRequestId: true,
+        msrId: true,
+        zendeskTicketId: true,
+        supportType: true,
+        city: true,
+        state: true,
+      },
       where: { zendeskTicketId: msrZendeskTicketId },
     });
 
