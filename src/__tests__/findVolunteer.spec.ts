@@ -4,6 +4,7 @@ import { findVolunteer } from "../../handler";
 import type { Decimal } from "@prisma/client/runtime/library";
 import * as fetchVolunteers from "../lib/fetchVolunteers";
 import { stringfyBigInt } from "../utils";
+import type { SupportRequests } from "@prisma/client";
 
 const validBody = {
   supportRequestId: 1,
@@ -113,7 +114,7 @@ describe("Successful req", () => {
 
   it("should return a res with volunteer payload when volunteer was found", async () => {
     prismaMock.supportRequests.findUnique.mockResolvedValueOnce(
-      mockSupportRequest
+      mockSupportRequest as SupportRequests
     );
 
     mockFetchVolunteers.mockResolvedValueOnce(mockVolunteers);
