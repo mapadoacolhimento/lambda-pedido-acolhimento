@@ -147,4 +147,4 @@ plugins:
   - serverless-webpack
   - serverless-offline
   - serverless-prune-plugin
-#  - serverless-newrelic-lambda-layers
+  - serverless-newrelic-lambda-layers
