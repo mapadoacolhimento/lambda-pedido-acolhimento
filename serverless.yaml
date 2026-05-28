@@ -52,7 +52,7 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs20.x
+  runtime: nodejs22.x
   region: ${env:AWS_REGION}
   httpApi:
     metrics: true
