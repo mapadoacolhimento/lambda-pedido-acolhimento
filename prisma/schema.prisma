@@ -194,6 +194,7 @@ model Volunteers {
   availability                Int
   offers_libras_support       Boolean
   street                      String?                       @db.VarChar(200)
+  discoveryChannel            DiscoveryChannel?             @map("discovery_channel")
   Matches                     Matches[]
   volunteer_availability      VolunteerAvailability?
   volunteer_status_history    VolunteerStatusHistory[]
@@ -1731,6 +1732,23 @@ enum InstrumentalStatus {
   @@schema("survey")
 }
 
+enum DiscoveryChannel {
+  Instagram
+  Facebook
+  LinkedIn
+  google_search           @map("Google/pesquisa na internet")
+  press_mention           @map("Menção em jornal, revista ou TV")
+  podcast_mention         @map("Menção em podcast")
+  volunteer_referral      @map("Indicação de outra voluntária")
+  msr_referral            @map("Indicação de mulher acolhida")
+  event_or_course         @map("Evento, palestra ou curso")
+  university_or_school    @map("Universidade ou escola")
+  other                   @map("Outro")
+
+  @@map("discovery_channel")
+  @@schema("public")
+
+}
 model iana_feedback {
   id         Int      @id @default(autoincrement())
   created_at DateTime @default(now()) @db.Timestamp(6)
